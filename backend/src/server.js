@@ -12,8 +12,8 @@ const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
 
-app.use(helmet());
-app.use(cors({ origin: process.env.FRONTEND_URL || 'http://localhost:3000', credentials: true }));
+app.use(helmet({ crossOriginResourcePolicy: false }));
+app.use(cors({ origin: process.env.FRONTEND_URL || true, credentials: true }));
 app.use(express.json({ limit: '1mb' }));
 
 
@@ -38,6 +38,12 @@ app.use('/api/admin', adminRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'TaskEarn Pro API is running' });
+});
+
+const frontendPath = path.join(__dirname, '../../frontend/out');
+app.use(express.static(frontendPath));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
 app.use((err, req, res, next) => {
