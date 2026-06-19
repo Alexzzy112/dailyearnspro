@@ -5,8 +5,6 @@ import { adminAPI } from '@/lib/api';
 import toast from 'react-hot-toast';
 import { HiCheckCircle, HiXCircle, HiPhotograph, HiExternalLink } from 'react-icons/hi';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-
 export default function AdminPaymentsPage() {
   const queryClient = useQueryClient();
 
@@ -107,7 +105,7 @@ export default function AdminPaymentsPage() {
                   <td className="py-4 px-4 text-gray-600 dark:text-gray-300 font-mono text-xs max-w-[120px] truncate" title={p.reference}>{p.reference}</td>
                   <td className="py-4 px-4">
                     {p.screenshot ? (
-                      <a href={`${API_URL}${p.screenshot}`} target="_blank" rel="noopener noreferrer"
+                      <a href={p.screenshot} target="_blank" rel="noopener noreferrer"
                         className="inline-flex items-center gap-1.5 text-primary-500 hover:text-primary-600 text-xs font-medium transition">
                         <HiPhotograph className="w-4 h-4" />
                         View

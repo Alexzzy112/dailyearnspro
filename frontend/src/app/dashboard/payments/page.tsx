@@ -5,8 +5,6 @@ import { userAPI } from '@/lib/api';
 import toast from 'react-hot-toast';
 import { HiPhotograph, HiCheckCircle, HiXCircle, HiClock, HiClipboardCopy, HiCash, HiArrowRight } from 'react-icons/hi';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-
 const BANK_DETAILS = {
   accountNumber: 'xxxxxxxxxxxx',
   accountName: 'xxxxxxxxxxxxx',
@@ -164,7 +162,7 @@ export default function PaymentsPage() {
                       <p className="text-sm font-semibold text-secondary-700 dark:text-white">₦{p.amount.toLocaleString()}</p>
                       <p className="text-xs text-gray-500">{p.reference ? `Ref: ${p.reference}` : ''}</p>
                       {p.screenshot && (
-                        <a href={`${API_URL}${p.screenshot}`} target="_blank"
+                        <a href={p.screenshot} target="_blank"
                           className="text-xs text-primary-500 hover:text-primary-600 inline-flex items-center gap-1 mt-1">
                           <HiPhotograph className="w-3 h-3" /> View Screenshot
                         </a>

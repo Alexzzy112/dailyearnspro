@@ -324,7 +324,7 @@ exports.submitActivationPayment = async (req, res) => {
     const fee = settings ? Number(settings.value) : safeEnvNum('ACTIVATION_FEE', 2000);
 
     const ref = reference && reference.trim() ? reference.trim() : `ACT-${user._id}-${Date.now()}`;
-    const screenshot = req.file ? `/uploads/${req.file.filename}` : '';
+    const screenshot = req.file ? req.file.path : '';
     const payment = await Payment.create({
       userId: req.user._id,
       amount: fee,
@@ -345,7 +345,7 @@ exports.submitPayment = async (req, res) => {
       return res.status(400).json({ message: 'Invalid amount' });
     }
     const ref = reference && reference.trim() ? reference.trim() : `PAY-${req.user._id}-${Date.now()}`;
-    const screenshot = req.file ? `/uploads/${req.file.filename}` : '';
+    const screenshot = req.file ? req.file.path : '';
     const payment = await Payment.create({
       userId: req.user._id,
       amount: Number(amount),
