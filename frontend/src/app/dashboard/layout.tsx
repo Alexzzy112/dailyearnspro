@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { HiHome, HiClipboardList, HiCurrencyDollar, HiUserGroup, HiLogout, HiCash } from 'react-icons/hi';
+import WelcomePopup from '@/components/WelcomePopup';
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: HiHome },
@@ -18,6 +19,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-secondary-900">
+      <WelcomePopup />
       {/* Top bar with profile + logout */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-secondary-800 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between px-4 h-16">

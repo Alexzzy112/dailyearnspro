@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { HiChartBar, HiUsers, HiCurrencyDollar, HiCog, HiLogout, HiMenu, HiX, HiArrowLeft, HiCash, HiClipboardList } from 'react-icons/hi';
+import WelcomePopup from '@/components/WelcomePopup';
 import { useState } from 'react';
 
 const navItems = [
@@ -16,8 +17,16 @@ const navItems = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { user, logout } = useAuth();
+  const { user, logout, loading: authLoading } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-secondary-900">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-500 border-t-transparent"></div>
+      </div>
+    );
+  }
 
   if (user?.role !== 'admin') {
     return (
@@ -35,6 +44,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-secondary-900 flex">
+      <WelcomePopup />
       <button onClick={() => setSidebarOpen(!sidebarOpen)} className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-white dark:bg-secondary-800 shadow-lg">
         {sidebarOpen ? <HiX className="w-6 h-6" /> : <HiMenu className="w-6 h-6" />}
       </button>
