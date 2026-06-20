@@ -24,16 +24,19 @@ if (process.env.VERCEL === '1') {
     if (req.method === 'GET' || req.method === 'HEAD') return next();
     const ct = req.headers['content-type'] || '';
     if (!ct.includes('application/json')) return next();
-    let data = '';
-    req.on('data', chunk => data += chunk);
+    if (typeof req.body === 'object' && req.body !== null) { req._body = true; return next(); }
+    const chunks = [];
+    req.on('data', chunk => chunks.push(chunk));
     req.on('end', () => {
-      if (data) {
-        try { req.body = JSON.parse(data); req._body = true; }
+      if (chunks.length) {
+        const buf = Buffer.concat(chunks);
+        try { req.body = JSON.parse(buf.toString()); req._body = true; }
         catch (e) { return res.status(400).json({ message: 'Invalid JSON in request body' }); }
       }
       next();
     });
     req.on('error', () => next());
+    req.resume();
   };
   app.use(rawBodyMiddleware);
 } else {
