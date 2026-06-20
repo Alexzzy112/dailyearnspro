@@ -68,8 +68,20 @@ const start = async () => {
 
 start();
 
-const apiMiddleware = (req, res, next) => {
-  connectDB().catch(() => {});
+const apiMiddleware = async (req, res, next) => {
+  if (req.path === '/health') return next();
+  try {
+    const db = await Promise.race([
+      connectDB(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('DB connection timeout')), 8000))
+    ]);
+    if (!db) {
+      return res.status(503).json({ message: 'Database connection unavailable' });
+    }
+  } catch (err) {
+    console.error('DB middleware error:', err.message);
+    return res.status(503).json({ message: 'Database connection unavailable' });
+  }
   next();
 };
 

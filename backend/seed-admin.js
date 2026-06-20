@@ -1,21 +1,22 @@
+require('dotenv').config({ path: require('path').join(__dirname, '.env') });
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 async function main() {
-  await mongoose.connect('mongodb://localhost:27017/taskearn');
+  await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/taskearn');
   const db = mongoose.connection.db;
   const users = db.collection('users');
 
-  const existing = await users.findOne({ email: 'admin@taskearnpro.com' });
+  const existing = await users.findOne({ email: 'azamukwokusilas2@gmail.com' });
   if (existing) {
     console.log('Admin user already exists');
   } else {
     const salt = await bcrypt.genSalt(12);
-    const hash = await bcrypt.hash('admin123', salt);
+    const hash = await bcrypt.hash('Alexzzy@11', salt);
     await users.insertOne({
       name: 'Admin',
       username: 'admin',
-      email: 'admin@taskearnpro.com',
+      email: 'azamukwokusilas2@gmail.com',
       password: hash,
       role: 'admin',
       accountStatus: 'active',
