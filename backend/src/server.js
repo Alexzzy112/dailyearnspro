@@ -18,11 +18,29 @@ app.use(helmet({
   contentSecurityPolicy: false
 }));
 app.use(cors({ origin: process.env.FRONTEND_URL || true, credentials: true }));
-app.use(express.json({ limit: '1mb' }));
 
+if (process.env.VERCEL === '1') {
+  const rawBodyMiddleware = (req, res, next) => {
+    if (req.method === 'GET' || req.method === 'HEAD') return next();
+    const ct = req.headers['content-type'] || '';
+    if (!ct.includes('application/json')) return next();
+    let data = '';
+    req.on('data', chunk => data += chunk);
+    req.on('end', () => {
+      if (data) {
+        try { req.body = JSON.parse(data); req._body = true; }
+        catch (e) { return res.status(400).json({ message: 'Invalid JSON in request body' }); }
+      }
+      next();
+    });
+    req.on('error', () => next());
+  };
+  app.use(rawBodyMiddleware);
+} else {
+  app.use(express.json({ limit: '1mb' }));
+}
 app.use((err, req, res, next) => {
   if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
-    console.error('Body parser SyntaxError:', err.message);
     return res.status(400).json({ message: 'Invalid JSON in request body' });
   }
   next();
