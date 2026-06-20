@@ -12,7 +12,11 @@ const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
 
-app.use(helmet({ crossOriginResourcePolicy: false }));
+app.set('trust proxy', true);
+app.use(helmet({
+  crossOriginResourcePolicy: false,
+  contentSecurityPolicy: false
+}));
 app.use(cors({ origin: process.env.FRONTEND_URL || true, credentials: true }));
 app.use(express.json({ limit: '1mb' }));
 
@@ -54,10 +58,21 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 
 const start = async () => {
-  await connectDB();
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
+  if (process.env.VERCEL !== '1') {
+    await connectDB();
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  }
 };
 
 start();
+
+const apiMiddleware = (req, res, next) => {
+  connectDB().catch(() => {});
+  next();
+};
+
+app.use('/api', apiMiddleware);
+
+module.exports = app;

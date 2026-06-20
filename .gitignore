@@ -5,3 +5,5 @@ out/
 .env.local
 server.log
 uploads/
+
+.vercel
