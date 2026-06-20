@@ -1,4 +1,6 @@
-require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
+if (process.env.VERCEL !== '1') {
+  require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
+}
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -28,7 +30,9 @@ app.use((err, req, res, next) => {
   next();
 });
 
-connectDB().catch(e => console.error('Initial DB connection failed:', e.message));
+if (process.env.VERCEL !== '1') {
+  connectDB().catch(e => console.error('Initial DB connection failed:', e.message));
+}
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -47,16 +51,8 @@ app.use('/api', limiter);
 
 const apiMiddleware = async (req, res, next) => {
   if (req.path === '/health') return next();
-  try {
-    const db = await Promise.race([
-      connectDB(),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('DB connection timeout')), 12000))
-    ]);
-    if (!db) {
-      return res.status(503).json({ message: 'Database connection unavailable - check MongoDB Atlas Network Access' });
-    }
-  } catch (err) {
-    console.error('DB middleware error:', err.message);
+  const db = await connectDB();
+  if (!db) {
     return res.status(503).json({ message: 'Database connection unavailable - check MongoDB Atlas Network Access' });
   }
   next();
@@ -73,7 +69,7 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'TaskEarn Pro API is running' });
 });
 
-const frontendPath = path.join(__dirname, '../../frontend/out');
+const frontendPath = path.resolve(process.cwd(), 'frontend', 'out');
 app.use(express.static(frontendPath, {
   maxAge: '1y',
   immutable: true,

@@ -100,7 +100,6 @@ exports.activateUser = async (req, res) => {
           });
         }
       }
-    }
     await createNotification({
       userId: user._id, title: 'Account Activated!', message: 'Your account has been activated by admin. Start earning now!', type: 'success', link: '/dashboard/tasks'
     });
