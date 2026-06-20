@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { userAPI } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
@@ -9,13 +9,13 @@ import { HiExternalLink, HiCheckCircle, HiClock, HiCurrencyDollar } from 'react-
 export default function TasksPage() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
-  const [activeTask, setActiveTask] = useState<number | null>(null);
-  const [viewingTime, setViewingTime] = useState(0);
-  const [taskTimer, setTaskTimer] = useState<ReturnType<typeof setInterval> | null>(null);
+  const [activeTimers, setActiveTimers] = useState<Record<number, number>>({});
+  const timersRef = useRef<Record<number, ReturnType<typeof setInterval>>>({});
 
   useEffect(() => {
-    return () => { if (taskTimer) clearInterval(taskTimer); };
-  }, [taskTimer]);
+    const timers = timersRef.current;
+    return () => { Object.values(timers).forEach(clearInterval); };
+  }, []);
 
   const { data, isLoading } = useQuery({
     queryKey: ['tasks'],
@@ -28,9 +28,6 @@ export default function TasksPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-      setActiveTask(null);
-      setViewingTime(0);
-      if (taskTimer) clearInterval(taskTimer);
     },
     onError: (err: any) => {
       toast.error(err.response?.data?.message || 'Failed to claim reward');
@@ -39,19 +36,25 @@ export default function TasksPage() {
 
   const handleStartTask = (task: any) => {
     if (task.completed) return;
-    setActiveTask(task.taskNumber);
-    setViewingTime(0);
+    if (timersRef.current[task.taskNumber]) return;
     window.open(task.taskLink, '_blank');
-    const timer = setInterval(() => {
-      setViewingTime((prev) => prev + 1);
+    setActiveTimers(prev => ({ ...prev, [task.taskNumber]: 0 }));
+    timersRef.current[task.taskNumber] = setInterval(() => {
+      setActiveTimers(prev => ({ ...prev, [task.taskNumber]: (prev[task.taskNumber] || 0) + 1 }));
     }, 1000);
-    setTaskTimer(timer);
   };
 
   const handleClaimReward = (taskNumber: number, reward: number) => {
     claimMutation.mutate(taskNumber, {
       onSuccess: () => {
         toast.success(`Reward claimed! ₦${reward} added to wallet.`);
+        clearInterval(timersRef.current[taskNumber]);
+        delete timersRef.current[taskNumber];
+        setActiveTimers(prev => {
+          const next = { ...prev };
+          delete next[taskNumber];
+          return next;
+        });
       }
     });
   };
@@ -106,8 +109,9 @@ export default function TasksPage() {
       {/* Tasks Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {tasks.map((task: any) => {
-          const isActive = activeTask === task.taskNumber;
-          const canClaim = isActive && viewingTime >= (task.requiredViewingTime || 15);
+          const taskTime = activeTimers[task.taskNumber] ?? -1;
+          const isActive = taskTime >= 0;
+          const canClaim = isActive && taskTime >= (task.requiredViewingTime || 15);
 
           return (
             <div key={task.taskNumber} className={`bg-white dark:bg-secondary-800 rounded-xl p-5 card-shadow transition ${
@@ -124,7 +128,7 @@ export default function TasksPage() {
               {isActive && (
                 <div className="mb-3 flex items-center gap-2 text-sm">
                   <HiClock className="w-4 h-4 text-primary-500" />
-                  <span className="text-primary-500 font-medium">{viewingTime}s / {task.requiredViewingTime}s</span>
+                  <span className="text-primary-500 font-medium">{taskTime}s / {task.requiredViewingTime}s</span>
                 </div>
               )}
               <div className="flex gap-2">
@@ -135,8 +139,8 @@ export default function TasksPage() {
                 ) : (
                   <>
                     <button onClick={() => handleStartTask(task)}
-                      disabled={activeTask !== null && !isActive}
-                      className="flex-1 flex items-center justify-center gap-2 bg-primary-500 hover:bg-primary-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 text-white py-2.5 rounded-lg text-sm font-medium transition">
+                      className="flex-1 flex items-center justify-center gap-2 bg-primary-500 hover:bg-primary-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 text-white py-2.5 rounded-lg text-sm font-medium transition"
+                      disabled={isActive}>
                       <HiExternalLink className="w-4 h-4" /> {isActive ? 'Visited' : 'Start Task'}
                     </button>
                     <button onClick={() => handleClaimReward(task.taskNumber, task.reward)}
