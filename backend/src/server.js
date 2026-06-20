@@ -20,6 +20,7 @@ app.use(helmet({
 app.use(cors({ origin: process.env.FRONTEND_URL || true, credentials: true }));
 app.use(express.json({ limit: '1mb' }));
 
+connectDB();
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -35,6 +36,25 @@ const limiter = rateLimit({
   message: { message: 'Too many requests, please try again later' }
 });
 app.use('/api', limiter);
+
+const apiMiddleware = async (req, res, next) => {
+  if (req.path === '/health') return next();
+  try {
+    const db = await Promise.race([
+      connectDB(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('DB connection timeout')), 12000))
+    ]);
+    if (!db) {
+      return res.status(503).json({ message: 'Database connection unavailable - check MongoDB Atlas Network Access' });
+    }
+  } catch (err) {
+    console.error('DB middleware error:', err.message);
+    return res.status(503).json({ message: 'Database connection unavailable - check MongoDB Atlas Network Access' });
+  }
+  next();
+};
+
+app.use('/api', apiMiddleware);
 
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
@@ -57,34 +77,11 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 
-const start = async () => {
-  if (process.env.VERCEL !== '1') {
+if (process.env.VERCEL !== '1') {
+  app.listen(PORT, async () => {
     await connectDB();
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
-  }
-};
-
-start();
-
-const apiMiddleware = async (req, res, next) => {
-  if (req.path === '/health') return next();
-  try {
-    const db = await Promise.race([
-      connectDB(),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('DB connection timeout')), 8000))
-    ]);
-    if (!db) {
-      return res.status(503).json({ message: 'Database connection unavailable' });
-    }
-  } catch (err) {
-    console.error('DB middleware error:', err.message);
-    return res.status(503).json({ message: 'Database connection unavailable' });
-  }
-  next();
-};
-
-app.use('/api', apiMiddleware);
+    console.log(`Server running on port ${PORT}`);
+  });
+}
 
 module.exports = app;
