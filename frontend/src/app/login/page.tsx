@@ -5,9 +5,11 @@ import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import toast from 'react-hot-toast';
 import Navbar from '@/components/Navbar';
+import { HiEye, HiEyeOff } from 'react-icons/hi';
 
 export default function LoginPage() {
   const [form, setForm] = useState({ email: '', password: '' });
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const router = useRouter();
@@ -49,9 +51,15 @@ export default function LoginPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Password</label>
-                <input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-secondary-700 text-secondary-700 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition"
-                  placeholder="••••••••" />
+                <div className="relative">
+                  <input type={showPassword ? 'text' : 'password'} value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })}
+                    className="w-full px-4 py-3 pr-12 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-secondary-700 text-secondary-700 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition"
+                    placeholder="••••••••" />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition">
+                    {showPassword ? <HiEyeOff className="w-5 h-5" /> : <HiEye className="w-5 h-5" />}
+                  </button>
+                </div>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <Link href="/forgot-password" className="text-primary-500 hover:text-primary-600">Forgot password?</Link>
