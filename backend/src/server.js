@@ -20,7 +20,15 @@ app.use(helmet({
 app.use(cors({ origin: process.env.FRONTEND_URL || true, credentials: true }));
 app.use(express.json({ limit: '1mb' }));
 
-connectDB();
+app.use((err, req, res, next) => {
+  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+    console.error('Body parser SyntaxError:', err.message);
+    return res.status(400).json({ message: 'Invalid JSON in request body' });
+  }
+  next();
+});
+
+connectDB().catch(e => console.error('Initial DB connection failed:', e.message));
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -65,8 +73,16 @@ app.get('/api/health', (req, res) => {
 });
 
 const frontendPath = path.join(__dirname, '../../frontend/out');
-app.use(express.static(frontendPath));
+app.use(express.static(frontendPath, {
+  maxAge: '1y',
+  immutable: true,
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.js')) res.setHeader('Content-Type', 'application/javascript');
+    if (filePath.endsWith('.css')) res.setHeader('Content-Type', 'text/css');
+  }
+}));
 app.get('*', (req, res) => {
+  if (!req.accepts('html')) return res.status(404).json({ message: 'Not found' });
   res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
