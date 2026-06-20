@@ -3,6 +3,7 @@ const Withdrawal = require('../models/Withdrawal');
 const Transaction = require('../models/Transaction');
 const Payment = require('../models/Payment');
 const Setting = require('../models/Setting');
+const { createNotification, createBulkNotifications } = require('./notificationController');
 
 exports.getDashboardStats = async (req, res) => {
   try {
@@ -88,14 +89,21 @@ exports.activateUser = async (req, res) => {
         referrer.referralEarnings += bonus;
         referrer.referralCount += 1;
         await referrer.save();
-        await Transaction.create({
-          userId: referrer._id,
-          type: 'credit',
-          amount: bonus,
-          description: `Referral bonus for referring ${user.name}`
-        });
+          await Transaction.create({
+            userId: referrer._id,
+            type: 'credit',
+            amount: bonus,
+            description: `Referral bonus for referring ${user.name}`
+          });
+          await createNotification({
+            userId: referrer._id, title: 'Referral Bonus Earned!', message: `You earned ₦${bonus} referral bonus for referring ${user.name}!`, type: 'success', link: '/dashboard'
+          });
+        }
       }
     }
+    await createNotification({
+      userId: user._id, title: 'Account Activated!', message: 'Your account has been activated by admin. Start earning now!', type: 'success', link: '/dashboard/tasks'
+    });
     res.json({ message: 'User activated successfully', user });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -222,6 +230,9 @@ exports.approveWithdrawal = async (req, res) => {
     if (!withdrawal) return res.status(404).json({ message: 'Withdrawal not found' });
     withdrawal.status = 'approved';
     await withdrawal.save();
+    await createNotification({
+      userId: withdrawal.userId, title: 'Withdrawal Approved', message: `Your withdrawal of ₦${withdrawal.amount} has been approved and is being processed.`, type: 'success', link: '/dashboard/wallet'
+    });
     res.json({ message: 'Withdrawal approved', withdrawal });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -244,6 +255,9 @@ exports.rejectWithdrawal = async (req, res) => {
         amount: withdrawal.amount,
         description: `Refund for rejected withdrawal #${withdrawal._id}`
       });
+      await createNotification({
+        userId: user._id, title: 'Withdrawal Rejected', message: `Your withdrawal of ₦${withdrawal.amount} has been rejected. Funds have been returned to your wallet.`, type: 'error', link: '/dashboard/wallet'
+      });
     }
     res.json({ message: 'Withdrawal rejected, funds returned', withdrawal });
   } catch (error) {
@@ -257,6 +271,9 @@ exports.markWithdrawalPaid = async (req, res) => {
     if (!withdrawal) return res.status(404).json({ message: 'Withdrawal not found' });
     withdrawal.status = 'paid';
     await withdrawal.save();
+    await createNotification({
+      userId: withdrawal.userId, title: 'Withdrawal Paid!', message: `Your withdrawal of ₦${withdrawal.amount} has been paid out successfully.`, type: 'success', link: '/dashboard/wallet'
+    });
     res.json({ message: 'Withdrawal marked as paid', withdrawal });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -334,8 +351,14 @@ exports.confirmPayment = async (req, res) => {
             amount: bonus,
             description: `Referral bonus for referring ${user.name}`
           });
+          await createNotification({
+            userId: referrer._id, title: 'Referral Bonus Earned!', message: `You earned ₦${bonus} referral bonus for referring ${user.name}!`, type: 'success', link: '/dashboard'
+          });
         }
       }
+      await createNotification({
+        userId: user._id, title: 'Account Activated!', message: 'Your account has been activated. Start completing tasks and earning rewards!', type: 'success', link: '/dashboard/tasks'
+      });
       res.json({ message: 'Activation payment confirmed, account activated', payment });
     } else {
       user.walletBalance += payment.amount;
@@ -345,6 +368,9 @@ exports.confirmPayment = async (req, res) => {
         type: 'credit',
         amount: payment.amount,
         description: `Wallet funded - payment ref: ${payment.reference}`
+      });
+      await createNotification({
+        userId: user._id, title: 'Payment Confirmed', message: `Your payment of ₦${payment.amount} has been confirmed. Wallet credited!`, type: 'success', link: '/dashboard/wallet'
       });
       res.json({ message: 'Payment confirmed, wallet credited', payment });
     }
@@ -362,6 +388,9 @@ exports.rejectPayment = async (req, res) => {
     }
     payment.status = 'rejected';
     await payment.save();
+    await createNotification({
+      userId: payment.userId, title: 'Payment Rejected', message: `Your payment of ₦${payment.amount} has been rejected. Contact admin for details.`, type: 'error', link: '/dashboard/payments'
+    });
     res.json({ message: 'Payment rejected', payment });
   } catch (error) {
     res.status(500).json({ message: error.message });

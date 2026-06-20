@@ -3,6 +3,7 @@ const Transaction = require('../models/Transaction');
 const Withdrawal = require('../models/Withdrawal');
 const Payment = require('../models/Payment');
 const Setting = require('../models/Setting');
+const { createNotification } = require('./notificationController');
 
 const safeEnvNum = (key, fallback) => {
   const v = process.env[key];
@@ -176,6 +177,11 @@ exports.claimTask = async (req, res) => {
       tasksCompleted: user.tasksCompleted,
       totalEarnings: user.totalEarnings
     });
+    if (user.todayTasksCompleted === 1) {
+      await createNotification({
+        userId: user._id, title: 'First Task Done!', message: `Congratulations on completing your first task! ₦${reward} has been added to your wallet.`, type: 'success', link: '/dashboard/tasks'
+      });
+    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -254,6 +260,9 @@ exports.requestWithdrawal = async (req, res) => {
       description: `Withdrawal request #${withdrawal._id}`
     });
 
+    await createNotification({
+      userId: user._id, title: 'Withdrawal Submitted', message: `Your withdrawal request of ₦${amount} has been submitted and is pending approval.`, type: 'info', link: '/dashboard/wallet'
+    });
     res.status(201).json({ message: 'Withdrawal request submitted', withdrawal });
   } catch (error) {
     res.status(500).json({ message: error.message });

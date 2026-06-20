@@ -2,8 +2,9 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { HiChartBar, HiUsers, HiCurrencyDollar, HiCog, HiLogout, HiMenu, HiX, HiArrowLeft, HiCash, HiClipboardList } from 'react-icons/hi';
+import { HiChartBar, HiUsers, HiCurrencyDollar, HiCog, HiLogout, HiMenu, HiX, HiArrowLeft, HiCash, HiClipboardList, HiBell } from 'react-icons/hi';
 import WelcomePopup from '@/components/WelcomePopup';
+import NotificationBell from '@/components/NotificationBell';
 import { useState } from 'react';
 
 const navItems = [
@@ -13,6 +14,7 @@ const navItems = [
   { href: '/admin/payments', label: 'Payments', icon: HiCash },
   { href: '/admin/withdrawals', label: 'Withdrawals', icon: HiCurrencyDollar },
   { href: '/admin/settings', label: 'Settings', icon: HiCog },
+  { href: '/admin/notifications', label: 'Notifications', icon: HiBell },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -82,6 +84,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <Link href="/dashboard" className="flex-1 flex items-center gap-2 px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-primary-500 transition">
               <HiArrowLeft className="w-4 h-4" /> User Panel
             </Link>
+            <NotificationBell />
             <button onClick={logout} className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition">
               <HiLogout className="w-5 h-5" />
             </button>

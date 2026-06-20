@@ -84,6 +84,16 @@ export const adminAPI = {
   getPayments: () => api.get('/admin/payments'),
   confirmPayment: (id: string) => api.put(`/admin/payments/${id}/confirm`),
   rejectPayment: (id: string) => api.put(`/admin/payments/${id}/reject`),
+  createNotification: (data: { userId?: string; title: string; message: string; type?: string; link?: string }) =>
+    api.post('/notifications/admin/create', data),
+  getNotifications: () => api.get('/notifications/admin/all'),
+};
+
+export const notificationAPI = {
+  getAll: () => api.get('/notifications'),
+  getUnreadCount: () => api.get('/notifications/unread-count'),
+  markAsRead: (id: string) => api.put(`/notifications/${id}/read`),
+  markAllAsRead: () => api.put('/notifications/read-all'),
 };
 
 export default api;

@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { HiHome, HiClipboardList, HiCurrencyDollar, HiUserGroup, HiLogout, HiCash } from 'react-icons/hi';
 import WelcomePopup from '@/components/WelcomePopup';
+import NotificationBell from '@/components/NotificationBell';
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: HiHome },
@@ -40,6 +41,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <p className="text-xs text-accent-500 font-semibold">₦{user?.walletBalance?.toLocaleString()}</p>
               </div>
             </div>
+            <NotificationBell />
             <button onClick={logout} className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition" title="Logout">
               <HiLogout className="w-5 h-5" />
             </button>
