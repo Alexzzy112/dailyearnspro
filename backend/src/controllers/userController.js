@@ -20,6 +20,7 @@ exports.getDashboard = async (req, res) => {
     today.setHours(0, 0, 0, 0);
     if (!user.lastTaskResetDate || user.lastTaskResetDate < today) {
       user.todayTasksCompleted = 0;
+      user.completedTaskNumbers = [];
       user.lastTaskResetDate = new Date();
       await user.save();
     }
@@ -80,6 +81,7 @@ exports.getTasks = async (req, res) => {
     today.setHours(0, 0, 0, 0);
     if (!user.lastTaskResetDate || user.lastTaskResetDate < today) {
       user.todayTasksCompleted = 0;
+      user.completedTaskNumbers = [];
       user.lastTaskResetDate = new Date();
       await user.save();
     }
@@ -99,6 +101,7 @@ exports.getTasks = async (req, res) => {
     const reward = safeNum('rewardPerTask', safeEnvNum('REWARD_PER_TASK', 5));
     const viewTime = safeNum('requiredViewingTime', safeEnvNum('REQUIRED_VIEWING_TIME', 15));
 
+    const completedSet = new Set(user.completedTaskNumbers || []);
     const tasks = [];
     for (let i = 1; i <= dailyLimit; i++) {
       tasks.push({
@@ -107,7 +110,7 @@ exports.getTasks = async (req, res) => {
         reward,
         taskLink,
         description: taskDescription,
-        completed: i <= user.todayTasksCompleted,
+        completed: completedSet.has(i),
         requiredViewingTime: viewTime
       });
     }
@@ -133,6 +136,7 @@ exports.claimTask = async (req, res) => {
     today.setHours(0, 0, 0, 0);
     if (!user.lastTaskResetDate || user.lastTaskResetDate < today) {
       user.todayTasksCompleted = 0;
+      user.completedTaskNumbers = [];
       user.lastTaskResetDate = new Date();
       await user.save();
     }
@@ -150,13 +154,15 @@ exports.claimTask = async (req, res) => {
     if (!Number.isInteger(taskNumber) || taskNumber < 1 || taskNumber > dailyLimit) {
       return res.status(400).json({ message: 'Invalid task number' });
     }
+    const completedSet = new Set(user.completedTaskNumbers || []);
+    if (completedSet.has(taskNumber)) {
+      return res.status(400).json({ message: 'Task already completed' });
+    }
     if (user.todayTasksCompleted >= dailyLimit) {
       return res.status(400).json({ message: 'Daily task limit reached' });
     }
-    if (taskNumber !== user.todayTasksCompleted + 1) {
-      return res.status(400).json({ message: `Please complete task #${user.todayTasksCompleted + 1} first` });
-    }
 
+    user.completedTaskNumbers = [...completedSet, taskNumber];
     user.walletBalance += reward;
     user.totalEarnings += reward;
     user.tasksCompleted += 1;

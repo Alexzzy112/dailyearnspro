@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema({
   totalEarnings: { type: Number, default: 0 },
   tasksCompleted: { type: Number, default: 0 },
   todayTasksCompleted: { type: Number, default: 0 },
+  completedTaskNumbers: { type: [Number], default: [] },
   lastTaskResetDate: { type: Date, default: null },
   isVerified: { type: Boolean, default: false },
   verificationToken: { type: String, default: null },
