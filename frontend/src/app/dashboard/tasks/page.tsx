@@ -108,15 +108,13 @@ export default function TasksPage() {
 
       {/* Tasks Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {tasks.map((task: any) => {
+        {tasks.filter((t: any) => !t.completed).map((task: any) => {
           const taskTime = activeTimers[task.taskNumber] ?? -1;
           const isActive = taskTime >= 0;
           const canClaim = isActive && taskTime >= (task.requiredViewingTime || 15);
 
           return (
-            <div key={task.taskNumber} className={`bg-white dark:bg-secondary-800 rounded-xl p-5 card-shadow transition ${
-              task.completed ? 'opacity-60' : 'hover:shadow-lg'
-            }`}>
+            <div key={task.taskNumber} className="bg-white dark:bg-secondary-800 rounded-xl p-5 card-shadow transition hover:shadow-lg">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Task #{task.taskNumber}</span>
                 <span className="flex items-center gap-1 text-accent-500 font-semibold text-sm">
@@ -132,24 +130,16 @@ export default function TasksPage() {
                 </div>
               )}
               <div className="flex gap-2">
-                {task.completed ? (
-                  <div className="flex items-center gap-2 text-accent-500 text-sm font-medium w-full justify-center py-2">
-                    <HiCheckCircle className="w-5 h-5" /> Completed
-                  </div>
-                ) : (
-                  <>
-                    <button onClick={() => handleStartTask(task)}
-                      className="flex-1 flex items-center justify-center gap-2 bg-primary-500 hover:bg-primary-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 text-white py-2.5 rounded-lg text-sm font-medium transition"
-                      disabled={isActive}>
-                      <HiExternalLink className="w-4 h-4" /> {isActive ? 'Visited' : 'Start Task'}
-                    </button>
-                    <button onClick={() => handleClaimReward(task.taskNumber, task.reward)}
-                      disabled={!canClaim}
-                      className="flex-1 flex items-center justify-center gap-2 bg-accent-500 hover:bg-accent-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 text-white py-2.5 rounded-lg text-sm font-medium transition">
-                      <HiCheckCircle className="w-4 h-4" /> Claim ₦{task.reward}
-                    </button>
-                  </>
-                )}
+                <button onClick={() => handleStartTask(task)}
+                  className="flex-1 flex items-center justify-center gap-2 bg-primary-500 hover:bg-primary-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 text-white py-2.5 rounded-lg text-sm font-medium transition"
+                  disabled={isActive}>
+                  <HiExternalLink className="w-4 h-4" /> {isActive ? 'Visited' : 'Start Task'}
+                </button>
+                <button onClick={() => handleClaimReward(task.taskNumber, task.reward)}
+                  disabled={!canClaim}
+                  className="flex-1 flex items-center justify-center gap-2 bg-accent-500 hover:bg-accent-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 text-white py-2.5 rounded-lg text-sm font-medium transition">
+                  <HiCheckCircle className="w-4 h-4" /> Claim ₦{task.reward}
+                </button>
               </div>
             </div>
           );
