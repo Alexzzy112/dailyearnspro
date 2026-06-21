@@ -25,8 +25,8 @@ exports.getDashboard = async (req, res) => {
       await user.save();
     }
 
-    const dailyLimit = safeEnvNum('DAILY_TASK_LIMIT', 100);
-    const rewardPerTask = safeEnvNum('REWARD_PER_TASK', 5);
+    const dailyLimit = safeEnvNum('DAILY_TASK_LIMIT', 50);
+    const rewardPerTask = safeEnvNum('REWARD_PER_TASK', 10);
     const tasksRemaining = Math.max(0, dailyLimit - user.todayTasksCompleted);
     const earningsToday = user.todayTasksCompleted * rewardPerTask;
 
@@ -97,8 +97,8 @@ exports.getTasks = async (req, res) => {
     const taskLink = settingsMap.taskLink || process.env.DEFAULT_TASK_LINK;
     const taskTitle = settingsMap.taskTitle || 'Visit Sponsor';
     const taskDescription = settingsMap.taskDescription || 'Click the link below, wait the required time, then claim your reward.';
-    const dailyLimit = safeNum('dailyTaskLimit', safeEnvNum('DAILY_TASK_LIMIT', 100));
-    const reward = safeNum('rewardPerTask', safeEnvNum('REWARD_PER_TASK', 5));
+    const dailyLimit = safeNum('dailyTaskLimit', safeEnvNum('DAILY_TASK_LIMIT', 50));
+    const reward = safeNum('rewardPerTask', safeEnvNum('REWARD_PER_TASK', 10));
     const viewTime = safeNum('requiredViewingTime', safeEnvNum('REQUIRED_VIEWING_TIME', 15));
 
     const completedSet = new Set(user.completedTaskNumbers || []);
@@ -148,8 +148,8 @@ exports.claimTask = async (req, res) => {
       const v = settingsMap[key];
       return v !== undefined && v !== null ? Number(v) : fallback;
     };
-    const dailyLimit = safeNum('dailyTaskLimit', safeEnvNum('DAILY_TASK_LIMIT', 100));
-    const reward = safeNum('rewardPerTask', safeEnvNum('REWARD_PER_TASK', 5));
+    const dailyLimit = safeNum('dailyTaskLimit', safeEnvNum('DAILY_TASK_LIMIT', 50));
+    const reward = safeNum('rewardPerTask', safeEnvNum('REWARD_PER_TASK', 10));
 
     if (!Number.isInteger(taskNumber) || taskNumber < 1 || taskNumber > dailyLimit) {
       return res.status(400).json({ message: 'Invalid task number' });
@@ -283,7 +283,7 @@ exports.requestActivation = async (req, res) => {
       return res.status(400).json({ message: 'Account is already active or suspended' });
     }
     const settings = await Setting.findOne({ key: 'activationFee' });
-    const fee = settings ? Number(settings.value) : safeEnvNum('ACTIVATION_FEE', 2000);
+    const fee = settings ? Number(settings.value) : safeEnvNum('ACTIVATION_FEE', 3000);
     if (user.walletBalance < fee) {
       return res.status(400).json({ message: `Insufficient balance. Activation fee is ₦${fee}.` });
     }
@@ -342,7 +342,7 @@ exports.submitActivationPayment = async (req, res) => {
       return res.status(400).json({ message: 'Account is already active or suspended' });
     }
     const settings = await Setting.findOne({ key: 'activationFee' });
-    const fee = settings ? Number(settings.value) : safeEnvNum('ACTIVATION_FEE', 2000);
+    const fee = settings ? Number(settings.value) : safeEnvNum('ACTIVATION_FEE', 3000);
 
     const ref = reference && reference.trim() ? reference.trim() : `ACT-${user._id}-${Date.now()}`;
     const screenshot = req.file ? req.file.path : '';

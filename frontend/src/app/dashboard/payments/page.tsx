@@ -66,7 +66,7 @@ export default function PaymentsPage() {
     rejected: 'text-red-600 bg-red-50 dark:bg-red-900/20',
   }[s]);
 
-  const activationFee = data?.settings?.activationFee || 2000;
+  const activationFee = data?.settings?.activationFee || 3000;
   const isActive = data?.user?.accountStatus === 'active';
 
   return (
