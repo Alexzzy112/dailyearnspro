@@ -188,6 +188,7 @@ exports.getSettings = async (req, res) => {
       activationFee: safeNum('activationFee', parseInt(process.env.ACTIVATION_FEE) || 3000),
       minWithdrawal: safeNum('minWithdrawal', parseInt(process.env.MIN_WITHDRAWAL) || 1500),
       referralBonus: safeNum('referralBonus', 50),
+      welcomeBonus: safeNum('welcomeBonus', parseInt(process.env.WELCOME_BONUS) || 500),
       bankName: settingsMap.bankName || '',
       accountNumber: settingsMap.accountNumber || '',
       accountName: settingsMap.accountName || ''

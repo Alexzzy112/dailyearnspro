@@ -35,6 +35,21 @@ exports.register = async (req, res) => {
         await user.save();
       }
     }
+
+    const welcomeSetting = await Setting.findOne({ key: 'welcomeBonus' });
+    const welcomeBonus = welcomeSetting ? Number(welcomeSetting.value) : Number(process.env.WELCOME_BONUS) || 500;
+    if (welcomeBonus > 0) {
+      user.walletBalance += welcomeBonus;
+      user.totalEarnings += welcomeBonus;
+      await user.save();
+      await Transaction.create({
+        userId: user._id,
+        type: 'credit',
+        amount: welcomeBonus,
+        description: 'Welcome bonus'
+      });
+    }
+
     if (user) {
       res.status(201).json({
         _id: user._id,

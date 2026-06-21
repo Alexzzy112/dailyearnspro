@@ -15,6 +15,7 @@ export default function AdminSettingsPage() {
     activationFee: 2000,
     minWithdrawal: 1500,
     referralBonus: 50,
+    welcomeBonus: 500,
     bankName: '',
     accountNumber: '',
     accountName: '',
@@ -35,6 +36,7 @@ export default function AdminSettingsPage() {
         activationFee: data.activationFee || 2000,
         minWithdrawal: data.minWithdrawal || 1500,
         referralBonus: data.referralBonus || 50,
+        welcomeBonus: data.welcomeBonus || 500,
         bankName: data.bankName || '',
         accountNumber: data.accountNumber || '',
         accountName: data.accountName || '',
@@ -97,7 +99,7 @@ export default function AdminSettingsPage() {
               <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Default Task Link</label>
               <input type="url" value={form.taskLink} onChange={(e) => handleChange('taskLink', e.target.value)}
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-secondary-700 text-secondary-700 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none" />
-              <p className="text-xs text-gray-500 mt-1">This link will be used for all 100 daily tasks</p>
+              <p className="text-xs text-gray-500 mt-1">This link will be used for all daily tasks</p>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Reward Per Task (₦)</label>
@@ -134,6 +136,11 @@ export default function AdminSettingsPage() {
             <div>
               <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Referral Bonus (₦)</label>
               <input type="number" value={form.referralBonus} onChange={(e) => handleChange('referralBonus', Number(e.target.value))}
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-secondary-700 text-secondary-700 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Welcome Bonus (₦)</label>
+              <input type="number" value={form.welcomeBonus} onChange={(e) => handleChange('welcomeBonus', Number(e.target.value))}
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-secondary-700 text-secondary-700 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none" />
             </div>
           </div>
