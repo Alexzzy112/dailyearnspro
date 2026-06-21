@@ -68,7 +68,6 @@ export default function PaymentsPage() {
 
   const activationFee = data?.settings?.activationFee || 2000;
   const isActive = data?.user?.accountStatus === 'active';
-  const lastPayment = data?.payments?.[0];
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -77,7 +76,7 @@ export default function PaymentsPage() {
         <p className="text-gray-500 dark:text-gray-400 mt-1">Activate your account and start earning</p>
       </div>
 
-      {isActive && lastPayment?.status === 'confirmed' ? (
+      {isActive ? (
         <div className="bg-white dark:bg-secondary-800 rounded-2xl card-shadow p-8 text-center">
           <div className="w-16 h-16 mx-auto bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-4">
             <HiCheckCircle className="w-10 h-10 text-green-500" />

@@ -388,6 +388,19 @@ exports.rejectPayment = async (req, res) => {
     }
     payment.status = 'rejected';
     await payment.save();
+    if (payment.type === 'activation' && payment.reference?.startsWith('ACT-WALLET-')) {
+      const user = await User.findById(payment.userId);
+      if (user) {
+        user.walletBalance += payment.amount;
+        await user.save();
+        await Transaction.create({
+          userId: user._id,
+          type: 'credit',
+          amount: payment.amount,
+          description: `Refund for rejected activation payment ref: ${payment.reference}`
+        });
+      }
+    }
     await createNotification({
       userId: payment.userId, title: 'Payment Rejected', message: `Your payment of ₦${payment.amount} has been rejected. Contact admin for details.`, type: 'error', link: '/dashboard/payments'
     });
