@@ -1,24 +1,25 @@
 'use client';
-import { useState, useEffect, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { authAPI } from '@/lib/api';
 import toast from 'react-hot-toast';
 import Navbar from '@/components/Navbar';
 
-function ResetPasswordForm() {
-  const searchParams = useSearchParams();
-  const token = searchParams.get('token');
+export default function ResetPasswordPage() {
+  const [token, setToken] = useState<string | null>(null);
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
 
   useEffect(() => {
-    if (!token) {
+    const params = new URLSearchParams(window.location.search);
+    const t = params.get('token');
+    setToken(t);
+    if (!t) {
       toast.error('Invalid or missing reset token');
     }
-  }, [token]);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,13 +83,5 @@ function ResetPasswordForm() {
         </div>
       </div>
     </div>
-  );
-}
-
-export default function ResetPasswordPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-gray-50 dark:bg-secondary-900 flex items-center justify-center"><p className="text-gray-500">Loading...</p></div>}>
-      <ResetPasswordForm />
-    </Suspense>
   );
 }
