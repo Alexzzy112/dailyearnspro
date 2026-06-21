@@ -48,16 +48,14 @@ exports.getDashboardStats = async (req, res) => {
 exports.getUsers = async (req, res) => {
   try {
     const { search } = req.query;
-    let query = {};
+    let query = { role: 'user' };
     if (search) {
       const escaped = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      query = {
-        $or: [
-          { name: { $regex: escaped, $options: 'i' } },
-          { username: { $regex: escaped, $options: 'i' } },
-          { email: { $regex: escaped, $options: 'i' } }
-        ]
-      };
+      query.$or = [
+        { name: { $regex: escaped, $options: 'i' } },
+        { username: { $regex: escaped, $options: 'i' } },
+        { email: { $regex: escaped, $options: 'i' } }
+      ];
     }
     const users = await User.find(query).select('-password').sort({ createdAt: -1 });
     res.json(users);
