@@ -169,6 +169,23 @@ exports.adjustWallet = async (req, res) => {
   }
 };
 
+exports.updateProfile = async (req, res) => {
+  try {
+    const { name } = req.body;
+    if (!name || !name.trim()) {
+      return res.status(400).json({ message: 'Name is required' });
+    }
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { name: name.trim() },
+      { new: true }
+    ).select('-password');
+    res.json({ message: 'Profile updated', user });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 exports.getSettings = async (req, res) => {
   try {
     const settings = await Setting.find();

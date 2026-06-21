@@ -2,11 +2,14 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { adminAPI } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
 import toast from 'react-hot-toast';
-import { HiSave } from 'react-icons/hi';
+import { HiSave, HiUser } from 'react-icons/hi';
 
 export default function AdminSettingsPage() {
+  const { user, refreshUser } = useAuth();
   const queryClient = useQueryClient();
+  const [adminName, setAdminName] = useState('');
   const [form, setForm] = useState({
     taskLink: '',
     rewardPerTask: 5,
@@ -25,6 +28,10 @@ export default function AdminSettingsPage() {
     queryKey: ['adminSettings'],
     queryFn: () => adminAPI.getSettings().then(r => r.data),
   });
+
+  useEffect(() => {
+    if (user) setAdminName(user.name || '');
+  }, [user]);
 
   useEffect(() => {
     if (data) {
@@ -48,6 +55,15 @@ export default function AdminSettingsPage() {
     mutationFn: () => adminAPI.updateSettings(form),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['adminSettings'] }); toast.success('Settings updated!'); },
     onError: (err: any) => toast.error(err.response?.data?.message || 'Failed to update'),
+  });
+
+  const profileMutation = useMutation({
+    mutationFn: () => adminAPI.updateProfile({ name: adminName }),
+    onSuccess: () => {
+      refreshUser();
+      toast.success('Name updated!');
+    },
+    onError: (err: any) => toast.error(err.response?.data?.message || 'Failed'),
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -91,6 +107,29 @@ export default function AdminSettingsPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="max-w-3xl space-y-8">
+        {/* Profile */}
+        <div className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow">
+          <h2 className="text-lg font-semibold text-secondary-700 dark:text-white mb-4 flex items-center gap-2">
+            <HiUser className="w-5 h-5 text-purple-500" /> Admin Profile
+          </h2>
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 gradient-primary rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+              {user?.name?.charAt(0)?.toUpperCase()}
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Display Name</label>
+              <div className="flex gap-3">
+                <input type="text" value={adminName} onChange={(e) => setAdminName(e.target.value)}
+                  className="flex-1 px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-secondary-700 text-secondary-700 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none" />
+                <button type="button" onClick={() => profileMutation.mutate()} disabled={profileMutation.isPending || !adminName.trim()}
+                  className="px-6 py-3 bg-purple-600 text-white rounded-xl font-medium hover:bg-purple-700 transition disabled:opacity-50">
+                  {profileMutation.isPending ? '...' : 'Update'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Task Settings */}
         <div className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow">
           <h2 className="text-lg font-semibold text-secondary-700 dark:text-white mb-4">Task Settings</h2>

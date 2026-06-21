@@ -10,6 +10,7 @@ const {
   adjustWallet,
   getSettings,
   updateSettings,
+  updateProfile,
   getWithdrawals,
   approveWithdrawal,
   rejectWithdrawal,
@@ -28,6 +29,7 @@ router.put('/users/:id/activate', activateUser);
 router.put('/users/:id/suspend', suspendUser);
 router.delete('/users/:id', deleteUser);
 router.put('/users/:id/wallet', adjustWallet);
+router.put('/profile', updateProfile);
 router.get('/settings', getSettings);
 router.put('/settings', updateSettings);
 router.get('/withdrawals', getWithdrawals);

@@ -84,6 +84,7 @@ export const adminAPI = {
   getPayments: () => api.get('/admin/payments'),
   confirmPayment: (id: string) => api.put(`/admin/payments/${id}/confirm`),
   rejectPayment: (id: string) => api.put(`/admin/payments/${id}/reject`),
+  updateProfile: (data: { name: string }) => api.put('/admin/profile', data),
   createNotification: (data: { userId?: string; username?: string; title: string; message: string; type?: string; link?: string }) =>
     api.post('/notifications/admin/create', data),
   getNotifications: () => api.get('/notifications/admin/all'),
