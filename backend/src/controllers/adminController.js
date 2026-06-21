@@ -50,11 +50,12 @@ exports.getUsers = async (req, res) => {
     const { search } = req.query;
     let query = {};
     if (search) {
+      const escaped = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       query = {
         $or: [
-          { name: { $regex: search, $options: 'i' } },
-          { username: { $regex: search, $options: 'i' } },
-          { email: { $regex: search, $options: 'i' } }
+          { name: { $regex: escaped, $options: 'i' } },
+          { username: { $regex: escaped, $options: 'i' } },
+          { email: { $regex: escaped, $options: 'i' } }
         ]
       };
     }
@@ -144,7 +145,7 @@ exports.deleteUser = async (req, res) => {
 exports.adjustWallet = async (req, res) => {
   try {
     const { amount, type } = req.body;
-    if (!amount || amount <= 0 || typeof amount !== 'number') {
+    if (!amount || amount <= 0 || typeof amount !== 'number' || !Number.isFinite(amount)) {
       return res.status(400).json({ message: 'Invalid amount' });
     }
     const user = await User.findById(req.params.id);

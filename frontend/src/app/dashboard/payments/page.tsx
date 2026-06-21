@@ -8,12 +8,6 @@ import {
   HiClipboardCopy, HiCash, HiArrowRight, HiX, HiLockClosed
 } from 'react-icons/hi';
 
-const BANK_DETAILS = {
-  accountNumber: 'xxxxxxxxxxxx',
-  accountName: 'xxxxxxxxxxxxx',
-  bankName: 'xxxxxxxxxxx',
-};
-
 export default function PaymentsPage() {
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -27,11 +21,7 @@ export default function PaymentsPage() {
   });
 
   const submitMutation = useMutation({
-    mutationFn: () => {
-      const fd = new FormData();
-      if (screenshot) fd.append('screenshot', screenshot);
-      return userAPI.submitActivationPayment({ screenshot: screenshot || undefined } as any);
-    },
+    mutationFn: () => userAPI.submitActivationPayment({ screenshot: screenshot || undefined } as any),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wallet'] });
       toast.success('Payment submitted! Awaiting admin approval.');
@@ -134,9 +124,9 @@ export default function PaymentsPage() {
                   Transfer <strong>₦{activationFee.toLocaleString()}</strong> to the account below and upload your payment proof
                 </p>
                 {[
-                  { label: 'Account Number', value: BANK_DETAILS.accountNumber, copy: true },
-                  { label: 'Account Name', value: BANK_DETAILS.accountName },
-                  { label: 'Bank Name', value: BANK_DETAILS.bankName },
+                  { label: 'Account Number', value: data?.bankInfo?.accountNumber || 'N/A', copy: true },
+                  { label: 'Account Name', value: data?.bankInfo?.accountName || 'N/A' },
+                  { label: 'Bank Name', value: data?.bankInfo?.bankName || 'N/A' },
                 ].map((i) => (
                   <div key={i.label} className="flex items-center justify-between">
                     <div>

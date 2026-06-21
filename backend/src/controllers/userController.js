@@ -295,6 +295,12 @@ exports.requestActivation = async (req, res) => {
       amount: fee,
       description: `Activation fee payment of ₦${fee}`
     });
+    await Payment.create({
+      userId: user._id,
+      amount: fee,
+      reference: `ACT-WALLET-${user._id}-${Date.now()}`,
+      type: 'activation'
+    });
     res.json({ message: 'Activation request submitted. Admin will review and approve.' });
   } catch (error) {
     res.status(500).json({ message: error.message });
