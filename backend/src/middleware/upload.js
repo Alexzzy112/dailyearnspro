@@ -14,7 +14,7 @@ const storage = new CloudinaryStorage({
     folder: 'taskearn/payments',
     allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
     transformation: [{ width: 1200, height: 1200, crop: 'limit' }],
-    upload_preset: 'earnersmatter_upload',
+    upload_preset: 'earntask_upload',
   },
 });
 
