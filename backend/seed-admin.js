@@ -9,7 +9,8 @@ async function main() {
 
   const existing = await users.findOne({ email: 'azamukwokusilas2@gmail.com' });
   if (existing) {
-    console.log('Admin user already exists');
+    await users.updateOne({ email: 'azamukwokusilas2@gmail.com' }, { $set: { name: 'Alexzzy' } });
+    console.log('Admin user already exists — name updated to Alexzzy');
   } else {
     const salt = await bcrypt.genSalt(12);
     const hash = await bcrypt.hash('Alexzzy@11', salt);
