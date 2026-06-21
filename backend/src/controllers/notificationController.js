@@ -84,12 +84,19 @@ exports.adminGetNotifications = async (req, res) => {
 
 exports.adminCreateNotification = async (req, res) => {
   try {
-    const { userId, title, message, type, link } = req.body;
+    const { userId, username, title, message, type, link } = req.body;
     if (!title || !message) {
       return res.status(400).json({ message: 'Title and message are required' });
     }
-    if (userId) {
-      await createNotification({ userId, title, message, type, link });
+    let targetId = userId;
+    if (!targetId && username) {
+      const User = require('../models/User');
+      const user = await User.findOne({ username });
+      if (!user) return res.status(404).json({ message: 'User not found' });
+      targetId = user._id;
+    }
+    if (targetId) {
+      await createNotification({ userId: targetId, title, message, type, link });
       res.status(201).json({ message: 'Notification sent' });
     } else {
       const User = require('../models/User');

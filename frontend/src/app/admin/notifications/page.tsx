@@ -2,13 +2,20 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { adminAPI } from '@/lib/api';
-import { HiBell, HiCheck, HiX, HiMail, HiUser, HiUsers } from 'react-icons/hi';
+import { HiBell, HiCheck, HiX, HiMail, HiUser, HiUsers, HiSelector } from 'react-icons/hi';
 import toast from 'react-hot-toast';
 
 export default function AdminNotificationsPage() {
   const queryClient = useQueryClient();
-  const [form, setForm] = useState({ userId: '', title: '', message: '', type: 'info' });
+  const [form, setForm] = useState({ username: '', title: '', message: '', type: 'info' });
   const [sendTo, setSendTo] = useState<'all' | 'single'>('all');
+
+  const { data: usersData } = useQuery({
+    queryKey: ['adminAllUsers'],
+    queryFn: () => adminAPI.getUsers().then(r => r.data),
+    enabled: sendTo === 'single',
+  });
+  const users = Array.isArray(usersData) ? usersData : [];
 
   const { data } = useQuery({
     queryKey: ['adminNotifications'],
@@ -18,12 +25,12 @@ export default function AdminNotificationsPage() {
   const sendMutation = useMutation({
     mutationFn: () => adminAPI.createNotification(
       sendTo === 'all' ? { title: form.title, message: form.message, type: form.type }
-        : { userId: form.userId, title: form.title, message: form.message, type: form.type }
+        : { username: form.username, title: form.title, message: form.message, type: form.type }
     ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminNotifications'] });
       toast.success('Notification sent');
-      setForm({ userId: '', title: '', message: '', type: 'info' });
+      setForm({ username: '', title: '', message: '', type: 'info' });
     },
     onError: (err: any) => toast.error(err.response?.data?.message || 'Failed'),
   });
@@ -31,6 +38,7 @@ export default function AdminNotificationsPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title || !form.message) { toast.error('Title and message are required'); return; }
+    if (sendTo === 'single' && !form.username) { toast.error('Select a user'); return; }
     sendMutation.mutate();
   };
 
@@ -60,10 +68,20 @@ export default function AdminNotificationsPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           {sendTo === 'single' && (
             <div>
-              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">User ID</label>
-              <input type="text" value={form.userId} onChange={(e) => setForm({ ...form, userId: e.target.value })}
-                placeholder="Enter user ID"
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-secondary-700 text-secondary-700 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none transition" />
+              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Select User</label>
+              <div className="relative">
+                <HiUser className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                <select value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })}
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-secondary-700 text-secondary-700 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none transition appearance-none">
+                  <option value="">-- Select a user --</option>
+                  {users.map((u: any) => (
+                    <option key={u._id} value={u.username}>
+                      @{u.username} - {u.name} ({u.email})
+                    </option>
+                  ))}
+                </select>
+                <HiSelector className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+              </div>
             </div>
           )}
           <div>
