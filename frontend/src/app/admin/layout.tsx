@@ -59,10 +59,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </div>
             <span className="font-bold text-xl text-secondary-700 dark:text-white">Admin</span>
           </div>
-          <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-xl mb-4">
-            <p className="text-xs text-purple-600 dark:text-purple-400 font-medium">Admin Panel</p>
-            <p className="text-sm font-semibold text-purple-700 dark:text-purple-300">{user?.name}</p>
-          </div>
         </div>
         <nav className="px-4 space-y-2">
           {navItems.map((item) => {
@@ -79,22 +75,32 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             );
           })}
         </nav>
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-700">
-          <div className="flex items-center gap-3">
-            <Link href="/dashboard" className="flex-1 flex items-center gap-2 px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-primary-500 transition">
-              <HiArrowLeft className="w-4 h-4" /> User Panel
-            </Link>
-            <NotificationBell />
-            <button onClick={logout} className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition">
-              <HiLogout className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
       </aside>
 
       {sidebarOpen && <div onClick={() => setSidebarOpen(false)} className="lg:hidden fixed inset-0 bg-black/50 z-30" />}
 
       <main className="flex-1 p-4 lg:p-8 pt-16 lg:pt-8">
+        <div className="flex items-center justify-between mb-6">
+          <div />
+          <div className="flex items-center gap-4">
+            <Link href="/dashboard" className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-primary-500 transition">
+              <HiArrowLeft className="w-4 h-4" /> User Panel
+            </Link>
+            <NotificationBell />
+            <div className="flex items-center gap-3 bg-white dark:bg-secondary-800 rounded-xl px-4 py-2 shadow-sm">
+              <div className="w-8 h-8 gradient-primary rounded-full flex items-center justify-center text-white font-bold text-sm">
+                {user?.name?.charAt(0)?.toUpperCase()}
+              </div>
+              <div className="hidden sm:block">
+                <p className="text-sm font-semibold text-secondary-700 dark:text-white leading-tight">{user?.name}</p>
+                <p className="text-xs text-purple-500 font-medium">Admin</p>
+              </div>
+            </div>
+            <button onClick={logout} className="p-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition" title="Logout">
+              <HiLogout className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
         {children}
       </main>
     </div>

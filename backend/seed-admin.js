@@ -14,7 +14,7 @@ async function main() {
     const salt = await bcrypt.genSalt(12);
     const hash = await bcrypt.hash('Alexzzy@11', salt);
     await users.insertOne({
-      name: 'Admin',
+      name: 'Alexzzy',
       username: 'admin',
       email: 'azamukwokusilas2@gmail.com',
       password: hash,
