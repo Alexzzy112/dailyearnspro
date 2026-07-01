@@ -6,16 +6,14 @@ import { HiShoppingBag } from 'react-icons/hi';
 import toast from 'react-hot-toast';
 
 const products = [
-  { name: 'Basic Saver', price: 1000, dailyEarn: 250 },
-  { name: 'Silver Saver', price: 2000, dailyEarn: 500 },
-  { name: 'Gold Saver', price: 5000, dailyEarn: 1250 },
-  { name: 'Diamond Saver', price: 10000, dailyEarn: 2500 },
-  { name: 'Premium Saver', price: 20000, dailyEarn: 5000 },
-  { name: 'Elite Saver', price: 50000, dailyEarn: 12500 },
-  { name: 'Platinum Saver', price: 100000, dailyEarn: 25000 },
-  { name: 'Royal Saver', price: 200000, dailyEarn: 50000 },
-  { name: 'VIP Saver', price: 500000, dailyEarn: 125000 },
-  { name: 'Legend Saver', price: 1000000, dailyEarn: 250000 },
+  { name: 'Gold Saver', price: 5000, dailyEarn: 500 },
+  { name: 'Diamond Saver', price: 10000, dailyEarn: 1000 },
+  { name: 'Premium Saver', price: 20000, dailyEarn: 2000 },
+  { name: 'Elite Saver', price: 50000, dailyEarn: 5000 },
+  { name: 'Platinum Saver', price: 100000, dailyEarn: 10000 },
+  { name: 'Royal Saver', price: 200000, dailyEarn: 20000 },
+  { name: 'VIP Saver', price: 500000, dailyEarn: 50000 },
+  { name: 'Legend Saver', price: 1000000, dailyEarn: 100000 },
 ];
 
 export default function ProductsPage() {
@@ -37,7 +35,7 @@ export default function ProductsPage() {
     <div>
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-secondary-700 dark:text-white">Investment Plans</h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">Choose a plan and earn 25% daily on your investment</p>
+        <p className="text-gray-500 dark:text-gray-400 mt-1">Choose a plan and earn 10% daily on your investment</p>
       </div>
 
       {user && (
@@ -55,11 +53,11 @@ export default function ProductsPage() {
             <h3 className="text-lg font-bold text-secondary-700 dark:text-white mb-1">{product.name}</h3>
             <p className="text-3xl font-bold text-primary-500 mb-4">₦{product.price.toLocaleString()}</p>
             <div className="bg-accent-500/10 rounded-xl p-3 mb-4">
-              <p className="text-sm text-accent-500 font-semibold">25% Daily Earn</p>
+              <p className="text-sm text-accent-500 font-semibold">10% Daily Earn</p>
               <p className="text-xl font-bold text-accent-500">+₦{product.dailyEarn.toLocaleString()}/day</p>
             </div>
             <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300 mb-6">
-              <li className="flex items-center gap-2">• 25% daily returns</li>
+              <li className="flex items-center gap-2">• 10% daily returns</li>
               <li className="flex items-center gap-2">• Capital included in plan</li>
               <li className="flex items-center gap-2">• Instant activation</li>
             </ul>
