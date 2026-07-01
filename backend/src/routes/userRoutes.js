@@ -13,7 +13,8 @@ const {
   getBankInfo,
   submitPayment,
   submitActivationPayment,
-  getPayments
+  getPayments,
+  purchaseProduct
 } = require('../controllers/userController');
 
 router.get('/dashboard', protect, getDashboard);
@@ -26,6 +27,7 @@ router.get('/referrals', protect, getReferrals);
 router.get('/bank-info', protect, getBankInfo);
 router.post('/payments', protect, upload.single('screenshot'), submitPayment);
 router.post('/payments/activation', protect, upload.single('screenshot'), submitActivationPayment);
+router.post('/purchase', protect, purchaseProduct);
 router.get('/payments', protect, getPayments);
 
 module.exports = router;

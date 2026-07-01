@@ -64,6 +64,7 @@ export const userAPI = {
     return api.post('/user/payments/activation', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
   },
   getPayments: () => api.get('/user/payments'),
+  purchaseProduct: (name: string, price: number) => api.post('/user/purchase', { name, price }),
 };
 
 export const adminAPI = {

@@ -398,6 +398,34 @@ exports.submitPayment = async (req, res) => {
   }
 };
 
+exports.purchaseProduct = async (req, res) => {
+  try {
+    const { name, price } = req.body;
+    if (!name || !price || price <= 0) {
+      return res.status(400).json({ message: 'Invalid product' });
+    }
+    const user = await User.findById(req.user._id);
+    if (user.walletBalance < price) {
+      return res.status(400).json({ message: `Insufficient funds. You need ₦${price.toLocaleString()} but have ₦${user.walletBalance.toLocaleString()}` });
+    }
+    user.walletBalance -= price;
+    user.purchasedProduct = true;
+    await user.save();
+    await Transaction.create({
+      userId: user._id,
+      type: 'debit',
+      amount: price,
+      description: `Purchased ${name} plan for ₦${price.toLocaleString()}`
+    });
+    await createNotification({
+      userId: user._id, title: 'Investment Activated!', message: `You've successfully purchased the ${name} plan. Start earning 25% daily returns now!`, type: 'success', link: '/dashboard/products'
+    });
+    res.json({ message: `${name} plan purchased successfully!`, walletBalance: user.walletBalance });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 exports.getPayments = async (req, res) => {
   try {
     const payments = await Payment.find({ userId: req.user._id }).sort({ createdAt: -1 });
