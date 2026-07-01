@@ -2,17 +2,11 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { useTheme } from 'next-themes';
-import { HiOutlineMenu, HiOutlineX, HiOutlineMoon, HiOutlineSun } from 'react-icons/hi';
-import { useEffect } from 'react';
+import { HiOutlineMenu, HiOutlineX } from 'react-icons/hi';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
-  const { theme, setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => { setMounted(true); }, []);
 
   return (
     <nav className="bg-white dark:bg-secondary-800 shadow-sm border-b border-gray-200 dark:border-gray-700 fixed w-full top-0 z-50">
@@ -56,15 +50,9 @@ export default function Navbar() {
                 </Link>
               </>
             )}
-            <button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">
-              {mounted && theme === 'dark' ? <HiOutlineSun className="w-5 h-5" /> : <HiOutlineMoon className="w-5 h-5" />}
-            </button>
           </div>
 
           <div className="md:hidden flex items-center space-x-2">
-            <button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">
-              {mounted && theme === 'dark' ? <HiOutlineSun className="w-5 h-5" /> : <HiOutlineMoon className="w-5 h-5" />}
-            </button>
             <button onClick={() => setIsOpen(!isOpen)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">
               {isOpen ? <HiOutlineX className="w-6 h-6" /> : <HiOutlineMenu className="w-6 h-6" />}
             </button>

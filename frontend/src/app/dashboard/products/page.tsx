@@ -44,28 +44,20 @@ export default function ProductsPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
         {products.map((product, i) => (
-          <div key={i} className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow hover:shadow-lg transition group">
-            <div className="w-12 h-12 gradient-primary rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition">
-              <HiShoppingBag className="w-6 h-6 text-white" />
+          <div key={i} className="bg-white dark:bg-secondary-800 rounded-xl p-4 card-shadow hover:shadow-md transition">
+            <h3 className="text-sm font-bold text-secondary-700 dark:text-white mb-1">{product.name}</h3>
+            <p className="text-xl font-bold text-primary-500 mb-2">₦{product.price.toLocaleString()}</p>
+            <div className="bg-accent-500/10 rounded-lg p-2 mb-3">
+              <p className="text-[11px] text-accent-500 font-semibold">10% Daily</p>
+              <p className="text-sm font-bold text-accent-500">+₦{product.dailyEarn.toLocaleString()}/day</p>
             </div>
-            <h3 className="text-lg font-bold text-secondary-700 dark:text-white mb-1">{product.name}</h3>
-            <p className="text-3xl font-bold text-primary-500 mb-4">₦{product.price.toLocaleString()}</p>
-            <div className="bg-accent-500/10 rounded-xl p-3 mb-4">
-              <p className="text-sm text-accent-500 font-semibold">10% Daily Earn</p>
-              <p className="text-xl font-bold text-accent-500">+₦{product.dailyEarn.toLocaleString()}/day</p>
-            </div>
-            <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300 mb-6">
-              <li className="flex items-center gap-2">• 10% daily returns</li>
-              <li className="flex items-center gap-2">• Capital included in plan</li>
-              <li className="flex items-center gap-2">• Instant activation</li>
-            </ul>
             <button
               onClick={() => purchaseMutation.mutate({ name: product.name, price: product.price })}
               disabled={purchaseMutation.isPending}
-              className="w-full gradient-primary text-white py-3 rounded-xl font-semibold hover:opacity-90 transition disabled:opacity-50">
-              {purchaseMutation.isPending ? 'Processing...' : 'Invest Now'}
+              className="w-full gradient-primary text-white py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition disabled:opacity-50">
+              {purchaseMutation.isPending ? 'Processing...' : 'Invest'}
             </button>
           </div>
         ))}
