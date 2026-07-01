@@ -3,15 +3,25 @@ import { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { userAPI } from '@/lib/api';
 import toast from 'react-hot-toast';
-import {
-  HiPhotograph, HiCheckCircle, HiXCircle, HiClock,
-  HiClipboardCopy, HiCash, HiArrowRight, HiX, HiLockClosed
-} from 'react-icons/hi';
+import { HiShoppingBag, HiPhotograph, HiCheckCircle, HiXCircle, HiClock, HiClipboardCopy, HiArrowRight, HiX } from 'react-icons/hi';
+
+const products = [
+  { name: 'Basic Saver', price: 1000, dailyEarn: 250 },
+  { name: 'Silver Saver', price: 2000, dailyEarn: 500 },
+  { name: 'Gold Saver', price: 5000, dailyEarn: 1250 },
+  { name: 'Diamond Saver', price: 10000, dailyEarn: 2500 },
+  { name: 'Premium Saver', price: 20000, dailyEarn: 5000 },
+  { name: 'Elite Saver', price: 50000, dailyEarn: 12500 },
+  { name: 'Platinum Saver', price: 100000, dailyEarn: 25000 },
+  { name: 'Royal Saver', price: 200000, dailyEarn: 50000 },
+  { name: 'VIP Saver', price: 500000, dailyEarn: 125000 },
+  { name: 'Legend Saver', price: 1000000, dailyEarn: 250000 },
+];
 
 export default function PaymentsPage() {
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [showModal, setShowModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<{ name: string; price: number } | null>(null);
   const [screenshot, setScreenshot] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
@@ -21,11 +31,11 @@ export default function PaymentsPage() {
   });
 
   const submitMutation = useMutation({
-    mutationFn: () => userAPI.submitActivationPayment({ screenshot: screenshot || undefined } as any),
+    mutationFn: () => userAPI.submitPayment({ amount: selectedProduct!.price, reference: `${selectedProduct!.name}`, screenshot: screenshot || undefined } as any),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wallet'] });
       toast.success('Payment submitted! Awaiting admin approval.');
-      setShowModal(false);
+      setSelectedProduct(null);
       setScreenshot(null);
       setPreview(null);
       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -66,52 +76,52 @@ export default function PaymentsPage() {
     rejected: 'text-red-600 bg-red-50 dark:bg-red-900/20',
   }[s]);
 
-  const activationFee = data?.settings?.activationFee || 3000;
-  const isActive = data?.user?.accountStatus === 'active';
-
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-5xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-secondary-700 dark:text-white">Payments</h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">Activate your account and start earning</p>
+        <h1 className="text-2xl font-bold text-secondary-700 dark:text-white">Fund Wallet</h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-1">Select a plan amount to fund your wallet via bank transfer</p>
       </div>
 
-      {isActive ? (
-        <div className="bg-white dark:bg-secondary-800 rounded-2xl card-shadow p-8 text-center">
-          <div className="w-16 h-16 mx-auto bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-4">
-            <HiCheckCircle className="w-10 h-10 text-green-500" />
-          </div>
-          <h2 className="text-xl font-bold text-secondary-700 dark:text-white mb-2">Account Active</h2>
-          <p className="text-gray-500 dark:text-gray-400">Your account is activated and you can start earning!</p>
-        </div>
-      ) : (
-        <div className="bg-white dark:bg-secondary-800 rounded-2xl card-shadow overflow-hidden">
-          <div className="gradient-primary px-6 py-8 text-center">
-            <div className="w-16 h-16 mx-auto bg-white/20 rounded-full flex items-center justify-center mb-4">
-              <HiLockClosed className="w-8 h-8 text-white" />
-            </div>
-            <h2 className="text-2xl font-bold text-white mb-2">Activate Your Account</h2>
-            <p className="text-blue-100 text-sm">Pay the activation fee to start earning</p>
-            <div className="mt-6 inline-flex items-baseline gap-1">
-              <span className="text-4xl font-bold text-white">₦{activationFee.toLocaleString()}</span>
-              <span className="text-blue-200 text-sm">one-time fee</span>
-            </div>
-            <div className="mt-6">
-              <button onClick={() => setShowModal(true)}
-                className="inline-flex items-center gap-2 bg-white text-primary-600 px-8 py-3.5 rounded-xl font-semibold hover:bg-blue-50 transition shadow-lg">
-                Pay Now <HiArrowRight className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
+      {data?.bankInfo?.bankName && (
+        <div className="bg-accent-500/10 border border-accent-500/20 rounded-xl p-4 mb-6 text-center">
+          <p className="text-sm text-accent-500 font-medium">Send to: <strong>{data.bankInfo.bankName}</strong> — <strong>{data.bankInfo.accountNumber}</strong> — <strong>{data.bankInfo.accountName}</strong></p>
+          <button onClick={() => copy(data.bankInfo.accountNumber, 'Account number')} className="mt-2 text-xs text-primary-500 hover:text-primary-600 font-medium inline-flex items-center gap-1">
+            <HiClipboardCopy className="w-3.5 h-3.5" /> Copy account number
+          </button>
         </div>
       )}
 
-      {showModal && (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        {products.map((product, i) => (
+          <div key={i} className="bg-white dark:bg-secondary-800 rounded-xl p-4 card-shadow hover:shadow-md transition group">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 gradient-primary rounded-lg flex items-center justify-center group-hover:scale-110 transition">
+                <HiShoppingBag className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-secondary-700 dark:text-white text-sm">{product.name}</h3>
+                <p className="text-lg font-bold text-primary-500">₦{product.price.toLocaleString()}</p>
+              </div>
+            </div>
+            <div className="bg-accent-500/10 rounded-lg p-2 mb-3">
+              <p className="text-xs text-accent-500 font-semibold">25% Daily Earn</p>
+              <p className="text-sm font-bold text-accent-500">+₦{product.dailyEarn.toLocaleString()}/day</p>
+            </div>
+            <button onClick={() => setSelectedProduct(product)}
+              className="w-full gradient-primary text-white py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition">
+              Pay ₦{product.price.toLocaleString()}
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {selectedProduct && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
           <div className="bg-white dark:bg-secondary-800 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-700">
-              <h3 className="text-lg font-bold text-secondary-700 dark:text-white">Complete Payment</h3>
-              <button onClick={() => { setShowModal(false); setScreenshot(null); setPreview(null); }}
+              <h3 className="text-lg font-bold text-secondary-700 dark:text-white">Pay for {selectedProduct.name}</h3>
+              <button onClick={() => { setSelectedProduct(null); setScreenshot(null); setPreview(null); }}
                 className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition">
                 <HiX className="w-5 h-5 text-gray-500" />
               </button>
@@ -120,7 +130,7 @@ export default function PaymentsPage() {
             <div className="p-6 space-y-6">
               <div className="bg-gray-50 dark:bg-secondary-700/50 rounded-xl p-5 space-y-3">
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-3">
-                  Transfer <strong>₦{activationFee.toLocaleString()}</strong> to the account below and upload your payment proof
+                  Transfer <strong className="text-primary-500">₦{selectedProduct.price.toLocaleString()}</strong> to the account below and upload your payment proof
                 </p>
                 {[
                   { label: 'Account Number', value: data?.bankInfo?.accountNumber || 'N/A', copy: true },
@@ -195,11 +205,11 @@ export default function PaymentsPage() {
                 <div key={p._id} className="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-secondary-700/50">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center flex-shrink-0">
-                      <HiCash className="w-6 h-6 text-white" />
+                      <HiShoppingBag className="w-6 h-6 text-white" />
                     </div>
                     <div>
                       <p className="text-sm font-semibold text-secondary-700 dark:text-white">₦{p.amount.toLocaleString()}</p>
-                      <p className="text-xs text-gray-500">{p.reference ? `Ref: ${p.reference}` : ''}</p>
+                      <p className="text-xs text-gray-500">{p.reference || `Ref: ${p._id?.slice(-6)}`}</p>
                       {p.screenshot && (
                         <a href={p.screenshot} target="_blank"
                           className="text-xs text-primary-500 hover:text-primary-600 inline-flex items-center gap-1 mt-1">
