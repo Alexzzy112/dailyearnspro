@@ -130,7 +130,7 @@ export default function TasksPage() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-secondary-700 dark:text-white">Daily Tasks</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Complete tasks and earn ₦5 each</p>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">Complete up to 10 daily tasks and earn ₦5 each</p>
         </div>
         <div className="text-right">
           <p className="text-lg font-bold text-accent-500">{completedCount}/{dailyLimit}</p>

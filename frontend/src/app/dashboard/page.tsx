@@ -88,7 +88,7 @@ export default function DashboardPage() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             <Link href="/dashboard/tasks" className="p-3 gradient-primary rounded-xl text-white text-center hover:opacity-90 transition">
               <p className="font-semibold text-sm">Start Tasks</p>
-              <p className="text-[11px] text-blue-100 mt-0.5">{dashboard?.tasksRemaining || 0} tasks left</p>
+              <p className="text-[11px] text-blue-100 mt-0.5">{dashboard?.tasksRemaining || 0} of 10 tasks left</p>
             </Link>
             <Link href="/dashboard/wallet" className="p-3 gradient-accent rounded-xl text-white text-center hover:opacity-90 transition">
               <p className="font-semibold text-sm">Withdraw</p>
