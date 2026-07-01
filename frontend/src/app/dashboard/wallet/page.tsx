@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { userAPI } from '@/lib/api';
 import toast from 'react-hot-toast';
-import { HiCurrencyDollar, HiClock, HiCheckCircle, HiXCircle, HiClipboardCopy, HiInformationCircle } from 'react-icons/hi';
+import { HiCurrencyDollar, HiClock, HiCheckCircle, HiXCircle, HiInformationCircle } from 'react-icons/hi';
 
 export default function WithdrawPage() {
   const queryClient = useQueryClient();
@@ -61,11 +61,6 @@ export default function WithdrawPage() {
     approved: 'text-green-600 bg-green-50 dark:bg-green-900/20',
     rejected: 'text-red-600 bg-red-50 dark:bg-red-900/20',
     paid: 'text-blue-600 bg-blue-50 dark:bg-blue-900/20',
-  };
-
-  const copy = (text: string, label: string) => {
-    navigator.clipboard.writeText(text);
-    toast.success(`${label} copied`);
   };
 
   if (isLoading) {
@@ -175,36 +170,6 @@ export default function WithdrawPage() {
         </div>
 
         <div className="space-y-6">
-          {data?.bankInfo?.bankName && (
-            <div className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow">
-              <h3 className="text-sm font-semibold text-secondary-700 dark:text-white mb-1">Company Bank Details</h3>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">Send payments to this account for wallet funding</p>
-              <div className="space-y-3">
-                {[
-                  { label: 'Bank', value: data.bankInfo.bankName },
-                  { label: 'Account Number', value: data.bankInfo.accountNumber, copyable: true },
-                  { label: 'Account Name', value: data.bankInfo.accountName },
-                ].map((item) => (
-                  <div key={item.label} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-secondary-700 rounded-xl">
-                    <div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">{item.label}</p>
-                      <p className="text-sm font-bold text-secondary-700 dark:text-white">{item.value}</p>
-                    </div>
-                    {item.copyable && (
-                      <button onClick={() => copy(item.value, item.label)}
-                        className="p-2 text-primary-500 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition">
-                        <HiClipboardCopy className="w-4 h-4" />
-                      </button>
-                    )}
-                  </div>
-                ))}
-              </div>
-              <a href="/dashboard/payments" className="mt-4 block text-center text-sm text-primary-500 hover:text-primary-600 font-medium">
-                I&apos;ve made a payment →
-              </a>
-            </div>
-          )}
-
           <div className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow">
             <h3 className="text-sm font-semibold text-secondary-700 dark:text-white mb-3">Withdrawal Info</h3>
             <ul className="space-y-3 text-sm">

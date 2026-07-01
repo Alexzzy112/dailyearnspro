@@ -2,12 +2,11 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { HiHome, HiClipboardList, HiCurrencyDollar, HiUserGroup, HiLogout, HiShoppingBag } from 'react-icons/hi';
+import { HiHome, HiClipboardList, HiCurrencyDollar, HiLogout, HiShoppingBag } from 'react-icons/hi';
 import WelcomePopup from '@/components/WelcomePopup';
 import NotificationBell from '@/components/NotificationBell';
 
 const navItems = [
-  { href: '/dashboard/referrals', label: 'Profile', icon: HiUserGroup },
   { href: '/dashboard/products', label: 'Products', icon: HiShoppingBag },
   { href: '/dashboard/tasks', label: 'Tasks', icon: HiClipboardList },
   { href: '/dashboard', label: 'Dashboard', icon: HiHome },
