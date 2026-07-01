@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { HiChartBar, HiUsers, HiCurrencyDollar, HiCog, HiLogout, HiMenu, HiX, HiArrowLeft, HiCash, HiClipboardList, HiBell, HiShoppingBag, HiChevronDown } from 'react-icons/hi';
+import { HiChartBar, HiUsers, HiCurrencyDollar, HiCog, HiLogout, HiMenu, HiX, HiCash, HiClipboardList, HiBell, HiShoppingBag, HiChevronDown } from 'react-icons/hi';
 import WelcomePopup from '@/components/WelcomePopup';
 import NotificationBell from '@/components/NotificationBell';
 import { useState, useRef, useEffect } from 'react';
@@ -75,10 +75,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <span className="font-bold text-xl text-secondary-700 dark:text-white">Admin</span>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <Link href="/dashboard" className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs text-gray-600 dark:text-gray-400 hover:text-purple-600 transition">
-              <HiArrowLeft className="w-3.5 h-3.5" /> User Panel
-            </Link>
+          <div className="flex items-center gap-1 sm:gap-3">
             <NotificationBell />
             <div ref={profileRef} className="relative">
               <button onClick={() => setProfileOpen(!profileOpen)} className="flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-secondary-700 rounded-xl px-2 sm:px-3 py-2 transition">
