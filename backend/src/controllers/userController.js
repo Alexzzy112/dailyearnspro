@@ -263,6 +263,15 @@ exports.requestWithdrawal = async (req, res) => {
       return res.status(400).json({ message: 'Insufficient balance' });
     }
 
+    const wdChargeSetting = await Setting.findOne({ key: 'withdrawalCharge' });
+    const wdChargePercent = wdChargeSetting ? Number(wdChargeSetting.value) : 0;
+    const charge = Math.round(amount * (wdChargePercent / 100));
+    const totalDeduction = amount + charge;
+
+    if (totalDeduction > user.walletBalance) {
+      return res.status(400).json({ message: `Insufficient balance including ₦${charge} withdrawal fee (${wdChargePercent}%)` });
+    }
+
     const day = new Date().getDay();
     if (![1, 3, 5].includes(day)) {
       return res.status(400).json({ message: 'Withdrawals only on Monday, Wednesday, and Friday' });
@@ -276,14 +285,14 @@ exports.requestWithdrawal = async (req, res) => {
       accountName
     });
 
-    user.walletBalance -= amount;
+    user.walletBalance -= totalDeduction;
     await user.save();
 
     await Transaction.create({
       userId: user._id,
       type: 'debit',
-      amount,
-      description: `Withdrawal request #${withdrawal._id}`
+      amount: totalDeduction,
+      description: `Withdrawal request #${withdrawal._id}${charge ? ` (incl. ₦${charge} fee)` : ''}`
     });
 
     await createNotification({
@@ -426,7 +435,9 @@ exports.purchaseProduct = async (req, res) => {
     });
 
     if (isFirstPurchase && user.referredBy) {
-      const bonus = Math.round(price * 0.3);
+      const refSetting = await Setting.findOne({ key: 'referralBonusPercent' });
+      const refPercent = refSetting ? Number(refSetting.value) : 30;
+      const bonus = Math.round(price * (refPercent / 100));
       const referrer = await User.findById(user.referredBy);
       if (referrer) {
         referrer.walletBalance += bonus;
@@ -438,10 +449,10 @@ exports.purchaseProduct = async (req, res) => {
           userId: referrer._id,
           type: 'credit',
           amount: bonus,
-          description: `30% referral bonus for referring ${user.name}'s ${name} purchase`
+          description: `${refPercent}% referral bonus for referring ${user.name}'s ${name} purchase`
         });
         await createNotification({
-          userId: referrer._id, title: 'Referral Bonus Earned!', message: `You earned ₦${bonus.toLocaleString()} (30%) from ${user.name}'s ${name} purchase!`, type: 'success', link: '/dashboard'
+          userId: referrer._id, title: 'Referral Bonus Earned!', message: `You earned ₦${bonus.toLocaleString()} (${refPercent}%) from ${user.name}'s ${name} purchase!`, type: 'success', link: '/dashboard'
         });
       }
     }

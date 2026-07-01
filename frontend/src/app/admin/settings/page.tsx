@@ -17,6 +17,8 @@ export default function AdminSettingsPage() {
     requiredViewingTime: 15,
     minWithdrawal: 1500,
     referralBonus: 50,
+    referralBonusPercent: 30,
+    withdrawalCharge: 5,
     welcomeBonus: 500,
     bankName: '',
     accountNumber: '',
@@ -41,6 +43,8 @@ export default function AdminSettingsPage() {
         requiredViewingTime: data.requiredViewingTime || 15,
         minWithdrawal: data.minWithdrawal || 1500,
         referralBonus: data.referralBonus || 50,
+        referralBonusPercent: data.referralBonusPercent ?? 30,
+        withdrawalCharge: data.withdrawalCharge ?? 5,
         welcomeBonus: data.welcomeBonus || 500,
         bankName: data.bankName || '',
         accountNumber: data.accountNumber || '',
@@ -178,9 +182,22 @@ export default function AdminSettingsPage() {
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-secondary-700 text-secondary-700 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Referral Bonus (₦)</label>
+              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Withdrawal Charge (%)</label>
+              <input type="number" value={form.withdrawalCharge} onChange={(e) => handleChange('withdrawalCharge', Number(e.target.value))}
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-secondary-700 text-secondary-700 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none" />
+              <p className="text-xs text-gray-500 mt-1">Extra fee on top of withdrawal amount</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Referral Bonus (₦) — Activation</label>
               <input type="number" value={form.referralBonus} onChange={(e) => handleChange('referralBonus', Number(e.target.value))}
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-secondary-700 text-secondary-700 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none" />
+              <p className="text-xs text-gray-500 mt-1">Fixed bonus when user activates (legacy)</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Referral Bonus (%) — Product Purchase</label>
+              <input type="number" value={form.referralBonusPercent} onChange={(e) => handleChange('referralBonusPercent', Number(e.target.value))}
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-secondary-700 text-secondary-700 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none" />
+              <p className="text-xs text-gray-500 mt-1">Percentage of purchase price given to referrer</p>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Welcome Bonus (₦)</label>

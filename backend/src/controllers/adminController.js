@@ -80,26 +80,6 @@ exports.activateUser = async (req, res) => {
       amount: 0,
       description: 'Account activated by admin'
     });
-    if (user.referredBy) {
-      const referrer = await User.findById(user.referredBy);
-      if (referrer) {
-        const bonus = Number(process.env.REFERRAL_BONUS) || 50;
-        referrer.walletBalance += bonus;
-        referrer.totalEarnings += bonus;
-        referrer.referralEarnings += bonus;
-        referrer.referralCount += 1;
-        await referrer.save();
-          await Transaction.create({
-            userId: referrer._id,
-            type: 'credit',
-            amount: bonus,
-            description: `Referral bonus for referring ${user.name}`
-          });
-          await createNotification({
-            userId: referrer._id, title: 'Referral Bonus Earned!', message: `You earned ₦${bonus} referral bonus for referring ${user.name}!`, type: 'success', link: '/dashboard'
-          });
-        }
-      }
     await createNotification({
       userId: user._id, title: 'Account Activated!', message: 'Your account has been activated by admin. Start earning now!', type: 'success', link: '/dashboard/tasks'
     });
@@ -204,6 +184,8 @@ exports.getSettings = async (req, res) => {
       activationFee: safeNum('activationFee', parseInt(process.env.ACTIVATION_FEE) || 3000),
       minWithdrawal: safeNum('minWithdrawal', parseInt(process.env.MIN_WITHDRAWAL) || 1500),
       referralBonus: safeNum('referralBonus', 50),
+      referralBonusPercent: safeNum('referralBonusPercent', 30),
+      withdrawalCharge: safeNum('withdrawalCharge', 5),
       welcomeBonus: safeNum('welcomeBonus', parseInt(process.env.WELCOME_BONUS) || 500),
       bankName: settingsMap.bankName || '',
       accountNumber: settingsMap.accountNumber || '',
