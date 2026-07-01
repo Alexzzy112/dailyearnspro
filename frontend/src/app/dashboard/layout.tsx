@@ -2,7 +2,8 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { HiHome, HiClipboardList, HiCurrencyDollar, HiLogout, HiShoppingBag } from 'react-icons/hi';
+import { useState, useRef, useEffect } from 'react';
+import { HiHome, HiClipboardList, HiCurrencyDollar, HiLogout, HiShoppingBag, HiChevronDown } from 'react-icons/hi';
 import WelcomePopup from '@/components/WelcomePopup';
 import NotificationBell from '@/components/NotificationBell';
 
@@ -15,6 +16,18 @@ const navItems = [
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
+        setProfileOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-secondary-900">
@@ -31,18 +44,33 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </Link>
           <div className="flex items-center gap-3">
             <div className="hidden sm:flex items-center gap-3">
-              <div className="w-9 h-9 gradient-primary rounded-full flex items-center justify-center text-white font-bold text-sm">
-                {user?.name?.charAt(0)?.toUpperCase()}
-              </div>
-              <div className="text-right">
-                <p className="text-sm font-medium text-secondary-700 dark:text-white leading-tight">{user?.name}</p>
-                <p className="text-xs text-accent-500 font-semibold">₦{user?.walletBalance?.toLocaleString()}</p>
+              <div ref={profileRef} className="relative">
+                <button onClick={() => setProfileOpen(!profileOpen)} className="flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-secondary-700 rounded-xl px-3 py-2 transition">
+                  <div className="w-9 h-9 gradient-primary rounded-full flex items-center justify-center text-white font-bold text-sm">
+                    {user?.name?.charAt(0)?.toUpperCase()}
+                  </div>
+                  <div className="text-left">
+                    <p className="text-sm font-medium text-secondary-700 dark:text-white leading-tight">{user?.name}</p>
+                    <p className="text-xs text-accent-500 font-semibold">₦{user?.walletBalance?.toLocaleString()}</p>
+                  </div>
+                  <HiChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${profileOpen ? 'rotate-180' : ''}`} />
+                </button>
+                {profileOpen && (
+                  <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-secondary-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 py-2 animate-fade-in">
+                    <button onClick={() => { logout(); setProfileOpen(false); }} className="flex items-center gap-3 w-full px-4 py-3 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                      <div className="w-8 h-8 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center">
+                        <HiLogout className="w-4 h-4" />
+                      </div>
+                      <div className="text-left">
+                        <p className="font-medium">Sign Out</p>
+                        <p className="text-xs text-gray-500">Log out of your account</p>
+                      </div>
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
             <NotificationBell />
-            <button onClick={logout} className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition" title="Logout">
-              <HiLogout className="w-5 h-5" />
-            </button>
           </div>
         </div>
       </div>
