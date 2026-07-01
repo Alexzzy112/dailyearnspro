@@ -26,7 +26,7 @@ export default function DashboardPage() {
   const stats = [
     { label: 'Wallet Balance', value: `₦${(dashboard?.walletBalance || 0).toLocaleString()}`, icon: HiCurrencyDollar, color: 'gradient-primary', change: '+', href: '/dashboard/wallet' },
     { label: 'Tasks Completed', value: dashboard?.tasksCompleted || 0, icon: HiClipboardList, color: 'gradient-accent', change: '', href: '/dashboard/tasks' },
-    { label: 'Today\'s Tasks', value: `${dashboard?.todayTasksCompleted || 0}/${settings?.dailyTaskLimit || 10}`, icon: HiCheckCircle, color: 'from-purple-500 to-pink-500', change: '', href: '/dashboard/tasks' },
+    { label: 'Today\'s Tasks', value: '0/10', icon: HiCheckCircle, color: 'from-purple-500 to-pink-500', change: '', href: '/dashboard/tasks' },
     { label: 'Total Earnings', value: `₦${(dashboard?.totalEarnings || 0).toLocaleString()}`, icon: HiTrendingUp, color: 'from-orange-500 to-red-500', change: '', href: '/dashboard/wallet' },
     { label: 'Referrals', value: dashboard?.referralCount || 0, icon: HiUserGroup, color: 'from-teal-500 to-cyan-500', change: '', href: '/dashboard/referrals' },
     { label: 'Earnings Today', value: `₦${dashboard?.earningsToday || 0}`, icon: HiTrendingUp, color: 'from-indigo-500 to-purple-500', change: '', href: '/dashboard/tasks' },
@@ -88,11 +88,11 @@ export default function DashboardPage() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             <Link href="/dashboard/tasks" className="p-3 gradient-primary rounded-xl text-white text-center hover:opacity-90 transition">
               <p className="font-semibold text-sm">Start Tasks</p>
-              <p className="text-[11px] text-blue-100 mt-0.5">{dashboard?.tasksRemaining || 0} of 10 tasks left</p>
+              <p className="text-[11px] text-blue-100 mt-0.5">Earns Daily</p>
             </Link>
             <Link href="/dashboard/wallet" className="p-3 gradient-accent rounded-xl text-white text-center hover:opacity-90 transition">
               <p className="font-semibold text-sm">Withdraw</p>
-              <p className="text-[11px] text-green-100 mt-0.5">Min ₦1,500</p>
+              <p className="text-[11px] text-green-100 mt-0.5">Fast Withdrawal</p>
             </Link>
             <Link href="/dashboard/referrals" className="p-3 gradient-dark rounded-xl text-white text-center hover:opacity-90 transition">
               <p className="font-semibold text-sm">Refer Friends</p>
