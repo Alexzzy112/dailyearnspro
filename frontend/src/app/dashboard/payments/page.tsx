@@ -5,19 +5,6 @@ import { userAPI } from '@/lib/api';
 import toast from 'react-hot-toast';
 import { HiShoppingBag, HiPhotograph, HiCheckCircle, HiXCircle, HiClock, HiClipboardCopy, HiArrowRight, HiX } from 'react-icons/hi';
 
-const products = [
-  { name: 'Basic Saver', price: 1000, dailyEarn: 250 },
-  { name: 'Silver Saver', price: 2000, dailyEarn: 500 },
-  { name: 'Gold Saver', price: 5000, dailyEarn: 1250 },
-  { name: 'Diamond Saver', price: 10000, dailyEarn: 2500 },
-  { name: 'Premium Saver', price: 20000, dailyEarn: 5000 },
-  { name: 'Elite Saver', price: 50000, dailyEarn: 12500 },
-  { name: 'Platinum Saver', price: 100000, dailyEarn: 25000 },
-  { name: 'Royal Saver', price: 200000, dailyEarn: 50000 },
-  { name: 'VIP Saver', price: 500000, dailyEarn: 125000 },
-  { name: 'Legend Saver', price: 1000000, dailyEarn: 250000 },
-];
-
 export default function PaymentsPage() {
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -25,9 +12,14 @@ export default function PaymentsPage() {
   const [screenshot, setScreenshot] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
-  const { data } = useQuery({
+  const { data: walletData } = useQuery({
     queryKey: ['wallet'],
     queryFn: () => userAPI.getWallet().then(r => r.data),
+  });
+
+  const { data: products } = useQuery({
+    queryKey: ['products'],
+    queryFn: () => userAPI.getProducts().then(r => r.data),
   });
 
   const submitMutation = useMutation({
@@ -84,27 +76,30 @@ export default function PaymentsPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-        {products.map((product, i) => (
-          <div key={i} className="bg-white dark:bg-secondary-800 rounded-xl p-4 card-shadow hover:shadow-md transition group">
+        {products?.map((product: any) => (
+          <div key={product._id} className="bg-white dark:bg-secondary-800 rounded-xl p-4 card-shadow hover:shadow-md transition group">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 gradient-primary rounded-lg flex items-center justify-center group-hover:scale-110 transition">
                 <HiShoppingBag className="w-5 h-5 text-white" />
               </div>
               <div>
                 <h3 className="font-semibold text-secondary-700 dark:text-white text-sm">{product.name}</h3>
-                <p className="text-lg font-bold text-primary-500">₦{product.price.toLocaleString()}</p>
+                <p className="text-lg font-bold text-primary-500">₦{product.price?.toLocaleString()}</p>
               </div>
             </div>
             <div className="bg-accent-500/10 rounded-lg p-2 mb-3">
-              <p className="text-xs text-accent-500 font-semibold">25% Daily Earn</p>
-              <p className="text-sm font-bold text-accent-500">+₦{product.dailyEarn.toLocaleString()}/day</p>
+              <p className="text-xs text-accent-500 font-semibold">Daily Earn</p>
+              <p className="text-sm font-bold text-accent-500">+₦{product.dailyEarn?.toLocaleString()}/day</p>
             </div>
             <button onClick={() => setSelectedProduct(product)}
               className="w-full gradient-primary text-white py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition">
-              Pay ₦{product.price.toLocaleString()}
+              Pay ₦{product.price?.toLocaleString()}
             </button>
           </div>
         ))}
+        {(!products || products.length === 0) && (
+          <p className="col-span-full text-center text-gray-500 py-12">No plans available</p>
+        )}
       </div>
 
       {selectedProduct && (
@@ -124,9 +119,9 @@ export default function PaymentsPage() {
                   Transfer <strong className="text-primary-500">₦{selectedProduct.price.toLocaleString()}</strong> to the account below and upload your payment proof
                 </p>
                 {[
-                  { label: 'Account Number', value: data?.bankInfo?.accountNumber || 'N/A', copy: true },
-                  { label: 'Account Name', value: data?.bankInfo?.accountName || 'N/A' },
-                  { label: 'Bank Name', value: data?.bankInfo?.bankName || 'N/A' },
+                  { label: 'Account Number', value: walletData?.bankInfo?.accountNumber || 'N/A', copy: true },
+                  { label: 'Account Name', value: walletData?.bankInfo?.accountName || 'N/A' },
+                  { label: 'Bank Name', value: walletData?.bankInfo?.bankName || 'N/A' },
                 ].map((i) => (
                   <div key={i.label} className="flex items-center justify-between">
                     <div>
@@ -190,9 +185,9 @@ export default function PaymentsPage() {
           <h2 className="text-lg font-semibold text-secondary-700 dark:text-white">Payment History</h2>
         </div>
         <div className="p-6">
-          {data?.payments?.length > 0 ? (
+          {walletData?.payments?.length > 0 ? (
             <div className="space-y-3">
-              {data.payments.map((p: any) => (
+              {walletData.payments.map((p: any) => (
                 <div key={p._id} className="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-secondary-700/50">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center flex-shrink-0">
