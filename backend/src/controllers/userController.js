@@ -111,7 +111,7 @@ exports.getTasks = async (req, res) => {
     const taskLink = settingsMap.taskLink || process.env.DEFAULT_TASK_LINK;
     const taskTitle = settingsMap.taskTitle || 'Visit Sponsor';
     const taskDescription = settingsMap.taskDescription || 'Click the link below, wait the required time, then claim your reward.';
-    const dailyLimit = safeNum('dailyTaskLimit', safeEnvNum('DAILY_TASK_LIMIT', 10));
+    const dailyLimit = safeEnvNum('DAILY_TASK_LIMIT', 10);
     const reward = safeNum('rewardPerTask', safeEnvNum('REWARD_PER_TASK', 10));
     const viewTime = safeNum('requiredViewingTime', safeEnvNum('REQUIRED_VIEWING_TIME', 15));
 
@@ -167,7 +167,7 @@ exports.claimTask = async (req, res) => {
       const v = settingsMap[key];
       return v !== undefined && v !== null ? Number(v) : fallback;
     };
-    const dailyLimit = safeNum('dailyTaskLimit', safeEnvNum('DAILY_TASK_LIMIT', 10));
+    const dailyLimit = safeEnvNum('DAILY_TASK_LIMIT', 10);
     const reward = safeNum('rewardPerTask', safeEnvNum('REWARD_PER_TASK', 10));
 
     if (!Number.isInteger(taskNumber) || taskNumber < 1 || taskNumber > dailyLimit) {

@@ -17,7 +17,7 @@ export default function TasksPage() {
     return () => { Object.values(timers).forEach(clearInterval); };
   }, []);
 
-  const { data: dashData } = useQuery({
+  const { data: dashData, isLoading: dashLoading } = useQuery({
     queryKey: ['dashboard'],
     queryFn: () => userAPI.getDashboard().then(r => r.data),
   });
@@ -28,7 +28,7 @@ export default function TasksPage() {
     queryKey: ['tasks'],
     queryFn: () => userAPI.getTasks().then(r => r.data),
     refetchInterval: 30000,
-    enabled: hasAccess,
+    enabled: hasAccess === true,
   });
 
   const claimMutation = useMutation({
@@ -67,18 +67,6 @@ export default function TasksPage() {
     });
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-96">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-500 border-t-transparent"></div>
-      </div>
-    );
-  }
-
-  const tasks = data?.tasks || [];
-  const completedCount = data?.todayCompleted || 0;
-  const dailyLimit = data?.dailyLimit || 10;
-
   if (user?.accountStatus !== 'active') {
     return (
       <div className="flex flex-col items-center justify-center h-96 text-center">
@@ -86,6 +74,14 @@ export default function TasksPage() {
         <h2 className="text-xl font-semibold text-secondary-700 dark:text-white mb-2">Account Not Active</h2>
         <p className="text-gray-500 dark:text-gray-400 mb-4">Activate your account to unlock daily tasks.</p>
         <a href="/dashboard/payments" className="gradient-primary text-white px-6 py-2 rounded-lg font-medium">Pay Activation Fee</a>
+      </div>
+    );
+  }
+
+  if (dashLoading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-500 border-t-transparent"></div>
       </div>
     );
   }
@@ -108,6 +104,18 @@ export default function TasksPage() {
       </div>
     );
   }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-500 border-t-transparent"></div>
+      </div>
+    );
+  }
+
+  const tasks = data?.tasks || [];
+  const completedCount = data?.todayCompleted || 0;
+  const dailyLimit = data?.dailyLimit || 10;
 
   return (
     <div>
