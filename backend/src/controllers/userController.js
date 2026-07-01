@@ -39,7 +39,7 @@ exports.getDashboard = async (req, res) => {
       return v !== undefined && v !== null ? Number(v) : fallback;
     };
     const dailyLimit = safeEnvNum('DAILY_TASK_LIMIT', 10);
-    const rewardPerTask = safeNum('rewardPerTask', safeEnvNum('REWARD_PER_TASK', 10));
+    const rewardPerTask = user.productDailyEarn ? Math.round(user.productDailyEarn / dailyLimit) : safeNum('rewardPerTask', safeEnvNum('REWARD_PER_TASK', 10));
     const tasksRemaining = Math.max(0, dailyLimit - user.todayTasksCompleted);
     const earningsToday = user.todayTasksCompleted * rewardPerTask;
     const access = await hasTaskAccess(user._id);
@@ -65,7 +65,7 @@ exports.getDashboard = async (req, res) => {
       },
       settings: {
         taskLink: settingsMap.taskLink || process.env.DEFAULT_TASK_LINK,
-        rewardPerTask: safeNum('rewardPerTask', rewardPerTask),
+        rewardPerTask,
         dailyTaskLimit: dailyLimit,
         requiredViewingTime: safeNum('requiredViewingTime', safeEnvNum('REQUIRED_VIEWING_TIME', 15)),
         minWithdrawal: safeNum('minWithdrawal', safeEnvNum('MIN_WITHDRAWAL', 1500)),
@@ -110,7 +110,7 @@ exports.getTasks = async (req, res) => {
     const taskTitle = settingsMap.taskTitle || 'Visit Sponsor';
     const taskDescription = settingsMap.taskDescription || 'Click the link below, wait the required time, then claim your reward.';
     const dailyLimit = safeEnvNum('DAILY_TASK_LIMIT', 10);
-    const reward = safeNum('rewardPerTask', safeEnvNum('REWARD_PER_TASK', 10));
+    const reward = user.productDailyEarn ? Math.round(user.productDailyEarn / dailyLimit) : safeNum('rewardPerTask', safeEnvNum('REWARD_PER_TASK', 10));
     const viewTime = safeNum('requiredViewingTime', safeEnvNum('REQUIRED_VIEWING_TIME', 15));
 
     const completedSet = new Set(user.completedTaskNumbers || []);
@@ -166,7 +166,7 @@ exports.claimTask = async (req, res) => {
       return v !== undefined && v !== null ? Number(v) : fallback;
     };
     const dailyLimit = safeEnvNum('DAILY_TASK_LIMIT', 10);
-    const reward = safeNum('rewardPerTask', safeEnvNum('REWARD_PER_TASK', 10));
+    const reward = user.productDailyEarn ? Math.round(user.productDailyEarn / dailyLimit) : safeNum('rewardPerTask', safeEnvNum('REWARD_PER_TASK', 10));
 
     if (!Number.isInteger(taskNumber) || taskNumber < 1 || taskNumber > dailyLimit) {
       return res.status(400).json({ message: 'Invalid task number' });
@@ -248,6 +248,9 @@ exports.requestWithdrawal = async (req, res) => {
     const user = await User.findById(req.user._id);
     if (!user || user.accountStatus !== 'active') {
       return res.status(403).json({ message: 'Account must be active to withdraw' });
+    }
+    if (!user.purchasedProduct) {
+      return res.status(403).json({ message: 'Purchase an investment plan to unlock withdrawals' });
     }
 
     const settings = await Setting.findOne({ key: 'minWithdrawal' });
@@ -406,8 +409,14 @@ exports.purchaseProduct = async (req, res) => {
     if (user.walletBalance < price) {
       return res.status(400).json({ message: `Insufficient funds. You need ₦${price.toLocaleString()} but have ₦${user.walletBalance.toLocaleString()}` });
     }
+    const product = await Product.findOne({ name, active: true });
+    if (!product) {
+      return res.status(400).json({ message: 'Product not found' });
+    }
+    const isFirstPurchase = !user.purchasedProduct;
     user.walletBalance -= price;
     user.purchasedProduct = true;
+    user.productDailyEarn = product.dailyEarn;
     await user.save();
     await Transaction.create({
       userId: user._id,
@@ -415,8 +424,30 @@ exports.purchaseProduct = async (req, res) => {
       amount: price,
       description: `Purchased ${name} plan for ₦${price.toLocaleString()}`
     });
+
+    if (isFirstPurchase && user.referredBy) {
+      const bonus = Math.round(price * 0.3);
+      const referrer = await User.findById(user.referredBy);
+      if (referrer) {
+        referrer.walletBalance += bonus;
+        referrer.totalEarnings += bonus;
+        referrer.referralEarnings += bonus;
+        referrer.referralCount += 1;
+        await referrer.save();
+        await Transaction.create({
+          userId: referrer._id,
+          type: 'credit',
+          amount: bonus,
+          description: `30% referral bonus for referring ${user.name}'s ${name} purchase`
+        });
+        await createNotification({
+          userId: referrer._id, title: 'Referral Bonus Earned!', message: `You earned ₦${bonus.toLocaleString()} (30%) from ${user.name}'s ${name} purchase!`, type: 'success', link: '/dashboard'
+        });
+      }
+    }
+
     await createNotification({
-      userId: user._id, title: 'Investment Activated!', message: `You've successfully purchased the ${name} plan. Start earning 25% daily returns now!`, type: 'success', link: '/dashboard/products'
+      userId: user._id, title: 'Investment Activated!', message: `You've successfully purchased the ${name} plan. Start earning daily returns now!`, type: 'success', link: '/dashboard/products'
     });
     res.json({ message: `${name} plan purchased successfully!`, walletBalance: user.walletBalance });
   } catch (error) {

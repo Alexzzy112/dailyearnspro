@@ -353,26 +353,6 @@ exports.confirmPayment = async (req, res) => {
         amount: 0,
         description: `Account activated via payment ref: ${payment.reference}`
       });
-      if (user.referredBy) {
-        const referrer = await User.findById(user.referredBy);
-        if (referrer) {
-          const bonus = Number(process.env.REFERRAL_BONUS) || 50;
-          referrer.walletBalance += bonus;
-          referrer.totalEarnings += bonus;
-          referrer.referralEarnings += bonus;
-          referrer.referralCount += 1;
-          await referrer.save();
-          await Transaction.create({
-            userId: referrer._id,
-            type: 'credit',
-            amount: bonus,
-            description: `Referral bonus for referring ${user.name}`
-          });
-          await createNotification({
-            userId: referrer._id, title: 'Referral Bonus Earned!', message: `You earned ₦${bonus} referral bonus for referring ${user.name}!`, type: 'success', link: '/dashboard'
-          });
-        }
-      }
       await createNotification({
         userId: user._id, title: 'Account Activated!', message: 'Your account has been activated. Start completing tasks and earning rewards!', type: 'success', link: '/dashboard/tasks'
       });

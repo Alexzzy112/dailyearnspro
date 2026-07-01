@@ -23,6 +23,7 @@ const userSchema = new mongoose.Schema({
   referralEarnings: { type: Number, default: 0 },
   referralCount: { type: Number, default: 0 },
   purchasedProduct: { type: Boolean, default: false },
+  productDailyEarn: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now }
 });
 
