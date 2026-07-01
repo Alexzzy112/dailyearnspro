@@ -223,6 +223,49 @@ export default function WithdrawPage() {
           </div>
         </div>
       </div>
+
+      {/* Payment History */}
+      <div className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow mt-6">
+        <h2 className="text-lg font-semibold text-secondary-700 dark:text-white mb-4">Payment History</h2>
+        {data?.payments?.length > 0 ? (
+          <div className="space-y-3">
+            {data.payments.map((p: any) => {
+              const pStatusColor: Record<string, string> = {
+                pending: 'text-yellow-600 bg-yellow-50 dark:bg-yellow-900/20',
+                confirmed: 'text-green-600 bg-green-50 dark:bg-green-900/20',
+                rejected: 'text-red-600 bg-red-50 dark:bg-red-900/20',
+              };
+              const pStatusIcon: Record<string, any> = {
+                pending: <HiClock className="w-4 h-4 text-yellow-500" />,
+                confirmed: <HiCheckCircle className="w-4 h-4 text-green-500" />,
+                rejected: <HiXCircle className="w-4 h-4 text-red-500" />,
+              };
+              return (
+                <div key={p._id} className="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-secondary-700">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                      <HiCurrencyDollar className="w-5 h-5 text-green-500" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-secondary-700 dark:text-white">₦{p.amount.toLocaleString()}</p>
+                      <p className="text-xs text-gray-500">{p.reference}</p>
+                      <p className="text-xs text-gray-400">{new Date(p.createdAt).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                  <span className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium ${pStatusColor[p.status] || ''}`}>
+                    {pStatusIcon[p.status]} {p.status.charAt(0).toUpperCase() + p.status.slice(1)}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <HiCurrencyDollar className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+            <p className="text-gray-500 dark:text-gray-400">No payment history yet</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -2,10 +2,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { userAPI } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
-import { HiUserGroup, HiCurrencyDollar, HiLink, HiClipboardCopy, HiMail, HiPhone, HiClock } from 'react-icons/hi';
+import { HiUserGroup, HiCurrencyDollar, HiLink, HiClipboardCopy, HiMail, HiPhone, HiClock, HiUser, HiBadgeCheck } from 'react-icons/hi';
 import toast from 'react-hot-toast';
 
-export default function ReferralsPage() {
+export default function ProfilePage() {
   const { user } = useAuth();
   const { data, isLoading } = useQuery({
     queryKey: ['referrals'],
@@ -31,8 +31,29 @@ export default function ReferralsPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-secondary-700 dark:text-white">Referrals</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Refer friends and earn bonuses</p>
+          <h1 className="text-2xl font-bold text-secondary-700 dark:text-white">Profile</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">Your account and referrals</p>
+        </div>
+      </div>
+
+      {/* Profile Card */}
+      <div className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow mb-8">
+        <div className="flex items-center gap-4">
+          <div className="w-16 h-16 gradient-primary rounded-full flex items-center justify-center text-white font-bold text-2xl">
+            {user?.name?.charAt(0)?.toUpperCase()}
+          </div>
+          <div className="flex-1">
+            <div className="flex items-center gap-2">
+              <h2 className="text-xl font-bold text-secondary-700 dark:text-white">{user?.name}</h2>
+              {user?.accountStatus === 'active' && <HiBadgeCheck className="w-5 h-5 text-accent-500" />}
+            </div>
+            <p className="text-sm text-gray-500">@{user?.username} · {user?.email}</p>
+            <p className="text-xs text-gray-400 mt-1">Joined {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : ''}</p>
+          </div>
+          <div className="text-right">
+            <p className="text-2xl font-bold text-accent-500">₦{user?.walletBalance?.toLocaleString() || 0}</p>
+            <p className="text-xs text-gray-500">Wallet Balance</p>
+          </div>
         </div>
       </div>
 
@@ -73,7 +94,7 @@ export default function ReferralsPage() {
       </div>
 
       {/* Referral List */}
-      <div className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow">
+      <div className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow mb-8">
         <h2 className="text-lg font-semibold text-secondary-700 dark:text-white mb-4">Referral History</h2>
         <div className="overflow-x-auto">
           {data?.referrals?.length > 0 ? (

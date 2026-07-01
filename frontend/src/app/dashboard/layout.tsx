@@ -2,16 +2,16 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { HiHome, HiClipboardList, HiCurrencyDollar, HiUserGroup, HiLogout, HiCash } from 'react-icons/hi';
+import { HiHome, HiClipboardList, HiCurrencyDollar, HiUserGroup, HiLogout, HiShoppingBag } from 'react-icons/hi';
 import WelcomePopup from '@/components/WelcomePopup';
 import NotificationBell from '@/components/NotificationBell';
 
 const navItems = [
-  { href: '/dashboard', label: 'Dashboard', icon: HiHome },
+  { href: '/dashboard/referrals', label: 'Profile', icon: HiUserGroup },
+  { href: '/dashboard/products', label: 'Products', icon: HiShoppingBag },
+  { href: '/dashboard/wallet', label: 'Finance', icon: HiCurrencyDollar },
   { href: '/dashboard/tasks', label: 'Tasks', icon: HiClipboardList },
-  { href: '/dashboard/wallet', label: 'Wallet', icon: HiCurrencyDollar },
-  { href: '/dashboard/payments', label: 'Payments', icon: HiCash },
-  { href: '/dashboard/referrals', label: 'Referrals', icon: HiUserGroup },
+  { href: '/dashboard', label: 'Dashboard', icon: HiHome },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
