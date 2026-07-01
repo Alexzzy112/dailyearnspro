@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { adminAPI } from '@/lib/api';
 import toast from 'react-hot-toast';
-import { HiSearch, HiCheckCircle, HiXCircle, HiTrash, HiCurrencyDollar } from 'react-icons/hi';
+import { HiSearch, HiXCircle, HiTrash, HiCurrencyDollar } from 'react-icons/hi';
 
 export default function AdminUsersPage() {
   const queryClient = useQueryClient();
@@ -15,12 +15,6 @@ export default function AdminUsersPage() {
   const { data: users, isLoading } = useQuery({
     queryKey: ['adminUsers', search],
     queryFn: () => adminAPI.getUsers(search).then(r => r.data),
-  });
-
-  const activateMutation = useMutation({
-    mutationFn: (id: string) => adminAPI.activateUser(id),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['adminUsers'] }); queryClient.invalidateQueries({ queryKey: ['adminDashboard'] }); toast.success('User activated'); },
-    onError: (err: any) => toast.error(err.response?.data?.message || 'Failed'),
   });
 
   const suspendMutation = useMutation({
@@ -119,11 +113,6 @@ export default function AdminUsersPage() {
                   <td className="py-4 px-4 text-gray-600 dark:text-gray-300">{u.tasksCompleted || 0}</td>
                   <td className="py-4 px-4">
                     <div className="flex items-center gap-2">
-                      {u.accountStatus === 'inactive' && (
-                        <button onClick={() => activateMutation.mutate(u._id)} className="p-2 text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition" title="Activate">
-                          <HiCheckCircle className="w-5 h-5" />
-                        </button>
-                      )}
                       {u.accountStatus === 'active' && (
                         <button onClick={() => suspendMutation.mutate(u._id)} className="p-2 text-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded-lg transition" title="Suspend">
                           <HiXCircle className="w-5 h-5" />

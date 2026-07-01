@@ -7,9 +7,9 @@ import { HiArrowRight, HiCheckCircle, HiShieldCheck, HiCurrencyDollar, HiUserGro
 const faqs = [
   { q: 'What is TaskEarn Pro?', a: 'TaskEarn Pro is a platform where you earn real money by completing simple daily tasks like visiting websites.' },
   { q: 'How much can I earn daily?', a: 'You can earn up to ₦50 per day by completing 10 tasks at ₦5 each.' },
-  { q: 'How do I get started?', a: 'Register an account, pay the ₦2,000 activation fee, get approved, and start completing tasks immediately.' },
+  { q: 'How do I get started?', a: 'Register an account, fund your wallet, purchase an investment plan, and start completing tasks immediately.' },
   { q: 'When can I withdraw?', a: 'Withdrawals are processed on Mondays, Wednesdays, and Fridays. Minimum withdrawal is ₦1,500.' },
-  { q: 'Is there a referral program?', a: 'Yes! You earn a bonus for every user you refer who registers and activates their account.' },
+  { q: 'Is there a referral program?', a: 'Yes! You earn a bonus for every user you refer who registers and purchases an investment plan.' },
 ];
 
 const testimonials = [
@@ -112,7 +112,7 @@ export default function Home() {
           <div className="grid md:grid-cols-3 gap-8">
             {[
               { icon: HiUserGroup, title: 'Create Account', desc: 'Sign up for free and complete your profile to get started on your earning journey.' },
-              { icon: HiShieldCheck, title: 'Activate Account', desc: 'Pay the one-time ₦2,000 activation fee to unlock daily tasks and earning potential.' },
+              { icon: HiShieldCheck, title: 'Fund Your Wallet', desc: 'Deposit funds and choose an investment plan to unlock daily tasks and earning potential.' },
               { icon: HiCurrencyDollar, title: 'Start Earning', desc: 'Complete 10 daily tasks at ₦5 each and earn up to ₦50 every single day!' },
             ].map((item, i) => (
               <div key={i} className="text-center p-8 rounded-2xl card-shadow hover:shadow-lg transition group bg-white dark:bg-secondary-800">

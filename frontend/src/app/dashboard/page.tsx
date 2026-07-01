@@ -44,20 +44,6 @@ export default function DashboardPage() {
         </button>
       </div>
 
-      {/* Account Status Banner */}
-      {dashboard?.accountStatus === 'inactive' && (
-        <div className="mb-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl flex items-center gap-3">
-          <HiExclamationCircle className="w-6 h-6 text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
-          <div className="flex-1">
-            <p className="text-yellow-700 dark:text-yellow-300 font-medium">Account Not Activated</p>
-            <p className="text-yellow-600 dark:text-yellow-400 text-sm">Pay the activation fee to unlock daily tasks and start earning.</p>
-          </div>
-          <Link href="/dashboard/payments" className="bg-yellow-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-yellow-600 transition flex-shrink-0">
-            Pay ₦{settings?.activationFee || 2000}
-          </Link>
-        </div>
-      )}
-
       {dashboard?.accountStatus === 'suspended' && (
         <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3">
           <HiExclamationCircle className="w-6 h-6 text-red-600 dark:text-red-400 flex-shrink-0" />

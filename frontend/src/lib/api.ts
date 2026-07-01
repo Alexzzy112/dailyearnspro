@@ -54,14 +54,9 @@ export const userAPI = {
   requestWithdrawal: (data: { amount: number; bankName: string; accountNumber: string; accountName: string }) =>
     api.post('/user/withdraw', data),
   getReferrals: () => api.get('/user/referrals'),
-  getBankInfo: () => api.get('/user/bank-info'),
   submitPayment: (data: { amount: number; reference: string; screenshot?: File }) => {
     const fd = toFormData(data);
     return api.post('/user/payments', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
-  },
-  submitActivationPayment: (data: { screenshot?: File }) => {
-    const fd = toFormData(data);
-    return api.post('/user/payments/activation', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
   },
   getPayments: () => api.get('/user/payments'),
   purchaseProduct: (name: string, price: number) => api.post('/user/purchase', { name, price }),
@@ -71,7 +66,6 @@ export const userAPI = {
 export const adminAPI = {
   getDashboard: () => api.get('/admin/dashboard'),
   getUsers: (search?: string) => api.get(`/admin/users${search ? `?search=${search}` : ''}`),
-  activateUser: (id: string) => api.put(`/admin/users/${id}/activate`),
   suspendUser: (id: string) => api.put(`/admin/users/${id}/suspend`),
   deleteUser: (id: string) => api.delete(`/admin/users/${id}`),
   adjustWallet: (id: string, amount: number, type: 'credit' | 'debit') =>

@@ -75,17 +75,6 @@ export default function TasksPage() {
     );
   }
 
-  if (user?.accountStatus !== 'active') {
-    return (
-      <div className="flex flex-col items-center justify-center h-96 text-center">
-        <HiClock className="w-16 h-16 text-gray-400 mb-4" />
-        <h2 className="text-xl font-semibold text-secondary-700 dark:text-white mb-2">Account Not Active</h2>
-        <p className="text-gray-500 dark:text-gray-400 mb-4">Activate your account to unlock daily tasks.</p>
-        <a href="/dashboard/payments" className="gradient-primary text-white px-6 py-2 rounded-lg font-medium">Pay Activation Fee</a>
-      </div>
-    );
-  }
-
   if (dashLoading) {
     return (
       <div className="flex items-center justify-center h-96">

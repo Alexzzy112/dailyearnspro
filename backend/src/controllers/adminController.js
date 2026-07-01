@@ -65,30 +65,6 @@ exports.getUsers = async (req, res) => {
   }
 };
 
-exports.activateUser = async (req, res) => {
-  try {
-    const user = await User.findById(req.params.id);
-    if (!user) return res.status(404).json({ message: 'User not found' });
-    if (user.accountStatus === 'active') {
-      return res.status(400).json({ message: 'User is already active' });
-    }
-    user.accountStatus = 'active';
-    await user.save();
-    await Transaction.create({
-      userId: user._id,
-      type: 'credit',
-      amount: 0,
-      description: 'Account activated by admin'
-    });
-    await createNotification({
-      userId: user._id, title: 'Account Activated!', message: 'Your account has been activated by admin. Start earning now!', type: 'success', link: '/dashboard/tasks'
-    });
-    res.json({ message: 'User activated successfully', user });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
 exports.suspendUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -181,7 +157,6 @@ exports.getSettings = async (req, res) => {
       rewardPerTask: safeNum('rewardPerTask', parseInt(process.env.REWARD_PER_TASK) || 10),
       dailyTaskLimit: safeNum('dailyTaskLimit', parseInt(process.env.DAILY_TASK_LIMIT) || 10),
       requiredViewingTime: safeNum('requiredViewingTime', parseInt(process.env.REQUIRED_VIEWING_TIME) || 15),
-      activationFee: safeNum('activationFee', parseInt(process.env.ACTIVATION_FEE) || 3000),
       minWithdrawal: safeNum('minWithdrawal', parseInt(process.env.MIN_WITHDRAWAL) || 1500),
       referralBonus: safeNum('referralBonus', 50),
       referralBonusPercent: safeNum('referralBonusPercent', 30),
@@ -326,33 +301,18 @@ exports.confirmPayment = async (req, res) => {
     const user = await User.findById(payment.userId._id);
     if (!user) return res.status(404).json({ message: 'User not found' });
 
-    if (payment.type === 'activation') {
-      user.accountStatus = 'active';
-      await user.save();
-      await Transaction.create({
-        userId: user._id,
-        type: 'credit',
-        amount: 0,
-        description: `Account activated via payment ref: ${payment.reference}`
-      });
-      await createNotification({
-        userId: user._id, title: 'Account Activated!', message: 'Your account has been activated. Start completing tasks and earning rewards!', type: 'success', link: '/dashboard/tasks'
-      });
-      res.json({ message: 'Activation payment confirmed, account activated', payment });
-    } else {
-      user.walletBalance += payment.amount;
-      await user.save();
-      await Transaction.create({
-        userId: user._id,
-        type: 'credit',
-        amount: payment.amount,
-        description: `Wallet funded - payment ref: ${payment.reference}`
-      });
-      await createNotification({
-        userId: user._id, title: 'Payment Confirmed', message: `Your payment of ₦${payment.amount} has been confirmed. Wallet credited!`, type: 'success', link: '/dashboard/wallet'
-      });
-      res.json({ message: 'Payment confirmed, wallet credited', payment });
-    }
+    user.walletBalance += payment.amount;
+    await user.save();
+    await Transaction.create({
+      userId: user._id,
+      type: 'credit',
+      amount: payment.amount,
+      description: `Wallet funded - payment ref: ${payment.reference}`
+    });
+    await createNotification({
+      userId: user._id, title: 'Payment Confirmed', message: `Your payment of ₦${payment.amount} has been confirmed. Wallet credited!`, type: 'success', link: '/dashboard/wallet'
+    });
+    res.json({ message: 'Payment confirmed, wallet credited', payment });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -367,19 +327,6 @@ exports.rejectPayment = async (req, res) => {
     }
     payment.status = 'rejected';
     await payment.save();
-    if (payment.type === 'activation' && payment.reference?.startsWith('ACT-WALLET-')) {
-      const user = await User.findById(payment.userId);
-      if (user) {
-        user.walletBalance += payment.amount;
-        await user.save();
-        await Transaction.create({
-          userId: user._id,
-          type: 'credit',
-          amount: payment.amount,
-          description: `Refund for rejected activation payment ref: ${payment.reference}`
-        });
-      }
-    }
     await createNotification({
       userId: payment.userId, title: 'Payment Rejected', message: `Your payment of ₦${payment.amount} has been rejected. Contact admin for details.`, type: 'error', link: '/dashboard/payments'
     });

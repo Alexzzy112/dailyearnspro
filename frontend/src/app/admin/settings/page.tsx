@@ -16,13 +16,9 @@ export default function AdminSettingsPage() {
     dailyTaskLimit: 10,
     requiredViewingTime: 15,
     minWithdrawal: 1500,
-    referralBonus: 50,
     referralBonusPercent: 30,
     withdrawalCharge: 5,
     welcomeBonus: 500,
-    bankName: '',
-    accountNumber: '',
-    accountName: '',
   });
 
   const { data, isLoading } = useQuery({
@@ -42,13 +38,9 @@ export default function AdminSettingsPage() {
         dailyTaskLimit: data.dailyTaskLimit || 10,
         requiredViewingTime: data.requiredViewingTime || 15,
         minWithdrawal: data.minWithdrawal || 1500,
-        referralBonus: data.referralBonus || 50,
         referralBonusPercent: data.referralBonusPercent ?? 30,
         withdrawalCharge: data.withdrawalCharge ?? 5,
         welcomeBonus: data.welcomeBonus || 500,
-        bankName: data.bankName || '',
-        accountNumber: data.accountNumber || '',
-        accountName: data.accountName || '',
       });
     }
   }, [data]);
@@ -188,12 +180,6 @@ export default function AdminSettingsPage() {
               <p className="text-xs text-gray-500 mt-1">Extra fee on top of withdrawal amount</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Referral Bonus (₦) — Activation</label>
-              <input type="number" value={form.referralBonus} onChange={(e) => handleChange('referralBonus', Number(e.target.value))}
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-secondary-700 text-secondary-700 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none" />
-              <p className="text-xs text-gray-500 mt-1">Fixed bonus when user activates (legacy)</p>
-            </div>
-            <div>
               <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Referral Bonus (%) — Product Purchase</label>
               <input type="number" value={form.referralBonusPercent} onChange={(e) => handleChange('referralBonusPercent', Number(e.target.value))}
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-secondary-700 text-secondary-700 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none" />
@@ -202,28 +188,6 @@ export default function AdminSettingsPage() {
             <div>
               <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Welcome Bonus (₦)</label>
               <input type="number" value={form.welcomeBonus} onChange={(e) => handleChange('welcomeBonus', Number(e.target.value))}
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-secondary-700 text-secondary-700 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none" />
-            </div>
-          </div>
-        </div>
-
-        {/* Payment Information */}
-        <div className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow">
-          <h2 className="text-lg font-semibold text-secondary-700 dark:text-white mb-4">Payment Information (for activation payments)</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Bank Name</label>
-              <input type="text" value={form.bankName} onChange={(e) => handleChange('bankName', e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-secondary-700 text-secondary-700 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Account Number</label>
-              <input type="text" value={form.accountNumber} onChange={(e) => handleChange('accountNumber', e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-secondary-700 text-secondary-700 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none" />
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Account Name</label>
-              <input type="text" value={form.accountName} onChange={(e) => handleChange('accountName', e.target.value)}
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-secondary-700 text-secondary-700 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none" />
             </div>
           </div>

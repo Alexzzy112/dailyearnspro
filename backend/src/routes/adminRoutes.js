@@ -4,7 +4,6 @@ const { protect, adminOnly } = require('../middleware/auth');
 const {
   getDashboardStats,
   getUsers,
-  activateUser,
   suspendUser,
   deleteUser,
   adjustWallet,
@@ -32,7 +31,6 @@ router.use(protect, adminOnly);
 
 router.get('/dashboard', getDashboardStats);
 router.get('/users', getUsers);
-router.put('/users/:id/activate', activateUser);
 router.put('/users/:id/suspend', suspendUser);
 router.delete('/users/:id', deleteUser);
 router.put('/users/:id/wallet', adjustWallet);

@@ -18,8 +18,6 @@ export default function AdminPaymentsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminPayments'] });
       queryClient.invalidateQueries({ queryKey: ['adminDashboard'] });
-      queryClient.invalidateQueries({ queryKey: ['adminActivations'] });
-      queryClient.invalidateQueries({ queryKey: ['adminUsers'] });
       toast.success('Payment confirmed');
     },
     onError: (err: any) => toast.error(err.response?.data?.message || 'Failed'),
@@ -48,10 +46,9 @@ export default function AdminPaymentsPage() {
 
   const typeBadge = (type: string) => {
     const colors: Record<string, string> = {
-      activation: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
       fund: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
     };
-    return <span className={`px-3 py-1 rounded-full text-xs font-medium ${colors[type] || ''}`}>{type}</span>;
+    return <span className={`px-3 py-1 rounded-full text-xs font-medium ${colors[type] || 'bg-gray-100 text-gray-700'}`}>{type}</span>;
   };
 
   if (isLoading) return (

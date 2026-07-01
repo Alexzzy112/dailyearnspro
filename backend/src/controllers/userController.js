@@ -38,7 +38,7 @@ exports.getDashboard = async (req, res) => {
       const v = settingsMap[key];
       return v !== undefined && v !== null ? Number(v) : fallback;
     };
-    const dailyLimit = safeEnvNum('DAILY_TASK_LIMIT', 10);
+    const dailyLimit = safeNum('dailyTaskLimit', safeEnvNum('DAILY_TASK_LIMIT', 10));
     const rewardPerTask = user.productDailyEarn ? Math.round(user.productDailyEarn / dailyLimit) : safeNum('rewardPerTask', safeEnvNum('REWARD_PER_TASK', 10));
     const tasksRemaining = Math.max(0, dailyLimit - user.todayTasksCompleted);
     const earningsToday = user.todayTasksCompleted * rewardPerTask;
@@ -69,7 +69,6 @@ exports.getDashboard = async (req, res) => {
         dailyTaskLimit: dailyLimit,
         requiredViewingTime: safeNum('requiredViewingTime', safeEnvNum('REQUIRED_VIEWING_TIME', 15)),
         minWithdrawal: safeNum('minWithdrawal', safeEnvNum('MIN_WITHDRAWAL', 1500)),
-        activationFee: safeNum('activationFee', safeEnvNum('ACTIVATION_FEE', 2000))
       }
     });
   } catch (error) {
@@ -81,7 +80,7 @@ exports.getTasks = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
     if (user.accountStatus !== 'active') {
-      return res.status(403).json({ message: 'Account not activated' });
+      return res.status(403).json({ message: 'Account is suspended or inactive' });
     }
 
     const access = await hasTaskAccess(user._id);
@@ -109,7 +108,7 @@ exports.getTasks = async (req, res) => {
     const taskLink = settingsMap.taskLink || process.env.DEFAULT_TASK_LINK;
     const taskTitle = settingsMap.taskTitle || 'Visit Sponsor';
     const taskDescription = settingsMap.taskDescription || 'Click the link below, wait the required time, then claim your reward.';
-    const dailyLimit = safeEnvNum('DAILY_TASK_LIMIT', 10);
+    const dailyLimit = safeNum('dailyTaskLimit', safeEnvNum('DAILY_TASK_LIMIT', 10));
     const reward = user.productDailyEarn ? Math.round(user.productDailyEarn / dailyLimit) : safeNum('rewardPerTask', safeEnvNum('REWARD_PER_TASK', 10));
     const viewTime = safeNum('requiredViewingTime', safeEnvNum('REQUIRED_VIEWING_TIME', 15));
 
@@ -141,7 +140,7 @@ exports.claimTask = async (req, res) => {
     }
     const user = await User.findById(req.user._id);
     if (user.accountStatus !== 'active') {
-      return res.status(403).json({ message: 'Account not activated' });
+      return res.status(403).json({ message: 'Account is suspended or inactive' });
     }
 
     const access = await hasTaskAccess(user._id);
@@ -165,7 +164,7 @@ exports.claimTask = async (req, res) => {
       const v = settingsMap[key];
       return v !== undefined && v !== null ? Number(v) : fallback;
     };
-    const dailyLimit = safeEnvNum('DAILY_TASK_LIMIT', 10);
+    const dailyLimit = safeNum('dailyTaskLimit', safeEnvNum('DAILY_TASK_LIMIT', 10));
     const reward = user.productDailyEarn ? Math.round(user.productDailyEarn / dailyLimit) : safeNum('rewardPerTask', safeEnvNum('REWARD_PER_TASK', 10));
 
     if (!Number.isInteger(taskNumber) || taskNumber < 1 || taskNumber > dailyLimit) {
@@ -304,85 +303,12 @@ exports.requestWithdrawal = async (req, res) => {
   }
 };
 
-exports.requestActivation = async (req, res) => {
-  try {
-    const user = await User.findById(req.user._id);
-    if (!user) return res.status(404).json({ message: 'User not found' });
-    if (user.accountStatus !== 'inactive') {
-      return res.status(400).json({ message: 'Account is already active or suspended' });
-    }
-    const settings = await Setting.findOne({ key: 'activationFee' });
-    const fee = settings ? Number(settings.value) : safeEnvNum('ACTIVATION_FEE', 3000);
-    if (user.walletBalance < fee) {
-      return res.status(400).json({ message: `Insufficient balance. Activation fee is ₦${fee}.` });
-    }
-    user.walletBalance -= fee;
-    await user.save();
-    await Transaction.create({
-      userId: user._id,
-      type: 'debit',
-      amount: fee,
-      description: `Activation fee payment of ₦${fee}`
-    });
-    await Payment.create({
-      userId: user._id,
-      amount: fee,
-      reference: `ACT-WALLET-${user._id}-${Date.now()}`,
-      type: 'activation'
-    });
-    res.json({ message: 'Activation request submitted. Admin will review and approve.' });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
 exports.getReferrals = async (req, res) => {
   try {
     const referrals = await User.find({ referredBy: req.user._id })
       .select('name username email createdAt totalEarnings')
       .sort({ createdAt: -1 });
     res.json({ referrals, count: referrals.length });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-exports.getBankInfo = async (req, res) => {
-  try {
-    const settings = await Setting.find();
-    const settingsMap = {};
-    settings.forEach(s => { settingsMap[s.key] = s.value; });
-    res.json({
-      bankName: settingsMap.bankName || '',
-      accountNumber: settingsMap.accountNumber || '',
-      accountName: settingsMap.accountName || ''
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-exports.submitActivationPayment = async (req, res) => {
-  try {
-    const { reference } = req.body;
-    const user = await User.findById(req.user._id);
-    if (!user) return res.status(404).json({ message: 'User not found' });
-    if (user.accountStatus !== 'inactive') {
-      return res.status(400).json({ message: 'Account is already active or suspended' });
-    }
-    const settings = await Setting.findOne({ key: 'activationFee' });
-    const fee = settings ? Number(settings.value) : safeEnvNum('ACTIVATION_FEE', 3000);
-
-    const ref = reference && reference.trim() ? reference.trim() : `ACT-${user._id}-${Date.now()}`;
-    const screenshot = req.file ? req.file.path : '';
-    const payment = await Payment.create({
-      userId: req.user._id,
-      amount: fee,
-      reference: ref,
-      type: 'activation',
-      screenshot
-    });
-    res.status(201).json({ message: 'Activation payment submitted. Awaiting admin approval.', payment });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

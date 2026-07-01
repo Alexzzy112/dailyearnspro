@@ -26,7 +26,8 @@ exports.register = async (req, res) => {
       username: username.toLowerCase(),
       email: email.toLowerCase(),
       password,
-      referralCode: username.toLowerCase()
+      referralCode: username.toLowerCase(),
+      accountStatus: 'active'
     });
     if (referredBy) {
       const referrer = await User.findOne({ referralCode: referredBy.toLowerCase() });

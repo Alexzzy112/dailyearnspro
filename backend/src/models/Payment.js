@@ -5,7 +5,7 @@ const paymentSchema = new mongoose.Schema({
   amount: { type: Number, required: true },
   reference: { type: String, required: true },
   status: { type: String, enum: ['pending', 'confirmed', 'rejected'], default: 'pending' },
-  type: { type: String, enum: ['fund', 'activation'], default: 'fund' },
+  type: { type: String, default: 'fund' },
   screenshot: { type: String, default: '' },
   adminNote: { type: String, default: '' }
 }, { timestamps: true });
