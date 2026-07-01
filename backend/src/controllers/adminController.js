@@ -425,3 +425,36 @@ exports.rejectPayment = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.deletePayment = async (req, res) => {
+  try {
+    const payment = await Payment.findByIdAndDelete(req.params.id);
+    if (!payment) return res.status(404).json({ message: 'Payment not found' });
+    res.json({ message: 'Payment deleted' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.resetRecords = async (req, res) => {
+  try {
+    await Transaction.deleteMany({});
+    await Payment.deleteMany({});
+    await Withdrawal.deleteMany({});
+    res.json({ message: 'All records reset. Users unaffected.' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.reseedData = async (req, res) => {
+  try {
+    await User.deleteMany({ role: { $ne: 'admin' } });
+    await Transaction.deleteMany({});
+    await Payment.deleteMany({});
+    await Withdrawal.deleteMany({});
+    res.json({ message: 'All user data wiped. Admin account preserved.' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

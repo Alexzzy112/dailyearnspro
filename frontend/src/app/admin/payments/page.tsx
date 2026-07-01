@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { adminAPI } from '@/lib/api';
 import toast from 'react-hot-toast';
-import { HiCheckCircle, HiXCircle, HiPhotograph, HiExternalLink } from 'react-icons/hi';
+import { HiCheckCircle, HiXCircle, HiPhotograph, HiExternalLink, HiTrash } from 'react-icons/hi';
 
 export default function AdminPaymentsPage() {
   const queryClient = useQueryClient();
@@ -28,6 +28,12 @@ export default function AdminPaymentsPage() {
   const rejectMutation = useMutation({
     mutationFn: (id: string) => adminAPI.rejectPayment(id),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['adminPayments'] }); toast.success('Payment rejected'); },
+    onError: (err: any) => toast.error(err.response?.data?.message || 'Failed'),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => adminAPI.deletePayment(id),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['adminPayments'] }); toast.success('Payment deleted'); },
     onError: (err: any) => toast.error(err.response?.data?.message || 'Failed'),
   });
 
@@ -129,6 +135,9 @@ export default function AdminPaymentsPage() {
                           </button>
                         </>
                       )}
+                      <button onClick={() => { if (confirm('Delete this payment?')) deleteMutation.mutate(p._id); }} className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition" title="Delete Payment">
+                        <HiTrash className="w-4 h-4" />
+                      </button>
                     </div>
                   </td>
                 </tr>

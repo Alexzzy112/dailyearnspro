@@ -8,7 +8,7 @@ import { HiSearch, HiCheckCircle, HiXCircle, HiTrash, HiCurrencyDollar } from 'r
 export default function AdminUsersPage() {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
-  const [walletModal, setWalletModal] = useState<{ id: string; name: string } | null>(null);
+  const [walletModal, setWalletModal] = useState<{ id: string; name: string; balance: number } | null>(null);
   const [walletAmount, setWalletAmount] = useState('');
   const [walletType, setWalletType] = useState<'credit' | 'debit'>('credit');
 
@@ -129,7 +129,7 @@ export default function AdminUsersPage() {
                           <HiXCircle className="w-5 h-5" />
                         </button>
                       )}
-                      <button onClick={() => { setWalletModal({ id: u._id, name: u.name }); setWalletAmount(''); setWalletType('credit'); }}
+                      <button onClick={() => { setWalletModal({ id: u._id, name: u.name, balance: u.walletBalance }); setWalletAmount(''); setWalletType('credit'); }}
                         className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition" title="Adjust Wallet">
                         <HiCurrencyDollar className="w-5 h-5" />
                       </button>
@@ -154,7 +154,8 @@ export default function AdminUsersPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-secondary-800 rounded-2xl p-6 max-w-md w-full">
             <h2 className="text-lg font-semibold text-secondary-700 dark:text-white mb-2">Adjust Wallet</h2>
-            <p className="text-sm text-gray-500 mb-4">{walletModal.name}</p>
+            <p className="text-sm text-gray-500 mb-1">{walletModal.name}</p>
+            <p className="text-sm font-semibold text-accent-500 mb-4">Current Balance: ₦{walletModal.balance?.toLocaleString()}</p>
             <div className="space-y-4">
               <div className="flex gap-2">
                 <button onClick={() => setWalletType('credit')} className={`flex-1 py-2 rounded-lg text-sm font-medium transition ${walletType === 'credit' ? 'bg-green-500 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'}`}>

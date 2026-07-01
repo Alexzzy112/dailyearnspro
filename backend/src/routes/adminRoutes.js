@@ -18,7 +18,10 @@ const {
   deleteWithdrawal,
   getPayments,
   confirmPayment,
-  rejectPayment
+  rejectPayment,
+  deletePayment,
+  resetRecords,
+  reseedData
 } = require('../controllers/adminController');
 
 router.use(protect, adminOnly);
@@ -40,5 +43,8 @@ router.delete('/withdrawals/:id', deleteWithdrawal);
 router.get('/payments', getPayments);
 router.put('/payments/:id/confirm', confirmPayment);
 router.put('/payments/:id/reject', rejectPayment);
+router.delete('/payments/:id', deletePayment);
+router.post('/reset', resetRecords);
+router.post('/reseed', reseedData);
 
 module.exports = router;

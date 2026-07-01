@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { adminAPI } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import toast from 'react-hot-toast';
-import { HiSave, HiUser } from 'react-icons/hi';
+import { HiSave, HiUser, HiRefresh, HiExclamationCircle } from 'react-icons/hi';
 
 export default function AdminSettingsPage() {
   const { user, refreshUser } = useAuth();
@@ -15,7 +15,6 @@ export default function AdminSettingsPage() {
     rewardPerTask: 5,
     dailyTaskLimit: 10,
     requiredViewingTime: 15,
-    activationFee: 2000,
     minWithdrawal: 1500,
     referralBonus: 50,
     welcomeBonus: 500,
@@ -40,7 +39,6 @@ export default function AdminSettingsPage() {
         rewardPerTask: data.rewardPerTask || 5,
         dailyTaskLimit: data.dailyTaskLimit || 10,
         requiredViewingTime: data.requiredViewingTime || 15,
-        activationFee: data.activationFee || 2000,
         minWithdrawal: data.minWithdrawal || 1500,
         referralBonus: data.referralBonus || 50,
         welcomeBonus: data.welcomeBonus || 500,
@@ -63,6 +61,18 @@ export default function AdminSettingsPage() {
       refreshUser();
       toast.success('Name updated!');
     },
+    onError: (err: any) => toast.error(err.response?.data?.message || 'Failed'),
+  });
+
+  const resetMutation = useMutation({
+    mutationFn: () => adminAPI.resetRecords(),
+    onSuccess: () => { toast.success('All records reset'); queryClient.invalidateQueries(); },
+    onError: (err: any) => toast.error(err.response?.data?.message || 'Failed'),
+  });
+
+  const reseedMutation = useMutation({
+    mutationFn: () => adminAPI.reseedData(),
+    onSuccess: () => { toast.success('All user data wiped'); queryClient.invalidateQueries(); },
     onError: (err: any) => toast.error(err.response?.data?.message || 'Failed'),
   });
 
@@ -163,11 +173,6 @@ export default function AdminSettingsPage() {
           <h2 className="text-lg font-semibold text-secondary-700 dark:text-white mb-4">Financial Settings</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Activation Fee (₦)</label>
-              <input type="number" value={form.activationFee} onChange={(e) => handleChange('activationFee', Number(e.target.value))}
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-secondary-700 text-secondary-700 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none" />
-            </div>
-            <div>
               <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Minimum Withdrawal (₦)</label>
               <input type="number" value={form.minWithdrawal} onChange={(e) => handleChange('minWithdrawal', Number(e.target.value))}
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-secondary-700 text-secondary-700 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none" />
@@ -212,6 +217,28 @@ export default function AdminSettingsPage() {
           <HiSave className="w-5 h-5" /> {updateMutation.isPending ? 'Saving...' : 'Save All Settings'}
         </button>
       </form>
+
+      {/* Danger Zone */}
+      <div className="max-w-3xl mt-8 space-y-6">
+        <div className="bg-red-50 dark:bg-red-900/10 rounded-2xl p-6 card-shadow border border-red-200 dark:border-red-800">
+          <h2 className="text-lg font-semibold text-red-600 dark:text-red-400 mb-1 flex items-center gap-2">
+            <HiExclamationCircle className="w-5 h-5" /> Danger Zone
+          </h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Destructive actions that cannot be undone.</p>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <button onClick={() => { if (confirm('Reset all records? Transactions, payments, and withdrawals will be cleared. Users are not affected.')) resetMutation.mutate(); }}
+              disabled={resetMutation.isPending}
+              className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl border-2 border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 font-medium hover:bg-red-50 dark:hover:bg-red-900/20 transition disabled:opacity-50">
+              <HiRefresh className="w-5 h-5" /> {resetMutation.isPending ? 'Resetting...' : 'Reset Records'}
+            </button>
+            <button onClick={() => { if (confirm('Wipe ALL user data? This deletes all users and their records. Only your admin account will remain.')) reseedMutation.mutate(); }}
+              disabled={reseedMutation.isPending}
+              className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-red-600 text-white font-medium hover:bg-red-700 transition disabled:opacity-50">
+              <HiExclamationCircle className="w-5 h-5" /> {reseedMutation.isPending ? 'Wiping...' : 'Reseed (Wipe All Users)'}
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
