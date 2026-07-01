@@ -462,7 +462,20 @@ exports.reseedData = async (req, res) => {
 
 exports.getProducts = async (req, res) => {
   try {
-    const products = await Product.find().sort({ price: 1 });
+    let products = await Product.find().sort({ price: 1 });
+    if (products.length === 0) {
+      const defaults = [
+        { name: 'Gold Saver', price: 5000, dailyEarn: 500 },
+        { name: 'Diamond Saver', price: 10000, dailyEarn: 1000 },
+        { name: 'Premium Saver', price: 20000, dailyEarn: 2000 },
+        { name: 'Elite Saver', price: 50000, dailyEarn: 5000 },
+        { name: 'Platinum Saver', price: 100000, dailyEarn: 10000 },
+        { name: 'Royal Saver', price: 200000, dailyEarn: 20000 },
+        { name: 'VIP Saver', price: 500000, dailyEarn: 50000 },
+        { name: 'Legend Saver', price: 1000000, dailyEarn: 100000 },
+      ];
+      products = await Product.insertMany(defaults);
+    }
     res.json(products);
   } catch (error) {
     res.status(500).json({ message: error.message });
