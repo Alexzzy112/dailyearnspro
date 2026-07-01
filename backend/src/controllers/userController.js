@@ -11,6 +11,13 @@ const safeEnvNum = (key, fallback) => {
   return isNaN(n) ? fallback : n;
 };
 
+const hasTaskAccess = async (userId) => {
+  const funded = await Payment.findOne({ userId, status: 'confirmed' });
+  if (funded) return true;
+  const user = await User.findById(userId).select('purchasedProduct');
+  return user?.purchasedProduct === true;
+};
+
 exports.getDashboard = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select('-password');
@@ -29,6 +36,7 @@ exports.getDashboard = async (req, res) => {
     const rewardPerTask = safeEnvNum('REWARD_PER_TASK', 10);
     const tasksRemaining = Math.max(0, dailyLimit - user.todayTasksCompleted);
     const earningsToday = user.todayTasksCompleted * rewardPerTask;
+    const access = await hasTaskAccess(user._id);
 
     const settings = await Setting.find();
     const settingsMap = {};
@@ -54,7 +62,8 @@ exports.getDashboard = async (req, res) => {
         referralCount: user.referralCount,
         referralEarnings: user.referralEarnings,
         referralCode: user.referralCode,
-        createdAt: user.createdAt
+        createdAt: user.createdAt,
+        hasTaskAccess: access
       },
       settings: {
         taskLink: settingsMap.taskLink || process.env.DEFAULT_TASK_LINK,
@@ -75,6 +84,11 @@ exports.getTasks = async (req, res) => {
     const user = await User.findById(req.user._id);
     if (user.accountStatus !== 'active') {
       return res.status(403).json({ message: 'Account not activated' });
+    }
+
+    const access = await hasTaskAccess(user._id);
+    if (!access) {
+      return res.status(403).json({ message: 'Fund your wallet or purchase a product to unlock tasks', locked: true });
     }
 
     const today = new Date();
@@ -130,6 +144,11 @@ exports.claimTask = async (req, res) => {
     const user = await User.findById(req.user._id);
     if (user.accountStatus !== 'active') {
       return res.status(403).json({ message: 'Account not activated' });
+    }
+
+    const access = await hasTaskAccess(user._id);
+    if (!access) {
+      return res.status(403).json({ message: 'Fund your wallet or purchase a product to unlock tasks' });
     }
 
     const today = new Date();

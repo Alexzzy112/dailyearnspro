@@ -22,6 +22,7 @@ const userSchema = new mongoose.Schema({
   resetPasswordExpire: { type: Date, default: null },
   referralEarnings: { type: Number, default: 0 },
   referralCount: { type: Number, default: 0 },
+  purchasedProduct: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now }
 });
 

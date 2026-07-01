@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { userAPI } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import toast from 'react-hot-toast';
-import { HiExternalLink, HiCheckCircle, HiClock, HiCurrencyDollar } from 'react-icons/hi';
+import { HiExternalLink, HiCheckCircle, HiClock, HiCurrencyDollar, HiLockClosed, HiShoppingBag } from 'react-icons/hi';
 
 export default function TasksPage() {
   const queryClient = useQueryClient();
@@ -17,10 +17,18 @@ export default function TasksPage() {
     return () => { Object.values(timers).forEach(clearInterval); };
   }, []);
 
+  const { data: dashData } = useQuery({
+    queryKey: ['dashboard'],
+    queryFn: () => userAPI.getDashboard().then(r => r.data),
+  });
+
+  const hasAccess = dashData?.user?.hasTaskAccess;
+
   const { data, isLoading } = useQuery({
     queryKey: ['tasks'],
     queryFn: () => userAPI.getTasks().then(r => r.data),
     refetchInterval: 30000,
+    enabled: hasAccess,
   });
 
   const claimMutation = useMutation({
@@ -78,6 +86,25 @@ export default function TasksPage() {
         <h2 className="text-xl font-semibold text-secondary-700 dark:text-white mb-2">Account Not Active</h2>
         <p className="text-gray-500 dark:text-gray-400 mb-4">Activate your account to unlock daily tasks.</p>
         <a href="/dashboard/payments" className="gradient-primary text-white px-6 py-2 rounded-lg font-medium">Pay Activation Fee</a>
+      </div>
+    );
+  }
+
+  if (hasAccess === false) {
+    return (
+      <div className="flex flex-col items-center justify-center h-96 text-center">
+        <HiLockClosed className="w-16 h-16 text-gray-400 mb-4" />
+        <h2 className="text-xl font-semibold text-secondary-700 dark:text-white mb-2">Tasks Locked</h2>
+        <p className="text-gray-500 dark:text-gray-400 mb-2">Fund your wallet or purchase a product to unlock daily tasks.</p>
+        <p className="text-sm text-gray-400 dark:text-gray-500 mb-6">Complete a payment or invest in any plan to start earning.</p>
+        <div className="flex gap-3">
+          <a href="/dashboard/wallet" className="gradient-primary text-white px-6 py-2 rounded-lg font-medium flex items-center gap-2">
+            <HiCurrencyDollar className="w-4 h-4" /> Fund Wallet
+          </a>
+          <a href="/dashboard/products" className="gradient-accent text-white px-6 py-2 rounded-lg font-medium flex items-center gap-2">
+            <HiShoppingBag className="w-4 h-4" /> View Plans
+          </a>
+        </div>
       </div>
     );
   }
