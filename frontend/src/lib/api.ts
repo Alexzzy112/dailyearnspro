@@ -65,6 +65,7 @@ export const userAPI = {
   },
   getPayments: () => api.get('/user/payments'),
   purchaseProduct: (name: string, price: number) => api.post('/user/purchase', { name, price }),
+  getProducts: () => api.get('/user/products'),
 };
 
 export const adminAPI = {
@@ -92,6 +93,10 @@ export const adminAPI = {
   getNotifications: () => api.get('/notifications/admin/all'),
   resetRecords: () => api.post('/admin/reset'),
   reseedData: () => api.post('/admin/reseed'),
+  getProducts: () => api.get('/admin/products'),
+  createProduct: (data: { name: string; price: number; dailyEarn: number }) => api.post('/admin/products', data),
+  updateProduct: (id: string, data: { name?: string; price?: number; dailyEarn?: number; active?: boolean }) => api.put(`/admin/products/${id}`, data),
+  deleteProduct: (id: string) => api.delete(`/admin/products/${id}`),
 };
 
 export const notificationAPI = {

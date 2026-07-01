@@ -3,6 +3,7 @@ const Withdrawal = require('../models/Withdrawal');
 const Transaction = require('../models/Transaction');
 const Payment = require('../models/Payment');
 const Setting = require('../models/Setting');
+const Product = require('../models/Product');
 const { createNotification, createBulkNotifications } = require('./notificationController');
 
 exports.getDashboardStats = async (req, res) => {
@@ -454,6 +455,46 @@ exports.reseedData = async (req, res) => {
     await Payment.deleteMany({});
     await Withdrawal.deleteMany({});
     res.json({ message: 'All user data wiped. Admin account preserved.' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.getProducts = async (req, res) => {
+  try {
+    const products = await Product.find().sort({ price: 1 });
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.createProduct = async (req, res) => {
+  try {
+    const { name, price, dailyEarn } = req.body;
+    if (!name || !price || !dailyEarn) return res.status(400).json({ message: 'All fields required' });
+    const product = await Product.create({ name, price, dailyEarn });
+    res.status(201).json(product);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.updateProduct = async (req, res) => {
+  try {
+    const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!product) return res.status(404).json({ message: 'Product not found' });
+    res.json(product);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.deleteProduct = async (req, res) => {
+  try {
+    const product = await Product.findByIdAndDelete(req.params.id);
+    if (!product) return res.status(404).json({ message: 'Product not found' });
+    res.json({ message: 'Product deleted' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

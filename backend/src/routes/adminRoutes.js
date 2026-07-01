@@ -21,7 +21,11 @@ const {
   rejectPayment,
   deletePayment,
   resetRecords,
-  reseedData
+  reseedData,
+  getProducts,
+  createProduct,
+  updateProduct,
+  deleteProduct
 } = require('../controllers/adminController');
 
 router.use(protect, adminOnly);
@@ -46,5 +50,9 @@ router.put('/payments/:id/reject', rejectPayment);
 router.delete('/payments/:id', deletePayment);
 router.post('/reset', resetRecords);
 router.post('/reseed', reseedData);
+router.get('/products', getProducts);
+router.post('/products', createProduct);
+router.put('/products/:id', updateProduct);
+router.delete('/products/:id', deleteProduct);
 
 module.exports = router;

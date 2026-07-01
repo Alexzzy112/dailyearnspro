@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { HiChartBar, HiUsers, HiCurrencyDollar, HiCog, HiLogout, HiMenu, HiX, HiArrowLeft, HiCash, HiClipboardList, HiBell } from 'react-icons/hi';
+import { HiChartBar, HiUsers, HiCurrencyDollar, HiCog, HiLogout, HiMenu, HiX, HiArrowLeft, HiCash, HiClipboardList, HiBell, HiShoppingBag } from 'react-icons/hi';
 import WelcomePopup from '@/components/WelcomePopup';
 import NotificationBell from '@/components/NotificationBell';
 import { useState } from 'react';
@@ -10,6 +10,7 @@ import { useState } from 'react';
 const navItems = [
   { href: '/admin', label: 'Dashboard', icon: HiChartBar },
   { href: '/admin/users', label: 'Users', icon: HiUsers },
+  { href: '/admin/products', label: 'Products', icon: HiShoppingBag },
   { href: '/admin/tasks', label: 'Tasks', icon: HiClipboardList },
   { href: '/admin/payments', label: 'Payments', icon: HiCash },
   { href: '/admin/withdrawals', label: 'Withdrawals', icon: HiCurrencyDollar },

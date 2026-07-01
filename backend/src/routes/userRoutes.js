@@ -14,7 +14,8 @@ const {
   submitPayment,
   submitActivationPayment,
   getPayments,
-  purchaseProduct
+  purchaseProduct,
+  getProducts
 } = require('../controllers/userController');
 
 router.get('/dashboard', protect, getDashboard);
@@ -27,6 +28,7 @@ router.get('/referrals', protect, getReferrals);
 router.get('/bank-info', protect, getBankInfo);
 router.post('/payments', protect, upload.single('screenshot'), submitPayment);
 router.post('/payments/activation', protect, upload.single('screenshot'), submitActivationPayment);
+router.get('/products', protect, getProducts);
 router.post('/purchase', protect, purchaseProduct);
 router.get('/payments', protect, getPayments);
 

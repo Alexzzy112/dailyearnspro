@@ -3,6 +3,7 @@ const Transaction = require('../models/Transaction');
 const Withdrawal = require('../models/Withdrawal');
 const Payment = require('../models/Payment');
 const Setting = require('../models/Setting');
+const Product = require('../models/Product');
 const { createNotification } = require('./notificationController');
 
 const safeEnvNum = (key, fallback) => {
@@ -427,6 +428,15 @@ exports.getPayments = async (req, res) => {
   try {
     const payments = await Payment.find({ userId: req.user._id }).sort({ createdAt: -1 });
     res.json(payments);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.getProducts = async (req, res) => {
+  try {
+    const products = await Product.find({ active: true }).sort({ price: 1 });
+    res.json(products);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
