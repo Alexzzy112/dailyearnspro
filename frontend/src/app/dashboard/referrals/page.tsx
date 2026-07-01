@@ -2,10 +2,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { userAPI } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
-import { HiUserGroup, HiCurrencyDollar, HiLink, HiClipboardCopy, HiMail, HiPhone, HiClock, HiBadgeCheck } from 'react-icons/hi';
+import { HiLink, HiClipboardCopy } from 'react-icons/hi';
 import toast from 'react-hot-toast';
 
-export default function ProfilePage() {
+export default function ReferralsPage() {
   const { user } = useAuth();
 
   const { data, isLoading } = useQuery({
@@ -32,55 +32,12 @@ export default function ProfilePage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-secondary-700 dark:text-white">Profile</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Your account and referrals</p>
+          <h1 className="text-2xl font-bold text-secondary-700 dark:text-white">Referrals</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">Share your link and earn bonuses</p>
         </div>
       </div>
 
-      {/* Profile Card */}
-      <div className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow mb-8">
-        <div className="flex items-center gap-4">
-          <div className="w-16 h-16 gradient-primary rounded-full flex items-center justify-center text-white font-bold text-2xl">
-            {user?.name?.charAt(0)?.toUpperCase()}
-          </div>
-          <div className="flex-1">
-            <div className="flex items-center gap-2">
-              <h2 className="text-xl font-bold text-secondary-700 dark:text-white">{user?.name}</h2>
-              {user?.accountStatus === 'active' && <HiBadgeCheck className="w-5 h-5 text-accent-500" />}
-            </div>
-            <p className="text-sm text-gray-500">@{user?.username} · {user?.email}</p>
-            <p className="text-xs text-gray-400 mt-1">Joined {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : ''}</p>
-          </div>
-          <div className="text-right">
-            <p className="text-2xl font-bold text-accent-500">₦{user?.walletBalance?.toLocaleString() || 0}</p>
-            <p className="text-xs text-gray-500">Wallet Balance</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Referral Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 gradient-primary rounded-xl flex items-center justify-center">
-              <HiUserGroup className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-sm text-gray-500 dark:text-gray-400">Total Referrals</span>
-          </div>
-          <p className="text-3xl font-bold text-secondary-700 dark:text-white">{data?.count || 0}</p>
-        </div>
-        <div className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 gradient-accent rounded-xl flex items-center justify-center">
-              <HiCurrencyDollar className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-sm text-gray-500 dark:text-gray-400">Referral Earnings</span>
-          </div>
-          <p className="text-3xl font-bold text-accent-500">₦{user?.referralEarnings?.toLocaleString() || 0}</p>
-        </div>
-      </div>
-
-      {/* Referral Link - Mobile friendly wrap */}
+      {/* Referral Link */}
       <div className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow mb-8">
         <h2 className="text-lg font-semibold text-secondary-700 dark:text-white mb-4">Your Referral Link</h2>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
@@ -95,7 +52,7 @@ export default function ProfilePage() {
       </div>
 
       {/* Referral List */}
-      <div className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow mb-8">
+      <div className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow">
         <h2 className="text-lg font-semibold text-secondary-700 dark:text-white mb-4">Referral History</h2>
         <div className="overflow-x-auto">
           {data?.referrals?.length > 0 ? (
@@ -120,40 +77,6 @@ export default function ProfilePage() {
           ) : (
             <p className="text-center text-gray-500 py-8">No referrals yet. Share your link to start earning!</p>
           )}
-        </div>
-      </div>
-
-      {/* Contact Section */}
-      <div className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow">
-        <h2 className="text-lg font-semibold text-secondary-700 dark:text-white mb-4">Contact Us</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-secondary-700 rounded-xl">
-            <div className="w-10 h-10 gradient-primary rounded-xl flex items-center justify-center flex-shrink-0">
-              <HiMail className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Email</p>
-              <p className="text-sm font-medium text-secondary-700 dark:text-white">support@taskearnpro.com</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-secondary-700 rounded-xl">
-            <div className="w-10 h-10 gradient-accent rounded-xl flex items-center justify-center flex-shrink-0">
-              <HiPhone className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">WhatsApp</p>
-              <p className="text-sm font-medium text-secondary-700 dark:text-white">+234 800 000 0000</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-secondary-700 rounded-xl">
-            <div className="w-10 h-10 gradient-dark rounded-xl flex items-center justify-center flex-shrink-0">
-              <HiClock className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Hours</p>
-              <p className="text-sm font-medium text-secondary-700 dark:text-white">Mon - Sat: 9AM - 6PM</p>
-            </div>
-          </div>
         </div>
       </div>
     </div>
