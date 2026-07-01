@@ -99,13 +99,10 @@ export default function TasksPage() {
       <div className="flex flex-col items-center justify-center h-96 text-center">
         <HiLockClosed className="w-16 h-16 text-gray-400 mb-4" />
         <h2 className="text-xl font-semibold text-secondary-700 dark:text-white mb-2">Tasks Locked</h2>
-        <p className="text-gray-500 dark:text-gray-400 mb-2">Fund your wallet or purchase a product to unlock daily tasks.</p>
-        <p className="text-sm text-gray-400 dark:text-gray-500 mb-6">Complete a payment or invest in any plan to start earning.</p>
+        <p className="text-gray-500 dark:text-gray-400 mb-2">Purchase an investment plan to unlock daily tasks.</p>
+        <p className="text-sm text-gray-400 dark:text-gray-500 mb-6">Invest in any plan to start earning.</p>
         <div className="flex gap-3">
-          <a href="/dashboard/wallet" className="gradient-primary text-white px-6 py-2 rounded-lg font-medium flex items-center gap-2">
-            <HiCurrencyDollar className="w-4 h-4" /> Fund Wallet
-          </a>
-          <a href="/dashboard/products" className="gradient-accent text-white px-6 py-2 rounded-lg font-medium flex items-center gap-2">
+          <a href="/dashboard/products" className="gradient-primary text-white px-6 py-2 rounded-lg font-medium flex items-center gap-2">
             <HiShoppingBag className="w-4 h-4" /> View Plans
           </a>
         </div>
@@ -124,13 +121,14 @@ export default function TasksPage() {
   const tasks = data?.tasks || [];
   const completedCount = data?.todayCompleted || 0;
   const dailyLimit = data?.dailyLimit || 10;
+  const rewardAmt = tasks.length > 0 ? tasks[0].reward : 10;
 
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-secondary-700 dark:text-white">Daily Tasks</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Complete up to 10 daily tasks and earn ₦5 each</p>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">Complete up to 10 daily tasks and earn ₦{rewardAmt} each</p>
         </div>
         <div className="text-right">
           <p className="text-lg font-bold text-accent-500">{completedCount}/{dailyLimit}</p>
@@ -142,7 +140,7 @@ export default function TasksPage() {
       <div className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow mb-8">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Today&apos;s Progress</span>
-          <span className="text-sm font-bold text-primary-500">₦{completedCount * 5} / ₦{dailyLimit * 5}</span>
+          <span className="text-sm font-bold text-primary-500">₦{completedCount * rewardAmt} / ₦{dailyLimit * rewardAmt}</span>
         </div>
         <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4">
           <div className="gradient-primary h-4 rounded-full transition-all duration-500" style={{ width: `${dailyLimit > 0 ? (completedCount / dailyLimit) * 100 : 0}%` }}></div>
