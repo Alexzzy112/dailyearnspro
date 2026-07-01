@@ -9,7 +9,6 @@ import NotificationBell from '@/components/NotificationBell';
 const navItems = [
   { href: '/dashboard/referrals', label: 'Profile', icon: HiUserGroup },
   { href: '/dashboard/products', label: 'Products', icon: HiShoppingBag },
-  { href: '/dashboard/wallet', label: 'Finance', icon: HiCurrencyDollar },
   { href: '/dashboard/tasks', label: 'Tasks', icon: HiClipboardList },
   { href: '/dashboard', label: 'Dashboard', icon: HiHome },
 ];

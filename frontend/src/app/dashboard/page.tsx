@@ -85,7 +85,7 @@ export default function DashboardPage() {
       {dashboard?.accountStatus === 'active' && (
         <div className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow">
           <h2 className="text-lg font-semibold text-secondary-700 dark:text-white mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <Link href="/dashboard/tasks" className="p-4 gradient-primary rounded-xl text-white text-center hover:opacity-90 transition">
               <p className="font-semibold">Start Tasks</p>
               <p className="text-sm text-blue-100 mt-1">{dashboard?.tasksRemaining || 0} tasks remaining</p>
@@ -97,6 +97,10 @@ export default function DashboardPage() {
             <Link href="/dashboard/referrals" className="p-4 gradient-dark rounded-xl text-white text-center hover:opacity-90 transition">
               <p className="font-semibold">Refer Friends</p>
               <p className="text-sm text-gray-300 mt-1">Earn referral bonus</p>
+            </Link>
+            <Link href="/dashboard/payments" className="p-4 bg-gradient-to-r from-pink-500 to-rose-500 rounded-xl text-white text-center hover:opacity-90 transition">
+              <p className="font-semibold">Fund Wallet</p>
+              <p className="text-sm text-pink-100 mt-1">Deposit & start earning</p>
             </Link>
           </div>
         </div>
