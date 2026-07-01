@@ -58,50 +58,30 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-secondary-900 flex">
+    <div className="min-h-screen bg-gray-50 dark:bg-secondary-900">
       <WelcomePopup />
-      <button onClick={() => setSidebarOpen(!sidebarOpen)} className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-white dark:bg-secondary-800 shadow-lg">
-        {sidebarOpen ? <HiX className="w-6 h-6" /> : <HiMenu className="w-6 h-6" />}
-      </button>
 
-      <aside className={`fixed lg:static inset-y-0 left-0 z-40 w-64 bg-white dark:bg-secondary-800 border-r border-gray-200 dark:border-gray-700 transform transition-transform duration-200 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
-        <div className="p-6">
-          <div className="flex items-center space-x-2 mb-6">
-            <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">A</span>
+      {/* Fixed top bar */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-secondary-800 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between px-4 h-16">
+          <div className="flex items-center gap-3">
+            <button onClick={() => setSidebarOpen(!sidebarOpen)} className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+              {sidebarOpen ? <HiX className="w-5 h-5" /> : <HiMenu className="w-5 h-5" />}
+            </button>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">A</span>
+              </div>
+              <span className="font-bold text-xl text-secondary-700 dark:text-white">Admin</span>
             </div>
-            <span className="font-bold text-xl text-secondary-700 dark:text-white">Admin</span>
           </div>
-        </div>
-        <nav className="px-4 space-y-2">
-          {navItems.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <Link key={item.href} href={item.href}
-                onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition ${
-                  isActive ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/25' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                }`}>
-                <item.icon className="w-5 h-5" />
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
-      </aside>
-
-      {sidebarOpen && <div onClick={() => setSidebarOpen(false)} className="lg:hidden fixed inset-0 bg-black/50 z-30" />}
-
-      <main className="flex-1 p-4 lg:p-8 pt-16 lg:pt-8">
-        <div className="flex items-center justify-between mb-6">
-          <div />
-          <div className="flex items-center gap-4">
-            <Link href="/dashboard" className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-primary-500 transition">
-              <HiArrowLeft className="w-4 h-4" /> User Panel
+          <div className="flex items-center gap-3">
+            <Link href="/dashboard" className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs text-gray-600 dark:text-gray-400 hover:text-purple-600 transition">
+              <HiArrowLeft className="w-3.5 h-3.5" /> User Panel
             </Link>
             <NotificationBell />
             <div ref={profileRef} className="relative">
-              <button onClick={() => setProfileOpen(!profileOpen)} className="flex items-center gap-2 bg-white dark:bg-secondary-800 rounded-xl px-3 py-2 shadow-sm hover:bg-gray-50 dark:hover:bg-secondary-700 transition">
+              <button onClick={() => setProfileOpen(!profileOpen)} className="flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-secondary-700 rounded-xl px-2 sm:px-3 py-2 transition">
                 <div className="w-8 h-8 gradient-primary rounded-full flex items-center justify-center text-white font-bold text-sm">
                   {user?.name?.charAt(0)?.toUpperCase()}
                 </div>
@@ -109,7 +89,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   <p className="text-sm font-semibold text-secondary-700 dark:text-white leading-tight">{user?.name}</p>
                   <p className="text-xs text-purple-500 font-medium">Admin</p>
                 </div>
-                <HiChevronDown className="hidden sm:block w-4 h-4 text-gray-400 transition-transform" />
+                <HiChevronDown className="hidden sm:block w-4 h-4 text-gray-400" />
               </button>
               {profileOpen && (
                 <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-secondary-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 py-2 animate-fade-in z-50">
@@ -127,8 +107,35 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </div>
           </div>
         </div>
-        {children}
-      </main>
+      </div>
+
+      <div className="flex pt-16">
+        <aside className={`fixed lg:static inset-y-0 left-0 z-40 w-64 bg-white dark:bg-secondary-800 border-r border-gray-200 dark:border-gray-700 transform transition-transform duration-200 pt-16 lg:pt-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+          <div className="p-6">
+            <nav className="space-y-2">
+              {navItems.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                  <Link key={item.href} href={item.href}
+                    onClick={() => setSidebarOpen(false)}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition ${
+                      isActive ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/25' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                    }`}>
+                    <item.icon className="w-5 h-5" />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
+        </aside>
+
+        {sidebarOpen && <div onClick={() => setSidebarOpen(false)} className="lg:hidden fixed inset-0 bg-black/50 z-30" />}
+
+        <main className="flex-1 p-4 lg:p-8">
+          {children}
+        </main>
+      </div>
     </div>
   );
 }
