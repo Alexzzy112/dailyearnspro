@@ -2,7 +2,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { userAPI } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
-import { HiUserGroup, HiCurrencyDollar, HiLink, HiClipboardCopy } from 'react-icons/hi';
+import { HiUserGroup, HiCurrencyDollar, HiLink, HiClipboardCopy, HiMail, HiPhone, HiClock } from 'react-icons/hi';
 import toast from 'react-hot-toast';
 
 export default function ReferralsPage() {
@@ -98,6 +98,40 @@ export default function ReferralsPage() {
           ) : (
             <p className="text-center text-gray-500 py-8">No referrals yet. Share your link to start earning!</p>
           )}
+        </div>
+      </div>
+
+      {/* Contact Section */}
+      <div className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow">
+        <h2 className="text-lg font-semibold text-secondary-700 dark:text-white mb-4">Contact Us</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-secondary-700 rounded-xl">
+            <div className="w-10 h-10 gradient-primary rounded-xl flex items-center justify-center flex-shrink-0">
+              <HiMail className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Email</p>
+              <p className="text-sm font-medium text-secondary-700 dark:text-white">support@taskearnpro.com</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-secondary-700 rounded-xl">
+            <div className="w-10 h-10 gradient-accent rounded-xl flex items-center justify-center flex-shrink-0">
+              <HiPhone className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">WhatsApp</p>
+              <p className="text-sm font-medium text-secondary-700 dark:text-white">+234 800 000 0000</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-secondary-700 rounded-xl">
+            <div className="w-10 h-10 gradient-dark rounded-xl flex items-center justify-center flex-shrink-0">
+              <HiClock className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Hours</p>
+              <p className="text-sm font-medium text-secondary-700 dark:text-white">Mon - Sat: 9AM - 6PM</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
