@@ -198,7 +198,7 @@ exports.getSettings = async (req, res) => {
     res.json({
       taskLink: settingsMap.taskLink || process.env.DEFAULT_TASK_LINK,
       rewardPerTask: safeNum('rewardPerTask', parseInt(process.env.REWARD_PER_TASK) || 10),
-      dailyTaskLimit: safeNum('dailyTaskLimit', parseInt(process.env.DAILY_TASK_LIMIT) || 50),
+      dailyTaskLimit: safeNum('dailyTaskLimit', parseInt(process.env.DAILY_TASK_LIMIT) || 10),
       requiredViewingTime: safeNum('requiredViewingTime', parseInt(process.env.REQUIRED_VIEWING_TIME) || 15),
       activationFee: safeNum('activationFee', parseInt(process.env.ACTIVATION_FEE) || 3000),
       minWithdrawal: safeNum('minWithdrawal', parseInt(process.env.MIN_WITHDRAWAL) || 1500),

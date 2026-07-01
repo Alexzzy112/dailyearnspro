@@ -13,7 +13,7 @@ export default function AdminSettingsPage() {
   const [form, setForm] = useState({
     taskLink: '',
     rewardPerTask: 5,
-    dailyTaskLimit: 100,
+    dailyTaskLimit: 10,
     requiredViewingTime: 15,
     activationFee: 2000,
     minWithdrawal: 1500,
@@ -38,7 +38,7 @@ export default function AdminSettingsPage() {
       setForm({
         taskLink: data.taskLink || '',
         rewardPerTask: data.rewardPerTask || 5,
-        dailyTaskLimit: data.dailyTaskLimit || 100,
+        dailyTaskLimit: data.dailyTaskLimit || 10,
         requiredViewingTime: data.requiredViewingTime || 15,
         activationFee: data.activationFee || 2000,
         minWithdrawal: data.minWithdrawal || 1500,

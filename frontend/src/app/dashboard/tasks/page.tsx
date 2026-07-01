@@ -69,7 +69,7 @@ export default function TasksPage() {
 
   const tasks = data?.tasks || [];
   const completedCount = data?.todayCompleted || 0;
-  const dailyLimit = data?.dailyLimit || 100;
+  const dailyLimit = data?.dailyLimit || 10;
 
   if (user?.accountStatus !== 'active') {
     return (

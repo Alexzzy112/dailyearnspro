@@ -6,7 +6,7 @@ import { HiArrowRight, HiCheckCircle, HiShieldCheck, HiCurrencyDollar, HiUserGro
 
 const faqs = [
   { q: 'What is TaskEarn Pro?', a: 'TaskEarn Pro is a platform where you earn real money by completing simple daily tasks like visiting websites.' },
-  { q: 'How much can I earn daily?', a: 'You can earn up to ₦500 per day by completing 100 tasks at ₦5 each.' },
+  { q: 'How much can I earn daily?', a: 'You can earn up to ₦50 per day by completing 10 tasks at ₦5 each.' },
   { q: 'How do I get started?', a: 'Register an account, pay the ₦2,000 activation fee, get approved, and start completing tasks immediately.' },
   { q: 'When can I withdraw?', a: 'Withdrawals are processed on Mondays, Wednesdays, and Fridays. Minimum withdrawal is ₦1,500.' },
   { q: 'Is there a referral program?', a: 'Yes! You earn a bonus for every user you refer who registers and activates their account.' },
@@ -20,7 +20,7 @@ const testimonials = [
 
 export default function Home() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [calcTasks, setCalcTasks] = useState(100);
+  const [calcTasks, setCalcTasks] = useState(10);
 
   return (
     <div className="min-h-screen">
@@ -37,7 +37,7 @@ export default function Home() {
             <div className="animate-fade-in">
               <div className="inline-flex items-center bg-accent-500/10 border border-accent-500/20 rounded-full px-4 py-1.5 mb-6">
                 <span className="w-2 h-2 bg-accent-500 rounded-full animate-pulse mr-2"></span>
-                <span className="text-accent-400 text-sm font-medium">Earn ₦500 Daily</span>
+                <span className="text-accent-400 text-sm font-medium">Earn ₦50 Daily</span>
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
                 Complete Simple Tasks,{' '}
@@ -92,7 +92,7 @@ export default function Home() {
                       ))}
                     </div>
                     <div className="mt-4 p-3 bg-accent-500/10 rounded-xl border border-accent-500/20">
-                      <p className="text-accent-400 text-sm font-medium text-center">Complete all 100 tasks = ₦500 Today!</p>
+                      <p className="text-accent-400 text-sm font-medium text-center">Complete all 10 tasks = ₦50 Today!</p>
                     </div>
                   </div>
                 </div>
@@ -113,7 +113,7 @@ export default function Home() {
             {[
               { icon: HiUserGroup, title: 'Create Account', desc: 'Sign up for free and complete your profile to get started on your earning journey.' },
               { icon: HiShieldCheck, title: 'Activate Account', desc: 'Pay the one-time ₦2,000 activation fee to unlock daily tasks and earning potential.' },
-              { icon: HiCurrencyDollar, title: 'Start Earning', desc: 'Complete 100 daily tasks at ₦5 each and earn up to ₦500 every single day!' },
+              { icon: HiCurrencyDollar, title: 'Start Earning', desc: 'Complete 10 daily tasks at ₦5 each and earn up to ₦50 every single day!' },
             ].map((item, i) => (
               <div key={i} className="text-center p-8 rounded-2xl card-shadow hover:shadow-lg transition group bg-white dark:bg-secondary-800">
                 <div className="w-16 h-16 gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition">
@@ -140,17 +140,17 @@ export default function Home() {
           <div className="bg-white dark:bg-secondary-800 rounded-2xl p-8 card-shadow">
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Tasks Per Day</label>
-              <input type="range" min="0" max="100" value={calcTasks} onChange={(e) => setCalcTasks(Number(e.target.value))}
+              <input type="range" min="0" max="10" value={calcTasks} onChange={(e) => setCalcTasks(Number(e.target.value))}
                 className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary-500" />
               <div className="flex justify-between text-sm text-gray-500 mt-1">
                 <span>0</span>
                 <span className="font-bold text-primary-500">{calcTasks}</span>
-                <span>100</span>
+                <span>10</span>
               </div>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
-                { label: 'Per Task', value: `₦${calcTasks > 0 ? '5' : '0'}` },
+                  { label: 'Per Task', value: `₦5` },
                 { label: 'Daily Earnings', value: `₦${(calcTasks * 5).toLocaleString()}`, accent: true },
                 { label: 'Weekly Earnings', value: `₦${(calcTasks * 5 * 7).toLocaleString()}` },
                 { label: 'Monthly Earnings', value: `₦${(calcTasks * 5 * 30).toLocaleString()}`, accent: true },
@@ -174,7 +174,7 @@ export default function Home() {
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { icon: HiCurrencyDollar, title: 'High Earnings', desc: 'Earn up to ₦500 daily with simple tasks.' },
+              { icon: HiCurrencyDollar, title: 'High Earnings', desc: 'Earn up to ₦50 daily with simple tasks.' },
               { icon: HiClock, title: 'Quick Tasks', desc: 'Each task takes only 15-30 seconds.' },
               { icon: HiShieldCheck, title: 'Secure & Safe', desc: 'Your data and earnings are fully protected.' },
               { icon: HiUserGroup, title: 'Referral Bonus', desc: 'Earn extra by referring friends.' },
