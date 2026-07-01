@@ -83,15 +83,6 @@ export default function PaymentsPage() {
         <p className="text-gray-500 dark:text-gray-400 mt-1">Select a plan amount to fund your wallet via bank transfer</p>
       </div>
 
-      {data?.bankInfo?.bankName && (
-        <div className="bg-accent-500/10 border border-accent-500/20 rounded-xl p-4 mb-6 text-center">
-          <p className="text-sm text-accent-500 font-medium">Send to: <strong>{data.bankInfo.bankName}</strong> — <strong>{data.bankInfo.accountNumber}</strong> — <strong>{data.bankInfo.accountName}</strong></p>
-          <button onClick={() => copy(data.bankInfo.accountNumber, 'Account number')} className="mt-2 text-xs text-primary-500 hover:text-primary-600 font-medium inline-flex items-center gap-1">
-            <HiClipboardCopy className="w-3.5 h-3.5" /> Copy account number
-          </button>
-        </div>
-      )}
-
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         {products.map((product, i) => (
           <div key={i} className="bg-white dark:bg-secondary-800 rounded-xl p-4 card-shadow hover:shadow-md transition group">

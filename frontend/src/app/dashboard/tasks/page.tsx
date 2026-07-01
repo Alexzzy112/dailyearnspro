@@ -8,7 +8,7 @@ import { HiExternalLink, HiCheckCircle, HiClock, HiCurrencyDollar, HiLockClosed,
 
 export default function TasksPage() {
   const queryClient = useQueryClient();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [activeTimers, setActiveTimers] = useState<Record<number, number>>({});
   const timersRef = useRef<Record<number, ReturnType<typeof setInterval>>>({});
 
@@ -66,6 +66,14 @@ export default function TasksPage() {
       }
     });
   };
+
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-500 border-t-transparent"></div>
+      </div>
+    );
+  }
 
   if (user?.accountStatus !== 'active') {
     return (
