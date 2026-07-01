@@ -68,7 +68,7 @@ exports.getDashboard = async (req, res) => {
       settings: {
         taskLink: settingsMap.taskLink || process.env.DEFAULT_TASK_LINK,
         rewardPerTask: safeNum('rewardPerTask', rewardPerTask),
-        dailyTaskLimit: safeNum('dailyTaskLimit', dailyLimit),
+        dailyTaskLimit: dailyLimit,
         requiredViewingTime: safeNum('requiredViewingTime', safeEnvNum('REQUIRED_VIEWING_TIME', 15)),
         minWithdrawal: safeNum('minWithdrawal', safeEnvNum('MIN_WITHDRAWAL', 1500)),
         activationFee: safeNum('activationFee', safeEnvNum('ACTIVATION_FEE', 2000))

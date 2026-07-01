@@ -34,19 +34,19 @@ export default function DashboardPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-4">
         <div>
-          <h1 className="text-2xl font-bold text-secondary-700 dark:text-white">Dashboard</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Welcome back, {dashboard?.name}!</p>
+          <h1 className="text-xl font-bold text-secondary-700 dark:text-white">Dashboard</h1>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Welcome back, {dashboard?.name}!</p>
         </div>
-        <button onClick={async () => { await refetch(); await refreshUser(); }} className="flex items-center gap-2 text-gray-500 hover:text-primary-500 transition">
-          <HiRefresh className="w-5 h-5" /> Refresh
+        <button onClick={async () => { await refetch(); await refreshUser(); }} className="flex items-center gap-1 text-gray-500 hover:text-primary-500 transition text-sm">
+          <HiRefresh className="w-4 h-4" /> Refresh
         </button>
       </div>
 
       {/* Account Status Banner */}
       {dashboard?.accountStatus === 'inactive' && (
-        <div className="mb-8 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl flex items-center gap-3">
+        <div className="mb-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl flex items-center gap-3">
           <HiExclamationCircle className="w-6 h-6 text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
           <div className="flex-1">
             <p className="text-yellow-700 dark:text-yellow-300 font-medium">Account Not Activated</p>
@@ -59,48 +59,48 @@ export default function DashboardPage() {
       )}
 
       {dashboard?.accountStatus === 'suspended' && (
-        <div className="mb-8 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3">
+        <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3">
           <HiExclamationCircle className="w-6 h-6 text-red-600 dark:text-red-400 flex-shrink-0" />
           <p className="text-red-700 dark:text-red-300 font-medium">Account Suspended. Please contact support.</p>
         </div>
       )}
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-3 mb-6">
         {stats.map((stat, i) => (
-          <Link key={i} href={stat.href} className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow hover:shadow-lg transition group">
-            <div className="flex items-center justify-between mb-4">
-              <div className={`w-12 h-12 ${stat.color} rounded-xl flex items-center justify-center group-hover:scale-110 transition`}>
-                <stat.icon className="w-6 h-6 text-white" />
+          <Link key={i} href={stat.href} className="bg-white dark:bg-secondary-800 rounded-xl p-3 card-shadow hover:shadow-md transition group">
+            <div className="flex items-center gap-2 mb-1">
+              <div className={`w-8 h-8 ${stat.color} rounded-lg flex items-center justify-center group-hover:scale-110 transition`}>
+                <stat.icon className="w-4 h-4 text-white" />
               </div>
-              <span className="text-sm font-medium text-accent-500">{stat.change}</span>
+              <span className="text-[10px] font-medium text-accent-500">{stat.change}</span>
             </div>
-            <p className="text-2xl font-bold text-secondary-700 dark:text-white">{stat.value}</p>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{stat.label}</p>
+            <p className="text-base font-bold text-secondary-700 dark:text-white">{stat.value}</p>
+            <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">{stat.label}</p>
           </Link>
         ))}
       </div>
 
       {/* Quick Actions */}
       {dashboard?.accountStatus === 'active' && (
-        <div className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow">
-          <h2 className="text-lg font-semibold text-secondary-700 dark:text-white mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-            <Link href="/dashboard/tasks" className="p-4 gradient-primary rounded-xl text-white text-center hover:opacity-90 transition">
-              <p className="font-semibold">Start Tasks</p>
-              <p className="text-sm text-blue-100 mt-1">{dashboard?.tasksRemaining || 0} tasks remaining</p>
+        <div className="bg-white dark:bg-secondary-800 rounded-xl p-4 card-shadow">
+          <h2 className="text-sm font-semibold text-secondary-700 dark:text-white mb-3">Quick Actions</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <Link href="/dashboard/tasks" className="p-3 gradient-primary rounded-xl text-white text-center hover:opacity-90 transition">
+              <p className="font-semibold text-sm">Start Tasks</p>
+              <p className="text-[11px] text-blue-100 mt-0.5">{dashboard?.tasksRemaining || 0} tasks left</p>
             </Link>
-            <Link href="/dashboard/wallet" className="p-4 gradient-accent rounded-xl text-white text-center hover:opacity-90 transition">
-              <p className="font-semibold">Withdraw</p>
-              <p className="text-sm text-green-100 mt-1">Min ₦1,500</p>
+            <Link href="/dashboard/wallet" className="p-3 gradient-accent rounded-xl text-white text-center hover:opacity-90 transition">
+              <p className="font-semibold text-sm">Withdraw</p>
+              <p className="text-[11px] text-green-100 mt-0.5">Min ₦1,500</p>
             </Link>
-            <Link href="/dashboard/referrals" className="p-4 gradient-dark rounded-xl text-white text-center hover:opacity-90 transition">
-              <p className="font-semibold">Refer Friends</p>
-              <p className="text-sm text-gray-300 mt-1">Earn referral bonus</p>
+            <Link href="/dashboard/referrals" className="p-3 gradient-dark rounded-xl text-white text-center hover:opacity-90 transition">
+              <p className="font-semibold text-sm">Refer Friends</p>
+              <p className="text-[11px] text-gray-300 mt-0.5">Earn bonus</p>
             </Link>
-            <Link href="/dashboard/payments" className="p-4 bg-gradient-to-r from-pink-500 to-rose-500 rounded-xl text-white text-center hover:opacity-90 transition">
-              <p className="font-semibold">Fund Wallet</p>
-              <p className="text-sm text-pink-100 mt-1">Deposit & start earning</p>
+            <Link href="/dashboard/payments" className="p-3 bg-gradient-to-r from-pink-500 to-rose-500 rounded-xl text-white text-center hover:opacity-90 transition">
+              <p className="font-semibold text-sm">Fund Wallet</p>
+              <p className="text-[11px] text-pink-100 mt-0.5">Deposit & earn</p>
             </Link>
           </div>
         </div>
