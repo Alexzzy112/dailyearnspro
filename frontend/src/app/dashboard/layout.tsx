@@ -35,7 +35,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Top bar with profile + logout */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-secondary-800 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between px-4 h-16">
-          <Link href="/" className="flex items-center space-x-2">
+          <Link href="/dashboard" className="flex items-center space-x-2">
             <div className="w-8 h-8 gradient-primary rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">T</span>
             </div>
@@ -71,6 +71,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </div>
             </div>
             <NotificationBell />
+            <button onClick={logout} className="sm:hidden p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition" title="Logout">
+              <HiLogout className="w-5 h-5" />
+            </button>
           </div>
         </div>
       </div>
