@@ -107,6 +107,18 @@ export default function TasksPage() {
     );
   }
 
+  if (data?.tasksAvailable === false) {
+    const dayName = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+    return (
+      <div className="flex flex-col items-center justify-center h-96 text-center">
+        <HiClock className="w-16 h-16 text-gray-400 mb-4" />
+        <h2 className="text-xl font-semibold text-secondary-700 dark:text-white mb-2">Tasks Unavailable Today</h2>
+        <p className="text-gray-500 dark:text-gray-400">Tasks are only available Monday to Friday.</p>
+        <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">Come back on a weekday!</p>
+      </div>
+    );
+  }
+
   const tasks = data?.tasks || [];
   const completedCount = data?.todayCompleted || 0;
   const dailyLimit = data?.dailyLimit || 10;

@@ -78,6 +78,11 @@ exports.getDashboard = async (req, res) => {
 
 exports.getTasks = async (req, res) => {
   try {
+    const day = new Date().getDay();
+    if (day === 0 || day === 6) {
+      return res.json({ tasks: [], todayCompleted: 0, dailyLimit: 0, tasksAvailable: false, message: 'Tasks are only available Monday to Friday. Come back on a weekday!' });
+    }
+
     const user = await User.findById(req.user._id);
     if (user.accountStatus !== 'active') {
       return res.status(403).json({ message: 'Account is suspended or inactive' });
@@ -126,7 +131,7 @@ exports.getTasks = async (req, res) => {
       });
     }
 
-    res.json({ tasks, todayCompleted: user.todayTasksCompleted, dailyLimit, taskTitle, taskDescription });
+    res.json({ tasks, todayCompleted: user.todayTasksCompleted, dailyLimit, taskTitle, taskDescription, tasksAvailable: true });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -134,6 +139,11 @@ exports.getTasks = async (req, res) => {
 
 exports.claimTask = async (req, res) => {
   try {
+    const day = new Date().getDay();
+    if (day === 0 || day === 6) {
+      return res.status(400).json({ message: 'Tasks can only be completed Monday to Friday' });
+    }
+
     const { taskNumber } = req.body;
     if (!taskNumber || taskNumber < 1 || typeof taskNumber !== 'number') {
       return res.status(400).json({ message: 'Invalid task number' });
@@ -272,8 +282,8 @@ exports.requestWithdrawal = async (req, res) => {
     }
 
     const day = new Date().getDay();
-    if (![1, 3, 5].includes(day)) {
-      return res.status(400).json({ message: 'Withdrawals only on Monday, Wednesday, and Friday' });
+    if (day !== 5) {
+      return res.status(400).json({ message: 'Withdrawals are only available on Friday' });
     }
 
     const withdrawal = await Withdrawal.create({

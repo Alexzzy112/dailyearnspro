@@ -3,11 +3,13 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { userAPI } from '@/lib/api';
 import toast from 'react-hot-toast';
-import { HiCurrencyDollar, HiClock, HiCheckCircle, HiXCircle, HiInformationCircle } from 'react-icons/hi';
+import { HiCurrencyDollar, HiClock, HiCheckCircle, HiXCircle, HiInformationCircle, HiExclamationCircle } from 'react-icons/hi';
 
 export default function WithdrawPage() {
   const queryClient = useQueryClient();
   const [form, setForm] = useState({ amount: '', bankName: '', accountNumber: '', accountName: '' });
+  const today = new Date().getDay();
+  const isFriday = today === 5;
 
   const { data, isLoading } = useQuery({
     queryKey: ['wallet'],
@@ -100,9 +102,15 @@ export default function WithdrawPage() {
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-semibold text-secondary-700 dark:text-white">Request Withdrawal</h2>
               <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-secondary-700 px-3 py-1.5 rounded-full">
-                <HiClock className="w-3.5 h-3.5" /> Mon · Wed · Fri
+                <HiClock className="w-3.5 h-3.5" /> Friday only
               </div>
             </div>
+            {!isFriday && (
+              <div className="mb-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl flex items-center gap-3">
+                <HiExclamationCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
+                <p className="text-sm text-yellow-700 dark:text-yellow-300">Withdrawals are only available on Friday.</p>
+              </div>
+            )}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Amount (₦)</label>
@@ -130,7 +138,7 @@ export default function WithdrawPage() {
                     placeholder="John Doe" />
                 </div>
               </div>
-              <button type="submit" disabled={withdrawMutation.isPending || (data?.walletBalance || 0) < (data?.minWithdrawal || 1500)}
+              <button type="submit" disabled={!isFriday || withdrawMutation.isPending || (data?.walletBalance || 0) < (data?.minWithdrawal || 1500)}
                 className="w-full gradient-accent text-white py-3.5 rounded-xl font-semibold hover:opacity-90 transition disabled:opacity-50 text-lg">
                 {withdrawMutation.isPending ? 'Submitting...' : 'Submit Withdrawal Request'}
               </button>
@@ -175,7 +183,7 @@ export default function WithdrawPage() {
             <ul className="space-y-3 text-sm">
               {[
                 { label: 'Minimum amount', value: `₦${(data?.minWithdrawal || 1500).toLocaleString()}` },
-                { label: 'Processing days', value: 'Mon, Wed, Fri' },
+                { label: 'Withdrawal day', value: 'Friday' },
                 { label: 'Processing time', value: '1-3 business days' },
                 { label: 'Account status', value: 'Must be active' },
               ].map((item) => (
