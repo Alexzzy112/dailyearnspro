@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { HiChartBar, HiUsers, HiCurrencyDollar, HiCog, HiLogout, HiMenu, HiX, HiCash, HiClipboardList, HiBell, HiShoppingBag, HiChevronDown } from 'react-icons/hi';
+import { HiChartBar, HiUsers, HiCurrencyDollar, HiCog, HiLogout, HiMenu, HiX, HiCash, HiClipboardList, HiBell, HiShoppingBag, HiChevronDown, HiArrowLeft } from 'react-icons/hi';
 import WelcomePopup from '@/components/WelcomePopup';
 import NotificationBell from '@/components/NotificationBell';
 import { useState, useRef, useEffect } from 'react';
