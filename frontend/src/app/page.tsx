@@ -8,7 +8,7 @@ const faqs = [
   { q: 'What is TaskEarn Pro?', a: 'TaskEarn Pro is a platform where you earn real money by completing simple daily tasks like visiting websites.' },
   { q: 'How much can I earn daily?', a: 'You can earn up to ₦50 per day by completing 10 tasks at ₦5 each.' },
   { q: 'How do I get started?', a: 'Register an account, fund your wallet, purchase an investment plan, and start completing tasks immediately.' },
-  { q: 'When can I withdraw?', a: 'Withdrawals are processed on Mondays, Wednesdays, and Fridays. Minimum withdrawal is ₦1,500.' },
+  { q: 'When can I withdraw?', a: 'Withdrawals are processed on Fridays only. Minimum withdrawal is ₦1,500.' },
   { q: 'Is there a referral program?', a: 'Yes! You earn a bonus for every user you refer who registers and purchases an investment plan.' },
 ];
 

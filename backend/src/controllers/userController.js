@@ -12,6 +12,12 @@ const safeEnvNum = (key, fallback) => {
   return isNaN(n) ? fallback : n;
 };
 
+const getNigeriaDay = () => {
+  const now = new Date();
+  const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
+  return new Date(utcMs + 60 * 60000).getUTCDay();
+};
+
 const hasTaskAccess = async (userId) => {
   const user = await User.findById(userId).select('purchasedProduct');
   return user?.purchasedProduct === true;
@@ -78,7 +84,7 @@ exports.getDashboard = async (req, res) => {
 
 exports.getTasks = async (req, res) => {
   try {
-    const day = new Date().getDay();
+    const day = getNigeriaDay();
     if (day === 0 || day === 6) {
       return res.json({ tasks: [], todayCompleted: 0, dailyLimit: 0, tasksAvailable: false, message: 'Tasks are only available Monday to Friday. Come back on a weekday!' });
     }
@@ -139,7 +145,7 @@ exports.getTasks = async (req, res) => {
 
 exports.claimTask = async (req, res) => {
   try {
-    const day = new Date().getDay();
+    const day = getNigeriaDay();
     if (day === 0 || day === 6) {
       return res.status(400).json({ message: 'Tasks can only be completed Monday to Friday' });
     }
@@ -281,7 +287,7 @@ exports.requestWithdrawal = async (req, res) => {
       return res.status(400).json({ message: `Insufficient balance including ₦${charge} withdrawal fee (${wdChargePercent}%)` });
     }
 
-    const day = new Date().getDay();
+    const day = getNigeriaDay();
     if (day !== 5) {
       return res.status(400).json({ message: 'Withdrawals are only available on Friday' });
     }
