@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import toast from 'react-hot-toast';
 import Navbar from '@/components/Navbar';
+import { MotionDiv, scaleIn } from '@/components/MotionComponents';
 import { HiEye, HiEyeOff } from 'react-icons/hi';
 
 export default function LoginPage() {
@@ -37,7 +38,7 @@ export default function LoginPage() {
       <Navbar />
       <div className="flex items-center justify-center min-h-screen px-4 pt-16">
         <div className="w-full max-w-md">
-          <div className="bg-white dark:bg-secondary-800 rounded-2xl shadow-xl p-8">
+          <MotionDiv variants={scaleIn} initial="initial" animate="animate" className="bg-white dark:bg-secondary-800 rounded-2xl shadow-xl p-8">
             <div className="text-center mb-8">
               <h1 className="text-2xl font-bold text-secondary-700 dark:text-white">Welcome Back</h1>
               <p className="text-gray-500 dark:text-gray-400 mt-2">Sign in to continue earning</p>
@@ -73,7 +74,7 @@ export default function LoginPage() {
               Don&apos;t have an account?{' '}
               <Link href="/register" className="text-primary-500 font-medium hover:text-primary-600">Create one</Link>
             </p>
-          </div>
+          </MotionDiv>
         </div>
       </div>
     </div>

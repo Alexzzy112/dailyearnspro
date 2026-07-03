@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { adminAPI } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
+import { MotionDiv, fadeInUp } from '@/components/MotionComponents';
 import toast from 'react-hot-toast';
 import { HiSave, HiUser, HiRefresh, HiExclamationCircle } from 'react-icons/hi';
 
@@ -120,7 +121,7 @@ export default function AdminSettingsPage() {
 
       <form onSubmit={handleSubmit} className="max-w-3xl space-y-8">
         {/* Profile */}
-        <div className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow">
+        <MotionDiv variants={fadeInUp(0)} initial="initial" animate="animate" className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow">
           <h2 className="text-lg font-semibold text-secondary-700 dark:text-white mb-4 flex items-center gap-2">
             <HiUser className="w-5 h-5 text-purple-500" /> Admin Profile
           </h2>
@@ -140,10 +141,10 @@ export default function AdminSettingsPage() {
               </div>
             </div>
           </div>
-        </div>
+        </MotionDiv>
 
         {/* Task Settings */}
-        <div className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow">
+        <MotionDiv variants={fadeInUp(0.1)} initial="initial" animate="animate" className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow">
           <h2 className="text-lg font-semibold text-secondary-700 dark:text-white mb-4">Task Settings</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -168,10 +169,10 @@ export default function AdminSettingsPage() {
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-secondary-700 text-secondary-700 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none" />
             </div>
           </div>
-        </div>
+        </MotionDiv>
 
         {/* Financial Settings */}
-        <div className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow">
+        <MotionDiv variants={fadeInUp(0.2)} initial="initial" animate="animate" className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow">
           <h2 className="text-lg font-semibold text-secondary-700 dark:text-white mb-4">Financial Settings</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -197,10 +198,10 @@ export default function AdminSettingsPage() {
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-secondary-700 text-secondary-700 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none" />
             </div>
           </div>
-        </div>
+        </MotionDiv>
 
         {/* Bank Information */}
-        <div className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow">
+        <MotionDiv variants={fadeInUp(0.3)} initial="initial" animate="animate" className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow">
           <h2 className="text-lg font-semibold text-secondary-700 dark:text-white mb-4">Bank Information (for wallet funding)</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -219,7 +220,7 @@ export default function AdminSettingsPage() {
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-secondary-700 text-secondary-700 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none" />
             </div>
           </div>
-        </div>
+        </MotionDiv>
 
         <button type="submit" disabled={updateMutation.isPending}
           className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-8 py-3.5 rounded-xl font-semibold transition disabled:opacity-50">
@@ -227,9 +228,9 @@ export default function AdminSettingsPage() {
         </button>
       </form>
 
-      {/* Danger Zone */}
+        {/* Danger Zone */}
       <div className="max-w-3xl mt-8 space-y-6">
-        <div className="bg-red-50 dark:bg-red-900/10 rounded-2xl p-6 card-shadow border border-red-200 dark:border-red-800">
+        <MotionDiv variants={fadeInUp(0.4)} initial="initial" animate="animate" className="bg-red-50 dark:bg-red-900/10 rounded-2xl p-6 card-shadow border border-red-200 dark:border-red-800">
           <h2 className="text-lg font-semibold text-red-600 dark:text-red-400 mb-1 flex items-center gap-2">
             <HiExclamationCircle className="w-5 h-5" /> Danger Zone
           </h2>
@@ -246,7 +247,7 @@ export default function AdminSettingsPage() {
               <HiExclamationCircle className="w-5 h-5" /> {reseedMutation.isPending ? 'Wiping...' : 'Reseed (Wipe All Users)'}
             </button>
           </div>
-        </div>
+        </MotionDiv>
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { userAPI } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
+import { MotionDiv, staggerContainer, staggerItem, fadeInUp } from '@/components/MotionComponents';
 import { HiClipboardList, HiCurrencyDollar, HiUserGroup, HiCheckCircle, HiExclamationCircle, HiRefresh, HiTrendingUp } from 'react-icons/hi';
 
 export default function DashboardPage() {
@@ -52,9 +53,9 @@ export default function DashboardPage() {
       )}
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-3 mb-6">
+      <MotionDiv variants={staggerContainer} initial="initial" animate="animate" className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-3 mb-6">
         {stats.map((stat, i) => (
-          <Link key={i} href={stat.href} className="bg-white dark:bg-secondary-800 rounded-xl p-3 card-shadow hover:shadow-md transition group">
+          <MotionDiv key={i} variants={staggerItem}>
             <div className="flex items-center gap-2 mb-1">
               <div className={`w-8 h-8 ${stat.color} rounded-lg flex items-center justify-center group-hover:scale-110 transition`}>
                 <stat.icon className="w-4 h-4 text-white" />
@@ -63,13 +64,13 @@ export default function DashboardPage() {
             </div>
             <p className="text-base font-bold text-secondary-700 dark:text-white">{stat.value}</p>
             <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">{stat.label}</p>
-          </Link>
+          </MotionDiv>
         ))}
-      </div>
+      </MotionDiv>
 
       {/* Quick Actions */}
       {dashboard?.accountStatus === 'active' && (
-        <div className="bg-white dark:bg-secondary-800 rounded-xl p-4 card-shadow">
+        <MotionDiv variants={fadeInUp(0.3)} initial="initial" whileInView="animate" viewport={{ once: true }} className="bg-white dark:bg-secondary-800 rounded-xl p-4 card-shadow">
           <h2 className="text-sm font-semibold text-secondary-700 dark:text-white mb-3">Quick Actions</h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             <Link href="/dashboard/tasks" className="p-3 gradient-primary rounded-xl text-white text-center hover:opacity-90 transition">
@@ -89,7 +90,7 @@ export default function DashboardPage() {
               <p className="text-[11px] text-pink-100 mt-0.5">Deposit & earn</p>
             </Link>
           </div>
-        </div>
+        </MotionDiv>
       )}
     </div>
   );

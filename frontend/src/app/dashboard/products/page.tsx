@@ -2,6 +2,7 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { userAPI } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
+import { MotionDiv, staggerContainer, staggerItem, fadeInUp } from '@/components/MotionComponents';
 import toast from 'react-hot-toast';
 
 export default function ProductsPage() {
@@ -45,9 +46,9 @@ export default function ProductsPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+      <MotionDiv variants={staggerContainer} initial="initial" animate="animate" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
         {products?.map((product: any) => (
-          <div key={product._id} className="bg-white dark:bg-secondary-800 rounded-xl p-4 card-shadow hover:shadow-md transition">
+          <MotionDiv key={product._id} variants={staggerItem} className="bg-white dark:bg-secondary-800 rounded-xl p-4 card-shadow hover:shadow-md transition">
             <h3 className="text-sm font-bold text-secondary-700 dark:text-white mb-1">{product.name}</h3>
             <p className="text-xl font-bold text-primary-500 mb-2">₦{product.price?.toLocaleString()}</p>
             <div className="bg-accent-500/10 rounded-lg p-2 mb-3">
@@ -60,12 +61,12 @@ export default function ProductsPage() {
               className="w-full gradient-primary text-white py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition disabled:opacity-50">
               {purchaseMutation.isPending ? 'Processing...' : 'Invest'}
             </button>
-          </div>
+          </MotionDiv>
         ))}
         {(!products || products.length === 0) && (
-          <p className="col-span-full text-center text-gray-500 py-12">No investment plans available</p>
+          <MotionDiv variants={staggerItem} className="col-span-full text-center text-gray-500 py-12">No investment plans available</MotionDiv>
         )}
-      </div>
+      </MotionDiv>
     </div>
   );
 }

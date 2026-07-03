@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { userAPI } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
+import { MotionDiv, staggerContainer, staggerItem, fadeInUp } from '@/components/MotionComponents';
 import toast from 'react-hot-toast';
 import { HiExternalLink, HiCheckCircle, HiClock, HiCurrencyDollar, HiLockClosed, HiShoppingBag } from 'react-icons/hi';
 
@@ -138,7 +139,7 @@ export default function TasksPage() {
       </div>
 
       {/* Progress Bar */}
-      <div className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow mb-8">
+      <MotionDiv variants={fadeInUp(0.1)} initial="initial" animate="animate" className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow mb-8">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Today&apos;s Progress</span>
           <span className="text-sm font-bold text-primary-500">₦{completedCount * rewardAmt} / ₦{dailyLimit * rewardAmt}</span>
@@ -146,17 +147,17 @@ export default function TasksPage() {
         <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4">
           <div className="gradient-primary h-4 rounded-full transition-all duration-500" style={{ width: `${dailyLimit > 0 ? (completedCount / dailyLimit) * 100 : 0}%` }}></div>
         </div>
-      </div>
+      </MotionDiv>
 
       {/* Tasks Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <MotionDiv variants={staggerContainer} initial="initial" animate="animate" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {tasks.filter((t: any) => !t.completed).map((task: any) => {
           const taskTime = activeTimers[task.taskNumber] ?? -1;
           const isActive = taskTime >= 0;
           const canClaim = isActive && taskTime >= (task.requiredViewingTime || 15);
 
           return (
-            <div key={task.taskNumber} className="bg-white dark:bg-secondary-800 rounded-xl p-5 card-shadow transition hover:shadow-lg">
+            <MotionDiv key={task.taskNumber} variants={staggerItem} className="bg-white dark:bg-secondary-800 rounded-xl p-5 card-shadow transition hover:shadow-lg">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Task #{task.taskNumber}</span>
                 <span className="flex items-center gap-1 text-accent-500 font-semibold text-sm">
@@ -183,10 +184,10 @@ export default function TasksPage() {
                   <HiCheckCircle className="w-4 h-4" /> Claim ₦{task.reward}
                 </button>
               </div>
-            </div>
+            </MotionDiv>
           );
         })}
-      </div>
+      </MotionDiv>
     </div>
   );
 }

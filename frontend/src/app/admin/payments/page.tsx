@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { adminAPI } from '@/lib/api';
 import toast from 'react-hot-toast';
+import { MotionDiv, MotionTbody, MotionTr, staggerContainer, staggerItem, fadeInUp } from '@/components/MotionComponents';
 import { HiCheckCircle, HiXCircle, HiPhotograph, HiExternalLink, HiTrash } from 'react-icons/hi';
 
 export default function AdminPaymentsPage() {
@@ -89,9 +90,9 @@ export default function AdminPaymentsPage() {
                 <th className="text-left py-4 px-4 text-gray-500 dark:text-gray-400 font-medium">Actions</th>
               </tr>
             </thead>
-            <tbody>
-              {payments?.map((p: any) => (
-                <tr key={p._id} className="border-b border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-secondary-700/50">
+              <MotionTbody variants={staggerContainer} initial="initial" animate="animate">
+                {payments?.map((p: any) => (
+                  <MotionTr key={p._id} variants={staggerItem} className="border-b border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-secondary-700/50">
                   <td className="py-4 px-4">
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 gradient-primary rounded-full flex items-center justify-center text-white font-bold text-sm">
@@ -137,12 +138,12 @@ export default function AdminPaymentsPage() {
                       </button>
                     </div>
                   </td>
-                </tr>
-              ))}
-              {(!payments || payments.length === 0) && (
-                <tr><td colSpan={8} className="text-center py-12 text-gray-500">No payment requests</td></tr>
-              )}
-            </tbody>
+                  </MotionTr>
+                ))}
+                {(!payments || payments.length === 0) && (
+                  <MotionTr><td colSpan={8} className="text-center py-12 text-gray-500">No payment requests</td></MotionTr>
+                )}
+              </MotionTbody>
           </table>
         </div>
       </div>

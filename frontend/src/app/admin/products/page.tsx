@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { adminAPI } from '@/lib/api';
 import toast from 'react-hot-toast';
+import { MotionDiv, MotionTbody, MotionTr, staggerContainer, staggerItem, fadeInUp, scaleIn, AnimatePresence } from '@/components/MotionComponents';
 import { HiPlus, HiPencil, HiTrash, HiShoppingBag } from 'react-icons/hi';
 
 export default function AdminProductsPage() {
@@ -73,9 +74,9 @@ export default function AdminProductsPage() {
                 <th className="text-left py-4 px-4 text-gray-500 dark:text-gray-400 font-medium">Actions</th>
               </tr>
             </thead>
-            <tbody>
-              {products?.map((p: any) => (
-                <tr key={p._id} className="border-b border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-secondary-700/50">
+              <MotionTbody variants={staggerContainer} initial="initial" animate="animate">
+                {products?.map((p: any) => (
+                  <MotionTr key={p._id} variants={staggerItem} className="border-b border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-secondary-700/50">
                   <td className="py-4 px-4">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 gradient-primary rounded-lg flex items-center justify-center">
@@ -101,19 +102,20 @@ export default function AdminProductsPage() {
                       </button>
                     </div>
                   </td>
-                </tr>
-              ))}
-              {(!products || products.length === 0) && (
-                <tr><td colSpan={5} className="text-center py-12 text-gray-500">No products yet</td></tr>
-              )}
-            </tbody>
+                  </MotionTr>
+                ))}
+                {(!products || products.length === 0) && (
+                  <MotionTr><td colSpan={5} className="text-center py-12 text-gray-500">No products yet</td></MotionTr>
+                )}
+              </MotionTbody>
           </table>
         </div>
       </div>
 
+      <AnimatePresence>
       {showForm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-secondary-800 rounded-2xl p-6 max-w-md w-full">
+        <MotionDiv initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <MotionDiv variants={scaleIn} initial="initial" animate="animate" className="bg-white dark:bg-secondary-800 rounded-2xl p-6 max-w-md w-full">
             <h2 className="text-lg font-semibold text-secondary-700 dark:text-white mb-4">{editing ? 'Edit Product' : 'Add Product'}</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
@@ -141,9 +143,10 @@ export default function AdminProductsPage() {
                 </button>
               </div>
             </form>
-          </div>
-        </div>
+          </MotionDiv>
+        </MotionDiv>
       )}
+      </AnimatePresence>
     </div>
   );
 }

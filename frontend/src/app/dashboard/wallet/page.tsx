@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { userAPI } from '@/lib/api';
 import toast from 'react-hot-toast';
+import { MotionDiv, staggerContainer, staggerItem, fadeInUp, scaleIn } from '@/components/MotionComponents';
 import { HiCurrencyDollar, HiClock, HiCheckCircle, HiXCircle, HiInformationCircle, HiExclamationCircle } from 'react-icons/hi';
 
 export default function WithdrawPage() {
@@ -82,7 +83,7 @@ export default function WithdrawPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          <div className="gradient-primary rounded-2xl p-6 text-white">
+          <MotionDiv variants={scaleIn} initial="initial" animate="animate" className="gradient-primary rounded-2xl p-6 text-white">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-blue-100 mb-1">Available Balance</p>
@@ -96,9 +97,9 @@ export default function WithdrawPage() {
               <HiInformationCircle className="w-4 h-4" />
               Min: ₦{(data?.minWithdrawal || 1500).toLocaleString()} · Balance: ₦{data?.walletBalance?.toLocaleString() || 0}
             </div>
-          </div>
+          </MotionDiv>
 
-          <div className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow">
+          <MotionDiv variants={fadeInUp(0.2)} initial="initial" animate="animate" className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-semibold text-secondary-700 dark:text-white">Request Withdrawal</h2>
               <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-secondary-700 px-3 py-1.5 rounded-full">
@@ -143,14 +144,14 @@ export default function WithdrawPage() {
                 {withdrawMutation.isPending ? 'Submitting...' : 'Submit Withdrawal Request'}
               </button>
             </form>
-          </div>
+          </MotionDiv>
 
-          <div className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow">
+          <MotionDiv variants={fadeInUp(0.3)} initial="initial" animate="animate" className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow">
             <h2 className="text-lg font-semibold text-secondary-700 dark:text-white mb-4">Withdrawal History</h2>
             {data?.withdrawals?.length > 0 ? (
-              <div className="space-y-3">
+              <MotionDiv variants={staggerContainer} initial="initial" animate="animate" className="space-y-3">
                 {data.withdrawals.map((w: any) => (
-                  <div key={w._id} className="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-secondary-700">
+                  <MotionDiv key={w._id} variants={staggerItem} className="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-secondary-700">
                     <div className="flex items-center gap-4">
                       <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
                         <HiCurrencyDollar className="w-5 h-5 text-blue-500" />
@@ -164,20 +165,20 @@ export default function WithdrawPage() {
                     <span className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium ${statusColor[w.status] || ''}`}>
                       {statusIcon[w.status]} {w.status.charAt(0).toUpperCase() + w.status.slice(1)}
                     </span>
-                  </div>
+                  </MotionDiv>
                 ))}
-              </div>
+              </MotionDiv>
             ) : (
-              <div className="text-center py-12">
+              <MotionDiv variants={fadeInUp(0)} className="text-center py-12">
                 <HiCurrencyDollar className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
                 <p className="text-gray-500 dark:text-gray-400">No withdrawal requests yet</p>
                 <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">Submit your first withdrawal using the form above</p>
-              </div>
+              </MotionDiv>
             )}
-          </div>
+          </MotionDiv>
         </div>
 
-        <div className="space-y-6">
+        <MotionDiv variants={fadeInUp(0.4)} initial="initial" animate="animate" className="space-y-6">
           <div className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow">
             <h3 className="text-sm font-semibold text-secondary-700 dark:text-white mb-3">Withdrawal Info</h3>
             <ul className="space-y-3 text-sm">
@@ -194,7 +195,7 @@ export default function WithdrawPage() {
               ))}
             </ul>
           </div>
-        </div>
+        </MotionDiv>
       </div>
 
     </div>

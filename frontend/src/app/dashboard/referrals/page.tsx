@@ -2,6 +2,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { userAPI } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
+import { MotionDiv, MotionTbody, MotionTr, staggerContainer, staggerItem, fadeInUp } from '@/components/MotionComponents';
 import { HiLink, HiClipboardCopy } from 'react-icons/hi';
 import toast from 'react-hot-toast';
 
@@ -38,7 +39,7 @@ export default function ReferralsPage() {
       </div>
 
       {/* Referral Link */}
-      <div className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow mb-8">
+      <MotionDiv variants={fadeInUp(0)} initial="initial" animate="animate" className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow mb-8">
         <h2 className="text-lg font-semibold text-secondary-700 dark:text-white mb-4">Your Referral Link</h2>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <div className="flex items-center gap-2 p-3 bg-gray-50 dark:bg-secondary-700 rounded-xl border border-gray-200 dark:border-gray-600 flex-1 break-all">
@@ -49,10 +50,10 @@ export default function ReferralsPage() {
             <HiClipboardCopy className="w-5 h-5" /> Copy
           </button>
         </div>
-      </div>
+      </MotionDiv>
 
       {/* Referral List */}
-      <div className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow">
+      <MotionDiv variants={fadeInUp(0.2)} initial="initial" animate="animate" className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow">
         <h2 className="text-lg font-semibold text-secondary-700 dark:text-white mb-4">Referral History</h2>
         <div className="overflow-x-auto">
           {data?.referrals?.length > 0 ? (
@@ -64,21 +65,21 @@ export default function ReferralsPage() {
                   <th className="text-left py-3 px-2 text-gray-500 dark:text-gray-400 font-medium">Date Joined</th>
                 </tr>
               </thead>
-              <tbody>
+              <MotionTbody variants={staggerContainer} initial="initial" animate="animate">
                 {data.referrals.map((ref: any) => (
-                  <tr key={ref._id} className="border-b border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-secondary-700">
+                  <MotionTr key={ref._id} variants={staggerItem} className="border-b border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-secondary-700">
                     <td className="py-3 px-2 text-secondary-700 dark:text-white font-medium">{ref.name}</td>
                     <td className="py-3 px-2 text-gray-500">@{ref.username}</td>
                     <td className="py-3 px-2 text-gray-500">{new Date(ref.createdAt).toLocaleDateString()}</td>
-                  </tr>
+                  </MotionTr>
                 ))}
-              </tbody>
+              </MotionTbody>
             </table>
           ) : (
             <p className="text-center text-gray-500 py-8">No referrals yet. Share your link to start earning!</p>
           )}
         </div>
-      </div>
+      </MotionDiv>
     </div>
   );
 }

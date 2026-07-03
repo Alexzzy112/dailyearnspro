@@ -351,7 +351,6 @@ exports.resetRecords = async (req, res) => {
     await Transaction.deleteMany({});
     await Payment.deleteMany({});
     await Withdrawal.deleteMany({});
-    await User.updateMany({ role: { $ne: 'admin' } }, { $set: { totalEarnings: 0, walletBalance: 0, referralEarnings: 0, tasksCompleted: 0, todayTasksCompleted: 0, completedTaskNumbers: [] } });
     res.json({ message: 'All records reset. Users unaffected.' });
   } catch (error) {
     res.status(500).json({ message: error.message });

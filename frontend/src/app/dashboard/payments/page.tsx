@@ -3,6 +3,7 @@ import { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { userAPI } from '@/lib/api';
 import toast from 'react-hot-toast';
+import { MotionDiv, AnimatePresence, staggerContainer, staggerItem, fadeInUp, scaleIn } from '@/components/MotionComponents';
 import { HiShoppingBag, HiPhotograph, HiCheckCircle, HiXCircle, HiClock, HiClipboardCopy, HiArrowRight, HiX } from 'react-icons/hi';
 
 export default function PaymentsPage() {
@@ -75,9 +76,9 @@ export default function PaymentsPage() {
         <p className="text-gray-500 dark:text-gray-400 mt-1">Select a plan amount to fund your wallet via bank transfer</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+      <MotionDiv variants={staggerContainer} initial="initial" animate="animate" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         {products?.map((product: any) => (
-          <div key={product._id} className="bg-white dark:bg-secondary-800 rounded-xl p-4 card-shadow hover:shadow-md transition group">
+          <MotionDiv key={product._id} variants={staggerItem} className="bg-white dark:bg-secondary-800 rounded-xl p-4 card-shadow hover:shadow-md transition group">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 gradient-primary rounded-lg flex items-center justify-center group-hover:scale-110 transition">
                 <HiShoppingBag className="w-5 h-5 text-white" />
@@ -95,16 +96,17 @@ export default function PaymentsPage() {
               className="w-full gradient-primary text-white py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition">
               Pay ₦{product.price?.toLocaleString()}
             </button>
-          </div>
+          </MotionDiv>
         ))}
         {(!products || products.length === 0) && (
-          <p className="col-span-full text-center text-gray-500 py-12">No plans available</p>
+          <MotionDiv variants={staggerItem} className="col-span-full text-center text-gray-500 py-12">No plans available</MotionDiv>
         )}
-      </div>
+      </MotionDiv>
 
+      <AnimatePresence>
       {selectedProduct && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white dark:bg-secondary-800 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <MotionDiv initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <MotionDiv variants={scaleIn} initial="initial" animate="animate" className="bg-white dark:bg-secondary-800 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-700">
               <h3 className="text-lg font-bold text-secondary-700 dark:text-white">Pay for {selectedProduct.name}</h3>
               <button onClick={() => { setSelectedProduct(null); setScreenshot(null); setPreview(null); }}
@@ -176,11 +178,12 @@ export default function PaymentsPage() {
                 </button>
               </form>
             </div>
-          </div>
-        </div>
+          </MotionDiv>
+        </MotionDiv>
       )}
+      </AnimatePresence>
 
-      <div className="bg-white dark:bg-secondary-800 rounded-2xl card-shadow overflow-hidden mt-6">
+      <MotionDiv variants={fadeInUp(0.2)} initial="initial" animate="animate" className="bg-white dark:bg-secondary-800 rounded-2xl card-shadow overflow-hidden mt-6">
         <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
           <h2 className="text-lg font-semibold text-secondary-700 dark:text-white">Payment History</h2>
         </div>
@@ -214,7 +217,7 @@ export default function PaymentsPage() {
             <p className="text-center text-gray-500 py-8">No payments yet</p>
           )}
         </div>
-      </div>
+      </MotionDiv>
     </div>
   );
 }

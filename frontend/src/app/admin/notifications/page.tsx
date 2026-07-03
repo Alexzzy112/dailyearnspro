@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { adminAPI } from '@/lib/api';
+import { MotionDiv, fadeInUp } from '@/components/MotionComponents';
 import { HiBell, HiCheck, HiX, HiMail, HiUser, HiUsers, HiSelector } from 'react-icons/hi';
 import toast from 'react-hot-toast';
 
@@ -49,7 +50,7 @@ export default function AdminNotificationsPage() {
         <p className="text-gray-500 dark:text-gray-400 mt-1">Send notifications to users</p>
       </div>
 
-      <div className="bg-white dark:bg-secondary-800 rounded-2xl card-shadow p-6 mb-6">
+      <MotionDiv variants={fadeInUp(0)} initial="initial" animate="animate" className="bg-white dark:bg-secondary-800 rounded-2xl card-shadow p-6 mb-6">
         <h2 className="text-lg font-semibold text-secondary-700 dark:text-white mb-4 flex items-center gap-2">
           <HiMail className="w-5 h-5 text-purple-500" /> Send Notification
         </h2>
@@ -116,9 +117,9 @@ export default function AdminNotificationsPage() {
             )}
           </button>
         </form>
-      </div>
+      </MotionDiv>
 
-      <div className="bg-white dark:bg-secondary-800 rounded-2xl card-shadow overflow-hidden">
+      <MotionDiv variants={fadeInUp(0.2)} initial="initial" animate="animate" className="bg-white dark:bg-secondary-800 rounded-2xl card-shadow overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
           <h2 className="text-lg font-semibold text-secondary-700 dark:text-white">Recent Notifications</h2>
         </div>
@@ -160,7 +161,7 @@ export default function AdminNotificationsPage() {
             </div>
           )}
         </div>
-      </div>
+      </MotionDiv>
     </div>
   );
 }

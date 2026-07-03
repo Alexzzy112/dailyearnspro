@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { MotionDiv, staggerContainer, staggerItem, fadeInUp } from '@/components/MotionComponents';
 import { HiSparkles, HiStar } from 'react-icons/hi';
 
 export default function WelcomePopup() {
@@ -25,7 +26,7 @@ export default function WelcomePopup() {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="bg-white dark:bg-secondary-800 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-[fadeIn_0.3s_ease-out]">
+      <MotionDiv variants={fadeInUp(0)} initial="initial" animate="animate" className="bg-white dark:bg-secondary-800 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
         <div className="gradient-primary p-8 text-center relative">
           <div className="absolute top-0 left-0 right-0 bottom-0 opacity-10">
             <div className="absolute top-4 left-4"><HiStar className="w-6 h-6 text-white" /></div>
@@ -52,26 +53,26 @@ export default function WelcomePopup() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <MotionDiv variants={staggerContainer} className="grid grid-cols-2 gap-3">
             {[
               { emoji: '💰', text: 'Earn daily rewards' },
               { emoji: '🚀', text: 'Instant withdrawals' },
               { emoji: '🎯', text: 'Simple tasks' },
               { emoji: '🔥', text: 'Refer & earn more' },
             ].map((item, i) => (
-              <div key={i} className="flex items-center gap-2 bg-gray-50 dark:bg-secondary-700/50 rounded-xl p-3">
+              <MotionDiv key={i} variants={staggerItem} className="flex items-center gap-2 bg-gray-50 dark:bg-secondary-700/50 rounded-xl p-3">
                 <span className="text-lg">{item.emoji}</span>
                 <span className="text-sm text-secondary-700 dark:text-gray-300 font-medium">{item.text}</span>
-              </div>
+              </MotionDiv>
             ))}
-          </div>
+          </MotionDiv>
 
           <button onClick={handleDismiss}
             className="w-full gradient-primary text-white py-3.5 rounded-xl font-semibold hover:opacity-90 transition shadow-lg shadow-primary-500/25">
             Let&apos;s Get Started 🚀
           </button>
         </div>
-      </div>
+      </MotionDiv>
     </div>
   );
 }

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { adminAPI } from '@/lib/api';
 import toast from 'react-hot-toast';
+import { MotionDiv, staggerContainer, staggerItem, fadeInUp } from '@/components/MotionComponents';
 import { HiSave, HiClipboardList, HiExternalLink } from 'react-icons/hi';
 
 export default function AdminTasksPage() {
@@ -58,9 +59,9 @@ export default function AdminTasksPage() {
                 <div className="h-12 bg-gray-100 dark:bg-gray-700 rounded-xl animate-pulse"></div>
               </div>
             ))}
-          </div>
         </div>
       </div>
+    </div>
     </div>
   );
 
@@ -72,7 +73,8 @@ export default function AdminTasksPage() {
       </div>
 
       <div className="max-w-3xl space-y-6">
-        <form onSubmit={handleSubmit} className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow">
+        <form onSubmit={handleSubmit}>
+        <MotionDiv variants={fadeInUp(0)} initial="initial" animate="animate" className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-purple-500 rounded-xl flex items-center justify-center">
               <HiClipboardList className="w-5 h-5 text-white" />
@@ -117,9 +119,10 @@ export default function AdminTasksPage() {
               {updateMutation.isPending ? 'Saving...' : 'Update Task'}
             </button>
           </div>
+        </MotionDiv>
         </form>
 
-        <div className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow">
+        <MotionDiv variants={fadeInUp(0.2)} initial="initial" animate="animate" className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow">
           <h3 className="text-sm font-semibold text-secondary-700 dark:text-white mb-3">Preview (how users see it)</h3>
           <div className="bg-gray-50 dark:bg-secondary-700 rounded-xl p-5">
             <div className="flex items-center justify-between mb-3">
@@ -140,7 +143,7 @@ export default function AdminTasksPage() {
             </div>
           </div>
           <p className="text-xs text-gray-400 mt-3">This repeats daily for all users. Changes apply immediately — no restart needed.</p>
-        </div>
+        </MotionDiv>
       </div>
     </div>
   );

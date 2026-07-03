@@ -1,6 +1,7 @@
 'use client';
 import { useQuery } from '@tanstack/react-query';
 import { adminAPI } from '@/lib/api';
+import { MotionDiv, staggerContainer, staggerItem, fadeInUp } from '@/components/MotionComponents';
 import { HiUsers, HiUserGroup, HiCurrencyDollar, HiClipboardList, HiRefresh, HiTrendingUp, HiCash } from 'react-icons/hi';
 
 export default function AdminDashboardPage() {
@@ -54,9 +55,9 @@ export default function AdminDashboardPage() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <MotionDiv variants={staggerContainer} initial="initial" animate="animate" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {stats.map((stat, i) => (
-          <div key={i} className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow hover:shadow-lg transition">
+          <MotionDiv key={i} variants={staggerItem} className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow hover:shadow-lg transition">
             <div className="flex items-center justify-between mb-4">
               <div className={`w-12 h-12 bg-gradient-to-br ${stat.color} rounded-xl flex items-center justify-center`}>
                 <stat.icon className="w-6 h-6 text-white" />
@@ -64,9 +65,9 @@ export default function AdminDashboardPage() {
             </div>
             <p className="text-2xl font-bold text-secondary-700 dark:text-white">{stat.value}</p>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{stat.label}</p>
-          </div>
+          </MotionDiv>
         ))}
-      </div>
+      </MotionDiv>
     </div>
   );
 }
