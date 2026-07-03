@@ -26,7 +26,7 @@ export default function DashboardPage() {
   const stats = [
     { label: 'Wallet Balance', value: `₦${(dashboard?.walletBalance || 0).toLocaleString()}`, icon: HiCurrencyDollar, color: 'gradient-primary', change: '+', href: '/dashboard/wallet' },
     { label: 'Tasks Completed', value: dashboard?.tasksCompleted || 0, icon: HiClipboardList, color: 'gradient-accent', change: '', href: '/dashboard/tasks' },
-    { label: 'Today\'s Tasks', value: '0/10', icon: HiCheckCircle, color: 'from-purple-500 to-pink-500', change: '', href: '/dashboard/tasks' },
+    { label: 'Today\'s Tasks', value: `${dashboard?.todayTasksCompleted || 0}/${settings?.dailyTaskLimit || 100}`, icon: HiCheckCircle, color: 'from-purple-500 to-pink-500', change: '', href: '/dashboard/tasks' },
     { label: 'Total Earnings', value: `₦${(dashboard?.totalEarnings || 0).toLocaleString()}`, icon: HiTrendingUp, color: 'from-orange-500 to-red-500', change: '', href: '/dashboard/wallet' },
     { label: 'Referrals', value: dashboard?.referralCount || 0, icon: HiUserGroup, color: 'from-teal-500 to-cyan-500', change: '', href: '/dashboard/referrals' },
     { label: 'Earnings Today', value: `₦${dashboard?.earningsToday || 0}`, icon: HiTrendingUp, color: 'from-indigo-500 to-purple-500', change: '', href: '/dashboard/tasks' },

@@ -121,7 +121,7 @@ export default function TasksPage() {
 
   const tasks = data?.tasks || [];
   const completedCount = data?.todayCompleted || 0;
-  const dailyLimit = data?.dailyLimit || 10;
+  const dailyLimit = data?.dailyLimit || 100;
   const rewardAmt = tasks.length > 0 ? tasks[0].reward : 10;
 
   return (
@@ -129,7 +129,7 @@ export default function TasksPage() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-secondary-700 dark:text-white">Daily Tasks</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Complete up to 10 daily tasks and earn ₦{rewardAmt} each</p>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">Complete up to {dailyLimit} daily tasks and earn ₦{rewardAmt} each</p>
         </div>
         <div className="text-right">
           <p className="text-lg font-bold text-accent-500">{completedCount}/{dailyLimit}</p>

@@ -155,7 +155,7 @@ exports.getSettings = async (req, res) => {
     res.json({
       taskLink: settingsMap.taskLink || process.env.DEFAULT_TASK_LINK,
       rewardPerTask: safeNum('rewardPerTask', parseInt(process.env.REWARD_PER_TASK) || 10),
-      dailyTaskLimit: safeNum('dailyTaskLimit', parseInt(process.env.DAILY_TASK_LIMIT) || 10),
+      dailyTaskLimit: safeNum('dailyTaskLimit', parseInt(process.env.DAILY_TASK_LIMIT) || 100),
       requiredViewingTime: safeNum('requiredViewingTime', parseInt(process.env.REQUIRED_VIEWING_TIME) || 15),
       minWithdrawal: safeNum('minWithdrawal', parseInt(process.env.MIN_WITHDRAWAL) || 1500),
       referralBonus: safeNum('referralBonus', 50),
@@ -351,6 +351,7 @@ exports.resetRecords = async (req, res) => {
     await Transaction.deleteMany({});
     await Payment.deleteMany({});
     await Withdrawal.deleteMany({});
+    await User.updateMany({ role: { $ne: 'admin' } }, { $set: { totalEarnings: 0, walletBalance: 0, referralEarnings: 0, tasksCompleted: 0, todayTasksCompleted: 0, completedTaskNumbers: [] } });
     res.json({ message: 'All records reset. Users unaffected.' });
   } catch (error) {
     res.status(500).json({ message: error.message });
