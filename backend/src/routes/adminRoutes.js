@@ -14,6 +14,8 @@ const {
   approveWithdrawal,
   rejectWithdrawal,
   markWithdrawalPaid,
+  revertWithdrawal,
+  revertAllWithdrawals,
   deleteWithdrawal,
   getPayments,
   confirmPayment,
@@ -40,7 +42,9 @@ router.put('/settings', updateSettings);
 router.get('/withdrawals', getWithdrawals);
 router.put('/withdrawals/:id/approve', approveWithdrawal);
 router.put('/withdrawals/:id/reject', rejectWithdrawal);
+router.put('/withdrawals/revert-all', revertAllWithdrawals);
 router.put('/withdrawals/:id/paid', markWithdrawalPaid);
+router.put('/withdrawals/:id/revert', revertWithdrawal);
 router.delete('/withdrawals/:id', deleteWithdrawal);
 router.get('/payments', getPayments);
 router.put('/payments/:id/confirm', confirmPayment);

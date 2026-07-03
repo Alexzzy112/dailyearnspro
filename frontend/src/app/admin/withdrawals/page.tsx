@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { adminAPI } from '@/lib/api';
 import toast from 'react-hot-toast';
 import { MotionDiv, MotionTbody, MotionTr, staggerContainer, staggerItem, fadeInUp } from '@/components/MotionComponents';
-import { HiCheckCircle, HiXCircle, HiTrash, HiCurrencyDollar } from 'react-icons/hi';
+import { HiCheckCircle, HiXCircle, HiTrash, HiCurrencyDollar, HiReply } from 'react-icons/hi';
 
 export default function AdminWithdrawalsPage() {
   const queryClient = useQueryClient();
@@ -37,6 +37,18 @@ export default function AdminWithdrawalsPage() {
     onError: (err: any) => toast.error(err.response?.data?.message || 'Failed'),
   });
 
+  const revertMutation = useMutation({
+    mutationFn: (id: string) => adminAPI.revertWithdrawal(id),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['adminWithdrawals'] }); queryClient.invalidateQueries({ queryKey: ['adminDashboard'] }); toast.success('Withdrawal reverted to pending'); },
+    onError: (err: any) => toast.error(err.response?.data?.message || 'Failed'),
+  });
+
+  const revertAllMutation = useMutation({
+    mutationFn: () => adminAPI.revertAllWithdrawals(),
+    onSuccess: (data: any) => { queryClient.invalidateQueries({ queryKey: ['adminWithdrawals'] }); queryClient.invalidateQueries({ queryKey: ['adminDashboard'] }); toast.success(data.data?.message || 'All reverted'); },
+    onError: (err: any) => toast.error(err.response?.data?.message || 'Failed'),
+  });
+
   const statusBadge = (status: string) => {
     const colors: Record<string, string> = {
       pending: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
@@ -65,9 +77,16 @@ export default function AdminWithdrawalsPage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-secondary-700 dark:text-white">Withdrawal Management</h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">{withdrawals?.length || 0} total requests</p>
+      <div className="mb-8 flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-secondary-700 dark:text-white">Withdrawal Management</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">{withdrawals?.length || 0} total requests</p>
+        </div>
+        <button onClick={() => { if (confirm('Revert all approved and paid withdrawals back to pending?')) revertAllMutation.mutate(); }}
+          disabled={revertAllMutation.isPending}
+          className="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 disabled:opacity-50 text-white px-4 py-2 rounded-xl text-sm font-medium transition">
+          <HiReply className="w-4 h-4" /> {revertAllMutation.isPending ? 'Reverting...' : 'Revert All'}
+        </button>
       </div>
 
       <div className="bg-white dark:bg-secondary-800 rounded-2xl overflow-hidden card-shadow">
@@ -116,8 +135,20 @@ export default function AdminWithdrawalsPage() {
                         </>
                       )}
                       {w.status === 'approved' && (
-                        <button onClick={() => paidMutation.mutate(w._id)} className="flex items-center gap-1 bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition" title="Mark as Paid">
-                          <HiCurrencyDollar className="w-4 h-4" /> Paid
+                        <>
+                          <button onClick={() => paidMutation.mutate(w._id)} className="flex items-center gap-1 bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition" title="Mark as Paid">
+                            <HiCurrencyDollar className="w-4 h-4" /> Paid
+                          </button>
+                          <button onClick={() => { if (confirm('Revert this withdrawal back to pending?')) revertMutation.mutate(w._id); }}
+                            className="flex items-center gap-1 bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition" title="Revert to Pending">
+                            <HiReply className="w-4 h-4" /> Revert
+                          </button>
+                        </>
+                      )}
+                      {w.status === 'paid' && (
+                        <button onClick={() => { if (confirm('Revert this paid withdrawal? Funds will be returned to user wallet.')) revertMutation.mutate(w._id); }}
+                          className="flex items-center gap-1 bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition" title="Revert to Pending">
+                          <HiReply className="w-4 h-4" /> Revert
                         </button>
                       )}
                       <button onClick={() => { if (confirm('Delete this withdrawal?')) deleteMutation.mutate(w._id); }}

@@ -278,6 +278,80 @@ exports.deleteWithdrawal = async (req, res) => {
   }
 };
 
+exports.revertWithdrawal = async (req, res) => {
+  try {
+    const withdrawal = await Withdrawal.findById(req.params.id);
+    if (!withdrawal) return res.status(404).json({ message: 'Withdrawal not found' });
+    if (withdrawal.status === 'pending') {
+      return res.status(400).json({ message: 'Cannot revert a pending withdrawal' });
+    }
+    if (withdrawal.status === 'rejected') {
+      return res.status(400).json({ message: 'Cannot revert a rejected withdrawal' });
+    }
+    const wasPaid = withdrawal.status === 'paid';
+    withdrawal.status = 'pending';
+    await withdrawal.save();
+    if (wasPaid) {
+      const user = await User.findById(withdrawal.userId);
+      if (user) {
+        user.walletBalance += withdrawal.amount;
+        await user.save();
+        await Transaction.create({
+          userId: user._id,
+          type: 'credit',
+          amount: withdrawal.amount,
+          description: `Refund for reverted paid withdrawal #${withdrawal._id}`
+        });
+        await createNotification({
+          userId: user._id, title: 'Withdrawal Reverted', message: `Your paid withdrawal of ₦${withdrawal.amount} has been reverted. Funds have been returned to your wallet.`, type: 'info', link: '/dashboard/wallet'
+        });
+      }
+    } else {
+      await createNotification({
+        userId: withdrawal.userId, title: 'Withdrawal Reverted', message: `Your approved withdrawal of ₦${withdrawal.amount} has been reverted back to pending.`, type: 'info', link: '/dashboard/wallet'
+      });
+    }
+    res.json({ message: 'Withdrawal reverted to pending', withdrawal });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.revertAllWithdrawals = async (req, res) => {
+  try {
+    const targetStatuses = ['approved', 'paid'];
+    const withdrawals = await Withdrawal.find({ status: { $in: targetStatuses } });
+    let revertedCount = 0;
+    let refundedCount = 0;
+    for (const withdrawal of withdrawals) {
+      const wasPaid = withdrawal.status === 'paid';
+      withdrawal.status = 'pending';
+      await withdrawal.save();
+      revertedCount++;
+      if (wasPaid) {
+        const user = await User.findById(withdrawal.userId);
+        if (user) {
+          user.walletBalance += withdrawal.amount;
+          await user.save();
+          await Transaction.create({
+            userId: user._id,
+            type: 'credit',
+            amount: withdrawal.amount,
+            description: `Refund for reverted paid withdrawal #${withdrawal._id}`
+          });
+          refundedCount++;
+        }
+      }
+      await createNotification({
+        userId: withdrawal.userId, title: 'Withdrawal Reverted', message: `Your ${wasPaid ? 'paid' : 'approved'} withdrawal of ₦${withdrawal.amount} has been reverted back to pending.`, type: 'info', link: '/dashboard/wallet'
+      });
+    }
+    res.json({ message: `Reverted ${revertedCount} withdrawal(s)${refundedCount ? `, refunded ${refundedCount}` : ''}`, revertedCount, refundedCount });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 exports.getPayments = async (req, res) => {
   try {
     const payments = await Payment.find()
