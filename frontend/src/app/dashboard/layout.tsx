@@ -84,24 +84,26 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* Bottom navigation bar */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-secondary-800 border-t border-gray-200 dark:border-gray-700 safe-area-bottom">
-        <div className="flex items-center justify-around h-16 px-2 max-w-lg mx-auto relative">
+        <div className="grid grid-cols-5 items-center h-16 max-w-lg mx-auto relative">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
             const isDashboard = item.href === '/dashboard';
             if (isDashboard) {
               return (
                 <Link key={item.href} href={item.href}
-                  className={`absolute left-1/2 -translate-x-1/2 -top-4 w-14 h-14 rounded-full flex flex-col items-center justify-center transition shadow-lg ${
+                  className="col-span-1 flex items-center justify-center">
+                  <div className={`-mt-7 w-14 h-14 rounded-full flex flex-col items-center justify-center transition shadow-lg ${
                     isActive ? 'gradient-primary text-white' : 'bg-white dark:bg-secondary-800 text-gray-400 dark:text-gray-500 border-2 border-gray-200 dark:border-gray-600'
                   }`}>
-                  <item.icon className="w-6 h-6" />
-                  <span className="text-[8px] font-bold mt-0.5">Dashboard</span>
+                    <item.icon className="w-6 h-6" />
+                    <span className="text-[8px] font-bold mt-0.5">Dashboard</span>
+                  </div>
                 </Link>
               );
             }
             return (
               <Link key={item.href} href={item.href}
-                className={`flex flex-col items-center justify-center gap-0.5 px-3 py-1 rounded-lg transition min-w-0 ${
+                className={`col-span-1 flex flex-col items-center justify-center gap-0.5 py-1 rounded-lg transition ${
                   isActive ? 'text-primary-500' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
                 }`}>
                 <item.icon className={`w-5 h-5 ${isActive ? 'drop-shadow-sm' : ''}`} />
