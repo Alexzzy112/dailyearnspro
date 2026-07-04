@@ -3,13 +3,14 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useState, useRef, useEffect } from 'react';
-import { HiHome, HiClipboardList, HiCurrencyDollar, HiLogout, HiShoppingBag, HiChevronDown } from 'react-icons/hi';
+import { HiHome, HiClipboardList, HiCurrencyDollar, HiLogout, HiShoppingBag, HiChevronDown, HiStar } from 'react-icons/hi';
 import WelcomePopup from '@/components/WelcomePopup';
 import NotificationBell from '@/components/NotificationBell';
 
 const navItems = [
   { href: '/dashboard/products', label: 'Products', icon: HiShoppingBag },
   { href: '/dashboard/tasks', label: 'Tasks', icon: HiClipboardList },
+  { href: '/dashboard/top-members', label: 'Top Members', icon: HiStar },
   { href: '/dashboard', label: 'Dashboard', icon: HiHome },
 ];
 

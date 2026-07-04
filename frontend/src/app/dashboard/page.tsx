@@ -24,6 +24,29 @@ export default function DashboardPage() {
   const dashboard = data?.user;
   const settings = data?.settings;
 
+  const withdrawals = [
+    { name: 'Chioma Okonkwo', amount: '50,000' },
+    { name: 'Emeka Okafor', amount: '30,000' },
+    { name: 'Aisha Bello', amount: '100,000' },
+    { name: 'Daniel Kalu', amount: '45,000' },
+    { name: 'Grace Adamu', amount: '75,000' },
+    { name: 'Samuel Peter', amount: '60,000' },
+    { name: 'Blessing Eze', amount: '200,000' },
+    { name: 'John Musa', amount: '35,000' },
+    { name: 'Favour Nnenna', amount: '80,000' },
+    { name: 'Victor Idris', amount: '40,000' },
+    { name: 'Precious Amara', amount: '150,000' },
+    { name: 'Michael Samuel', amount: '55,000' },
+    { name: 'Ruth David', amount: '90,000' },
+    { name: 'Tunde Balogun', amount: '300,000' },
+    { name: 'Esther Johnson', amount: '70,000' },
+    { name: 'David Chukwu', amount: '250,000' },
+    { name: 'Mercy Uche', amount: '120,000' },
+    { name: 'Peter Adebayo', amount: '85,000' },
+    { name: 'Sarah Williams', amount: '180,000' },
+    { name: 'Joshua Tobi', amount: '65,000' },
+  ];
+
   const stats = [
     { label: 'Wallet Balance', value: `₦${(dashboard?.walletBalance || 0).toLocaleString()}`, icon: HiCurrencyDollar, color: 'gradient-primary', change: '+', href: '/dashboard/wallet' },
     { label: 'Tasks Completed', value: dashboard?.tasksCompleted || 0, icon: HiClipboardList, color: 'gradient-accent', change: '', href: '/dashboard/tasks' },
@@ -66,6 +89,28 @@ export default function DashboardPage() {
             <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">{stat.label}</p>
           </MotionDiv>
         ))}
+      </MotionDiv>
+
+      {/* Recent Withdrawals Ticker */}
+      <MotionDiv variants={fadeInUp(0.2)} initial="initial" animate="animate" className="mb-4 bg-white dark:bg-secondary-800 rounded-xl p-3 card-shadow overflow-hidden">
+        <div className="flex items-center gap-2 mb-2">
+          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+          <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Recent Withdrawals</p>
+        </div>
+        <div className="overflow-hidden relative">
+          <div className="flex gap-6 animate-marquee whitespace-nowrap" style={{ width: 'max-content' }}>
+            {[...withdrawals, ...withdrawals].map((w, i) => (
+              <div key={i} className="inline-flex items-center gap-2 bg-green-50 dark:bg-green-900/10 rounded-full px-3 py-1.5">
+                <span className="w-6 h-6 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">
+                  {w.name.charAt(0)}
+                </span>
+                <span className="text-sm font-medium text-secondary-700 dark:text-white">{w.name}</span>
+                <span className="text-xs text-gray-400">withdraw</span>
+                <span className="text-sm font-bold text-green-600">₦{w.amount}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </MotionDiv>
 
       {/* Quick Actions */}
