@@ -7,14 +7,14 @@ import { HiArrowRight, HiCheckCircle, HiShieldCheck, HiCurrencyDollar, HiUserGro
 
 const faqs = [
   { q: 'What is TaskEarn Pro?', a: 'TaskEarn Pro is a platform where you earn real money by completing simple daily tasks like visiting websites.' },
-  { q: 'How much can I earn daily?', a: 'You can earn up to ₦50 per day by completing 10 tasks at ₦5 each.' },
+  { q: 'How much can I earn daily?', a: 'You can earn up to ₦10,000 per day by completing 10 tasks at ₦1,000 each.' },
   { q: 'How do I get started?', a: 'Register an account, fund your wallet, purchase an investment plan, and start completing tasks immediately.' },
   { q: 'When can I withdraw?', a: 'Withdrawals are processed on Fridays only. Minimum withdrawal is ₦1,500.' },
   { q: 'Is there a referral program?', a: 'Yes! You earn a bonus for every user you refer who registers and purchases an investment plan.' },
 ];
 
 const testimonials = [
-  { name: 'Chioma O.', role: 'Premium Member', text: 'I earn ₦500 daily consistently. This platform has been a game changer for my finances!', rating: 5 },
+  { name: 'Chioma O.', role: 'Premium Member', text: 'I earn ₦10,000 daily consistently. This platform has been a game changer for my finances!', rating: 5 },
   { name: 'Emeka O.', role: 'Active Member', text: 'Simple tasks, instant payments. I\'ve referred my friends and earn even more.', rating: 5 },
   { name: 'Aisha B.', role: 'Top Earner', text: 'Best platform for earning online. The support team is responsive and helpful.', rating: 5 },
 ];
@@ -38,7 +38,7 @@ export default function Home() {
             <div className="animate-fade-in">
               <div className="inline-flex items-center bg-accent-500/10 border border-accent-500/20 rounded-full px-4 py-1.5 mb-6">
                 <span className="w-2 h-2 bg-accent-500 rounded-full animate-pulse mr-2"></span>
-                <span className="text-accent-400 text-sm font-medium">Earn ₦50 Daily</span>
+                <span className="text-accent-400 text-sm font-medium">Earn ₦10,000 Daily</span>
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
                 Complete Simple Tasks,{' '}
@@ -88,12 +88,12 @@ export default function Home() {
                       {[1, 2, 3].map((i) => (
                         <div key={i} className="flex items-center justify-between bg-secondary-800 rounded-xl px-4 py-3">
                           <span className="text-gray-300 text-sm">Task #{i}</span>
-                          <span className="text-accent-400 font-semibold text-sm">+₦5</span>
+                          <span className="text-accent-400 font-semibold text-sm">+₦1,000</span>
                         </div>
                       ))}
                     </div>
                     <div className="mt-4 p-3 bg-accent-500/10 rounded-xl border border-accent-500/20">
-                      <p className="text-accent-400 text-sm font-medium text-center">Complete all 10 tasks = ₦50 Today!</p>
+                      <p className="text-accent-400 text-sm font-medium text-center">Complete all 10 tasks = ₦10,000 Today!</p>
                     </div>
                   </div>
                 </div>
@@ -114,7 +114,7 @@ export default function Home() {
             {[
               { icon: HiUserGroup, title: 'Create Account', desc: 'Sign up for free and complete your profile to get started on your earning journey.' },
               { icon: HiShieldCheck, title: 'Fund Your Wallet', desc: 'Deposit funds and choose an investment plan to unlock daily tasks and earning potential.' },
-              { icon: HiCurrencyDollar, title: 'Start Earning', desc: 'Complete 100 daily tasks and earn from your investment every single day!' },
+              { icon: HiCurrencyDollar, title: 'Start Earning', desc: 'Complete 10 daily tasks and earn ₦10,000 from your investment every single day!' },
             ].map((item, i) => (
               <MotionDiv key={i} variants={staggerItem} className="text-center p-8 rounded-2xl card-shadow hover:shadow-lg transition group bg-white dark:bg-secondary-800">
                 <div className="w-16 h-16 gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition">
@@ -151,10 +151,10 @@ export default function Home() {
             </div>
             <MotionDiv variants={staggerContainer} className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
-                  { label: 'Per Task', value: `₦5` },
-                { label: 'Daily Earnings', value: `₦${(calcTasks * 5).toLocaleString()}`, accent: true },
-                { label: 'Weekly Earnings', value: `₦${(calcTasks * 5 * 7).toLocaleString()}` },
-                { label: 'Monthly Earnings', value: `₦${(calcTasks * 5 * 30).toLocaleString()}`, accent: true },
+                  { label: 'Per Task', value: `₦1,000` },
+                { label: 'Daily Earnings', value: `₦${(calcTasks * 1000).toLocaleString()}`, accent: true },
+                { label: 'Weekly Earnings', value: `₦${(calcTasks * 1000 * 7).toLocaleString()}` },
+                { label: 'Monthly Earnings', value: `₦${(calcTasks * 1000 * 30).toLocaleString()}`, accent: true },
               ].map((item, i) => (
                 <MotionDiv key={i} variants={staggerItem} className={`p-4 rounded-xl ${item.accent ? 'gradient-primary text-white' : 'bg-gray-50 dark:bg-secondary-700'} text-center`}>
                   <p className={`text-sm ${item.accent ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'}`}>{item.label}</p>
