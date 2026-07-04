@@ -1,4 +1,5 @@
 'use client';
+import { useState } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { userAPI } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
@@ -7,6 +8,7 @@ import toast from 'react-hot-toast';
 
 export default function ProductsPage() {
   const { user, refreshUser } = useAuth();
+  const [purchasingId, setPurchasingId] = useState<string | null>(null);
 
   const { data: products, isLoading } = useQuery({
     queryKey: ['products'],
@@ -18,10 +20,12 @@ export default function ProductsPage() {
       userAPI.purchaseProduct(name, price),
     onSuccess: (data: any) => {
       toast.success(data.data?.message || 'Plan purchased!');
+      setPurchasingId(null);
       refreshUser();
     },
     onError: (err: any) => {
       toast.error(err.response?.data?.message || 'Purchase failed');
+      setPurchasingId(null);
     },
   });
 
@@ -56,10 +60,10 @@ export default function ProductsPage() {
               <p className="text-sm font-bold text-accent-500">+₦{product.dailyEarn?.toLocaleString()}/day</p>
             </div>
             <button
-              onClick={() => purchaseMutation.mutate({ name: product.name, price: product.price })}
-              disabled={purchaseMutation.isPending}
+              onClick={() => { setPurchasingId(product._id); purchaseMutation.mutate({ name: product.name, price: product.price }); }}
+              disabled={purchasingId === product._id}
               className="w-full gradient-primary text-white py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition disabled:opacity-50">
-              {purchaseMutation.isPending ? 'Processing...' : 'Invest'}
+              {purchasingId === product._id ? 'Processing...' : 'Invest'}
             </button>
           </MotionDiv>
         ))}
