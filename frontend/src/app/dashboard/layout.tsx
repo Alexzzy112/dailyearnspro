@@ -84,7 +84,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* Bottom navigation bar */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-secondary-800 border-t border-gray-200 dark:border-gray-700 safe-area-bottom">
-        <div className="grid grid-cols-5 items-center h-16 max-w-lg mx-auto relative">
+        <div className="grid grid-cols-5 items-center h-16 max-w-lg mx-auto relative gap-1">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
             const isDashboard = item.href === '/dashboard';
