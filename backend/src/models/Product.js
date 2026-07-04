@@ -4,6 +4,7 @@ const productSchema = new mongoose.Schema({
   name: { type: String, required: true },
   price: { type: Number, required: true },
   dailyEarn: { type: Number, required: true },
+  dailyEarnPercent: { type: Number, default: 10 },
   active: { type: Boolean, default: true },
 }, { timestamps: true });
 

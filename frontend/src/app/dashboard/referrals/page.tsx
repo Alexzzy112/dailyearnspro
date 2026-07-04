@@ -2,8 +2,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { userAPI } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
-import { MotionDiv, MotionTbody, MotionTr, staggerContainer, staggerItem, fadeInUp } from '@/components/MotionComponents';
-import { HiLink, HiClipboardCopy } from 'react-icons/hi';
+import { MotionDiv, staggerContainer, staggerItem, fadeInUp } from '@/components/MotionComponents';
+import { HiLink, HiClipboardCopy, HiCurrencyDollar, HiUserGroup } from 'react-icons/hi';
 import toast from 'react-hot-toast';
 
 export default function ReferralsPage() {
@@ -54,31 +54,34 @@ export default function ReferralsPage() {
 
       {/* Referral List */}
       <MotionDiv variants={fadeInUp(0.2)} initial="initial" animate="animate" className="bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow">
-        <h2 className="text-lg font-semibold text-secondary-700 dark:text-white mb-4">Referral History</h2>
-        <div className="overflow-x-auto">
-          {data?.referrals?.length > 0 ? (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-gray-200 dark:border-gray-700">
-                  <th className="text-left py-3 px-2 text-gray-500 dark:text-gray-400 font-medium">Name</th>
-                  <th className="text-left py-3 px-2 text-gray-500 dark:text-gray-400 font-medium">Username</th>
-                  <th className="text-left py-3 px-2 text-gray-500 dark:text-gray-400 font-medium">Date Joined</th>
-                </tr>
-              </thead>
-              <MotionTbody variants={staggerContainer} initial="initial" animate="animate">
-                {data.referrals.map((ref: any) => (
-                  <MotionTr key={ref._id} variants={staggerItem} className="border-b border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-secondary-700">
-                    <td className="py-3 px-2 text-secondary-700 dark:text-white font-medium">{ref.name}</td>
-                    <td className="py-3 px-2 text-gray-500">@{ref.username}</td>
-                    <td className="py-3 px-2 text-gray-500">{new Date(ref.createdAt).toLocaleDateString()}</td>
-                  </MotionTr>
-                ))}
-              </MotionTbody>
-            </table>
-          ) : (
-            <p className="text-center text-gray-500 py-8">No referrals yet. Share your link to start earning!</p>
-          )}
+        <div className="flex items-center gap-2 mb-4">
+          <HiUserGroup className="w-5 h-5 text-primary-500" />
+          <h2 className="text-lg font-semibold text-secondary-700 dark:text-white">Referral History</h2>
+          <span className="ml-auto text-xs font-medium text-gray-400">{data?.count || 0} total</span>
         </div>
+        <MotionDiv variants={staggerContainer} initial="initial" animate="animate" className="space-y-3">
+          {data?.referrals?.length > 0 ? data.referrals.map((ref: any) => (
+            <MotionDiv key={ref._id} variants={staggerItem} className="flex items-center gap-4 p-4 rounded-xl bg-gray-50 dark:bg-secondary-700/50 hover:bg-gray-100 dark:hover:bg-secondary-700 transition">
+              <div className="w-10 h-10 rounded-full gradient-primary flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                {ref.name?.charAt(0)?.toUpperCase()}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-secondary-700 dark:text-white truncate">{ref.name}</p>
+                <p className="text-xs text-gray-500">@{ref.username} · Joined {new Date(ref.createdAt).toLocaleDateString()}</p>
+              </div>
+              <div className="text-right flex-shrink-0">
+                <p className="text-sm font-bold text-green-600">₦{ref.totalEarnings?.toLocaleString() || 0}</p>
+                <p className="text-[10px] text-gray-400">earned</p>
+              </div>
+            </MotionDiv>
+          )) : (
+            <div className="text-center py-8">
+              <HiUserGroup className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+              <p className="text-gray-500 dark:text-gray-400">No referrals yet</p>
+              <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">Share your link to start earning!</p>
+            </div>
+          )}
+        </MotionDiv>
       </MotionDiv>
     </div>
   );

@@ -10,7 +10,7 @@ export default function AdminProductsPage() {
   const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<any>(null);
-  const [form, setForm] = useState({ name: '', price: '', dailyEarn: '' });
+  const [form, setForm] = useState({ name: '', price: '', dailyEarnPercent: '' });
 
   const { data: products, isLoading } = useQuery({
     queryKey: ['adminProducts'],
@@ -18,14 +18,14 @@ export default function AdminProductsPage() {
   });
 
   const createMutation = useMutation({
-    mutationFn: () => adminAPI.createProduct({ name: form.name, price: Number(form.price), dailyEarn: Number(form.dailyEarn) }),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['adminProducts'] }); toast.success('Product created'); setShowForm(false); setForm({ name: '', price: '', dailyEarn: '' }); },
+    mutationFn: () => adminAPI.createProduct({ name: form.name, price: Number(form.price), dailyEarnPercent: Number(form.dailyEarnPercent) }),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['adminProducts'] }); toast.success('Product created'); setShowForm(false); setForm({ name: '', price: '', dailyEarnPercent: '' }); },
     onError: (err: any) => toast.error(err.response?.data?.message || 'Failed'),
   });
 
   const updateMutation = useMutation({
-    mutationFn: () => adminAPI.updateProduct(editing._id, { name: form.name, price: Number(form.price), dailyEarn: Number(form.dailyEarn) }),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['adminProducts'] }); toast.success('Product updated'); setEditing(null); setShowForm(false); setForm({ name: '', price: '', dailyEarn: '' }); },
+    mutationFn: () => adminAPI.updateProduct(editing._id, { name: form.name, price: Number(form.price), dailyEarnPercent: Number(form.dailyEarnPercent) }),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['adminProducts'] }); toast.success('Product updated'); setEditing(null); setShowForm(false); setForm({ name: '', price: '', dailyEarnPercent: '' }); },
     onError: (err: any) => toast.error(err.response?.data?.message || 'Failed'),
   });
 
@@ -35,12 +35,13 @@ export default function AdminProductsPage() {
     onError: (err: any) => toast.error(err.response?.data?.message || 'Failed'),
   });
 
-  const openCreate = () => { setEditing(null); setForm({ name: '', price: '', dailyEarn: '' }); setShowForm(true); };
-  const openEdit = (p: any) => { setEditing(p); setForm({ name: p.name, price: String(p.price), dailyEarn: String(p.dailyEarn) }); setShowForm(true); };
+  const openCreate = () => { setEditing(null); setForm({ name: '', price: '', dailyEarnPercent: '' }); setShowForm(true); };
+  const openEdit = (p: any) => { setEditing(p); setForm({ name: p.name, price: String(p.price), dailyEarnPercent: String(p.dailyEarnPercent || 10) }); setShowForm(true); };
+  const calculatedEarn = Math.round(Number(form.price) * (Number(form.dailyEarnPercent) / 100)) || 0;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name || !form.price || !form.dailyEarn) return toast.error('All fields required');
+    if (!form.name || !form.price || !form.dailyEarnPercent) return toast.error('All fields required');
     if (editing) updateMutation.mutate(); else createMutation.mutate();
   };
 
@@ -70,6 +71,7 @@ export default function AdminProductsPage() {
                 <th className="text-left py-4 px-4 text-gray-500 dark:text-gray-400 font-medium">Name</th>
                 <th className="text-left py-4 px-4 text-gray-500 dark:text-gray-400 font-medium">Price</th>
                 <th className="text-left py-4 px-4 text-gray-500 dark:text-gray-400 font-medium">Daily Earn</th>
+                <th className="text-left py-4 px-4 text-gray-500 dark:text-gray-400 font-medium">Rate</th>
                 <th className="text-left py-4 px-4 text-gray-500 dark:text-gray-400 font-medium">Status</th>
                 <th className="text-left py-4 px-4 text-gray-500 dark:text-gray-400 font-medium">Actions</th>
               </tr>
@@ -87,6 +89,7 @@ export default function AdminProductsPage() {
                   </td>
                   <td className="py-4 px-4 font-semibold text-secondary-700 dark:text-white">₦{p.price?.toLocaleString()}</td>
                   <td className="py-4 px-4 font-semibold text-accent-500">₦{p.dailyEarn?.toLocaleString()}/day</td>
+                  <td className="py-4 px-4 font-semibold text-secondary-700 dark:text-white">{p.dailyEarnPercent || 10}%</td>
                   <td className="py-4 px-4">
                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${p.active ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400'}`}>
                       {p.active ? 'Active' : 'Inactive'}
@@ -105,7 +108,7 @@ export default function AdminProductsPage() {
                   </MotionTr>
                 ))}
                 {(!products || products.length === 0) && (
-                  <MotionTr><td colSpan={5} className="text-center py-12 text-gray-500">No products yet</td></MotionTr>
+                  <MotionTr><td colSpan={6} className="text-center py-12 text-gray-500">No products yet</td></MotionTr>
                 )}
               </MotionTbody>
           </table>
@@ -129,9 +132,14 @@ export default function AdminProductsPage() {
                   className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-secondary-700 text-secondary-700 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Daily Earn (₦)</label>
-                <input type="number" value={form.dailyEarn} onChange={(e) => setForm({ ...form, dailyEarn: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-secondary-700 text-secondary-700 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none" />
+                <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Daily Earn (%)</label>
+                <input type="number" value={form.dailyEarnPercent} onChange={(e) => setForm({ ...form, dailyEarnPercent: e.target.value })}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-secondary-700 text-secondary-700 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none" placeholder="10" step="0.1" />
+                {form.price && form.dailyEarnPercent && (
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5">
+                    Calculated: <span className="font-semibold text-accent-500">₦{calculatedEarn.toLocaleString()}/day</span>
+                  </p>
+                )}
               </div>
               <div className="flex gap-3 pt-2">
                 <button type="submit" disabled={createMutation.isPending || updateMutation.isPending}

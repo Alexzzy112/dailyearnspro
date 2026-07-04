@@ -448,14 +448,14 @@ exports.getProducts = async (req, res) => {
     let products = await Product.find().sort({ price: 1 });
     if (products.length === 0) {
       const defaults = [
-        { name: 'Gold Saver', price: 5000, dailyEarn: 500 },
-        { name: 'Diamond Saver', price: 10000, dailyEarn: 1000 },
-        { name: 'Premium Saver', price: 20000, dailyEarn: 2000 },
-        { name: 'Elite Saver', price: 50000, dailyEarn: 5000 },
-        { name: 'Platinum Saver', price: 100000, dailyEarn: 10000 },
-        { name: 'Royal Saver', price: 200000, dailyEarn: 20000 },
-        { name: 'VIP Saver', price: 500000, dailyEarn: 50000 },
-        { name: 'Legend Saver', price: 1000000, dailyEarn: 100000 },
+        { name: 'Gold Saver', price: 5000, dailyEarn: 500, dailyEarnPercent: 10 },
+        { name: 'Diamond Saver', price: 10000, dailyEarn: 1000, dailyEarnPercent: 10 },
+        { name: 'Premium Saver', price: 20000, dailyEarn: 2000, dailyEarnPercent: 10 },
+        { name: 'Elite Saver', price: 50000, dailyEarn: 5000, dailyEarnPercent: 10 },
+        { name: 'Platinum Saver', price: 100000, dailyEarn: 10000, dailyEarnPercent: 10 },
+        { name: 'Royal Saver', price: 200000, dailyEarn: 20000, dailyEarnPercent: 10 },
+        { name: 'VIP Saver', price: 500000, dailyEarn: 50000, dailyEarnPercent: 10 },
+        { name: 'Legend Saver', price: 1000000, dailyEarn: 100000, dailyEarnPercent: 10 },
       ];
       products = await Product.insertMany(defaults);
     }
@@ -467,9 +467,10 @@ exports.getProducts = async (req, res) => {
 
 exports.createProduct = async (req, res) => {
   try {
-    const { name, price, dailyEarn } = req.body;
-    if (!name || !price || !dailyEarn) return res.status(400).json({ message: 'All fields required' });
-    const product = await Product.create({ name, price, dailyEarn });
+    const { name, price, dailyEarnPercent } = req.body;
+    if (!name || !price || !dailyEarnPercent) return res.status(400).json({ message: 'Name, price, and daily earn % are required' });
+    const dailyEarn = Math.round(price * (Number(dailyEarnPercent) / 100));
+    const product = await Product.create({ name, price, dailyEarn, dailyEarnPercent: Number(dailyEarnPercent) });
     res.status(201).json(product);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -478,7 +479,14 @@ exports.createProduct = async (req, res) => {
 
 exports.updateProduct = async (req, res) => {
   try {
-    const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const updateData = { ...req.body };
+    if (updateData.dailyEarnPercent || updateData.price) {
+      const current = await Product.findById(req.params.id);
+      const price = updateData.price || current.price;
+      const percent = updateData.dailyEarnPercent || current.dailyEarnPercent;
+      updateData.dailyEarn = Math.round(price * (Number(percent) / 100));
+    }
+    const product = await Product.findByIdAndUpdate(req.params.id, updateData, { new: true });
     if (!product) return res.status(404).json({ message: 'Product not found' });
     res.json(product);
   } catch (error) {

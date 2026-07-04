@@ -90,8 +90,8 @@ export const adminAPI = {
   resetRecords: () => api.post('/admin/reset'),
   reseedData: () => api.post('/admin/reseed'),
   getProducts: () => api.get('/admin/products'),
-  createProduct: (data: { name: string; price: number; dailyEarn: number }) => api.post('/admin/products', data),
-  updateProduct: (id: string, data: { name?: string; price?: number; dailyEarn?: number; active?: boolean }) => api.put(`/admin/products/${id}`, data),
+  createProduct: (data: { name: string; price: number; dailyEarnPercent: number }) => api.post('/admin/products', data),
+  updateProduct: (id: string, data: { name?: string; price?: number; dailyEarnPercent?: number; active?: boolean }) => api.put(`/admin/products/${id}`, data),
   deleteProduct: (id: string) => api.delete(`/admin/products/${id}`),
 };
 
