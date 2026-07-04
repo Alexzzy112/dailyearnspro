@@ -10,9 +10,9 @@ import NotificationBell from '@/components/NotificationBell';
 const navItems = [
   { href: '/dashboard/products', label: 'Products', icon: HiShoppingBag },
   { href: '/dashboard/tasks', label: 'Tasks', icon: HiClipboardList },
+  { href: '/dashboard', label: 'Dashboard', icon: HiHome },
   { href: '/dashboard/referrals', label: 'Referrals', icon: HiUserGroup },
   { href: '/dashboard/top-members', label: 'Top Members', icon: HiStar },
-  { href: '/dashboard', label: 'Dashboard', icon: HiHome },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -93,7 +93,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <Link key={item.href} href={item.href}
                   className="col-span-1 flex items-center justify-center">
                   <div className={`-mt-7 w-14 h-14 rounded-full flex flex-col items-center justify-center transition shadow-lg ${
-                    isActive ? 'gradient-primary text-white' : 'bg-white dark:bg-secondary-800 text-gray-400 dark:text-gray-500 border-2 border-gray-200 dark:border-gray-600'
+                    isActive ? 'gradient-accent text-white shadow-green-500/30' : 'bg-white dark:bg-secondary-800 text-gray-400 dark:text-gray-500 border-2 border-gray-200 dark:border-gray-600'
                   }`}>
                     <item.icon className="w-6 h-6" />
                     <span className="text-[8px] font-bold mt-0.5">Dashboard</span>
