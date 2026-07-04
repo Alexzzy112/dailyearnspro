@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { adminAPI } from '@/lib/api';
 import toast from 'react-hot-toast';
 import { MotionDiv, MotionTbody, MotionTr, staggerContainer, staggerItem, fadeInUp, scaleIn, AnimatePresence } from '@/components/MotionComponents';
-import { HiSearch, HiXCircle, HiTrash, HiCurrencyDollar } from 'react-icons/hi';
+import { HiSearch, HiXCircle, HiCheckCircle, HiTrash, HiCurrencyDollar } from 'react-icons/hi';
 
 export default function AdminUsersPage() {
   const queryClient = useQueryClient();
@@ -20,7 +20,7 @@ export default function AdminUsersPage() {
 
   const suspendMutation = useMutation({
     mutationFn: (id: string) => adminAPI.suspendUser(id),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['adminUsers'] }); toast.success('User suspended'); },
+    onSuccess: (data: any) => { queryClient.invalidateQueries({ queryKey: ['adminUsers'] }); toast.success(data.data?.message || 'Updated'); },
     onError: (err: any) => toast.error(err.response?.data?.message || 'Failed'),
   });
 
@@ -114,11 +114,11 @@ export default function AdminUsersPage() {
                   <td className="py-4 px-4 text-gray-600 dark:text-gray-300">{u.tasksCompleted || 0}</td>
                   <td className="py-4 px-4">
                     <div className="flex items-center gap-2">
-                      {u.accountStatus === 'active' && (
-                        <button onClick={() => suspendMutation.mutate(u._id)} className="p-2 text-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded-lg transition" title="Suspend">
-                          <HiXCircle className="w-5 h-5" />
-                        </button>
-                      )}
+                      <button onClick={() => suspendMutation.mutate(u._id)}
+                        className={`p-2 rounded-lg transition ${u.accountStatus === 'suspended' ? 'text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20' : 'text-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-900/20'}`}
+                        title={u.accountStatus === 'suspended' ? 'Activate' : 'Suspend'}>
+                        {u.accountStatus === 'suspended' ? <HiCheckCircle className="w-5 h-5" /> : <HiXCircle className="w-5 h-5" />}
+                      </button>
                       <button onClick={() => { setWalletModal({ id: u._id, name: u.name, balance: u.walletBalance }); setWalletAmount(''); setWalletType('credit'); }}
                         className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition" title="Adjust Wallet">
                         <HiCurrencyDollar className="w-5 h-5" />

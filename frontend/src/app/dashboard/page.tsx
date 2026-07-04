@@ -69,12 +69,18 @@ export default function DashboardPage() {
       </div>
 
       {dashboard?.accountStatus === 'suspended' && (
-        <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3">
-          <HiExclamationCircle className="w-6 h-6 text-red-600 dark:text-red-400 flex-shrink-0" />
-          <p className="text-red-700 dark:text-red-300 font-medium">Account Suspended. Please contact support.</p>
-        </div>
+        <MotionDiv initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="mb-6 p-8 bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-900/10 border-2 border-red-300 dark:border-red-800 rounded-2xl text-center">
+          <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+            <HiExclamationCircle className="w-10 h-10 text-red-500" />
+          </div>
+          <h2 className="text-xl font-bold text-red-700 dark:text-red-400 mb-2">Account Suspended</h2>
+          <p className="text-red-600 dark:text-red-300 font-medium">Account is suspended due to illegal activities</p>
+          <p className="text-sm text-red-500 dark:text-red-400 mt-3">Please contact support for assistance.</p>
+        </MotionDiv>
       )}
 
+      {dashboard?.accountStatus !== 'suspended' && (
+        <>
       {/* Testimonials Ticker */}
       <Link href="/dashboard/top-members">
         <MotionDiv variants={fadeInUp(0.2)} initial="initial" animate="animate" className="mb-4 bg-white dark:bg-secondary-800 rounded-xl p-3 card-shadow overflow-hidden hover:shadow-md transition cursor-pointer">

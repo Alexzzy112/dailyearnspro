@@ -11,9 +11,6 @@ const protect = async (req, res, next) => {
       if (!req.user) {
         return res.status(401).json({ message: 'User not found' });
       }
-      if (req.user.accountStatus === 'suspended') {
-        return res.status(403).json({ message: 'Account suspended. Contact admin.' });
-      }
       next();
     } catch (error) {
       return res.status(401).json({ message: 'Not authorized, token failed' });
@@ -31,4 +28,11 @@ const adminOnly = (req, res, next) => {
   }
 };
 
-module.exports = { protect, adminOnly };
+const checkNotSuspended = (req, res, next) => {
+  if (req.user && req.user.accountStatus === 'suspended') {
+    return res.status(403).json({ message: 'Account suspended. Contact admin.' });
+  }
+  next();
+};
+
+module.exports = { protect, adminOnly, checkNotSuspended };

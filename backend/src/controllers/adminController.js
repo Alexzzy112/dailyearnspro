@@ -69,9 +69,10 @@ exports.suspendUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ message: 'User not found' });
-    user.accountStatus = 'suspended';
+    const newStatus = user.accountStatus === 'suspended' ? 'active' : 'suspended';
+    user.accountStatus = newStatus;
     await user.save();
-    res.json({ message: 'User suspended', user });
+    res.json({ message: `User ${newStatus === 'suspended' ? 'suspended' : 'activated'}`, user });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
