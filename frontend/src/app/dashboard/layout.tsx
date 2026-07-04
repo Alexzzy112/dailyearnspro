@@ -93,7 +93,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <Link key={item.href} href={item.href}
                   className="col-span-1 flex items-center justify-center">
                   <div className={`-mt-7 w-14 h-14 rounded-full flex flex-col items-center justify-center transition shadow-lg ${
-                    isActive ? 'bg-gradient-to-br from-amber-400 via-orange-500 to-red-500 text-white shadow-orange-500/30' : 'bg-white dark:bg-secondary-800 text-gray-400 dark:text-gray-500 border-2 border-gray-200 dark:border-gray-600'
+                    isActive ? 'bg-gradient-to-br from-emerald-400 via-green-500 to-teal-600 text-white shadow-green-500/30' : 'bg-white dark:bg-secondary-800 text-gray-400 dark:text-gray-500 border-2 border-gray-200 dark:border-gray-600'
                   }`}>
                     <item.icon className="w-6 h-6" />
                     <span className="text-[8px] font-bold mt-0.5">Dashboard</span>
