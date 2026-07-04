@@ -60,22 +60,6 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Stats Grid */}
-      <MotionDiv variants={staggerContainer} initial="initial" animate="animate" className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-3 mb-6">
-        {stats.map((stat, i) => (
-          <MotionDiv key={i} variants={staggerItem}>
-            <div className="flex items-center gap-2 mb-1">
-              <div className={`w-8 h-8 ${stat.color} rounded-lg flex items-center justify-center group-hover:scale-110 transition`}>
-                <stat.icon className="w-4 h-4 text-white" />
-              </div>
-              <span className="text-[10px] font-medium text-accent-500">{stat.change}</span>
-            </div>
-            <p className="text-base font-bold text-secondary-700 dark:text-white">{stat.value}</p>
-            <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">{stat.label}</p>
-          </MotionDiv>
-        ))}
-      </MotionDiv>
-
       {/* Top Members Withdrawals Ticker */}
       <Link href="/dashboard/top-members">
         <MotionDiv variants={fadeInUp(0.2)} initial="initial" animate="animate" className="mb-4 bg-white dark:bg-secondary-800 rounded-xl p-3 card-shadow overflow-hidden hover:shadow-md transition cursor-pointer">
@@ -99,6 +83,22 @@ export default function DashboardPage() {
           </div>
         </MotionDiv>
       </Link>
+
+      {/* Stats Grid */}
+      <MotionDiv variants={staggerContainer} initial="initial" animate="animate" className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-3 mb-6">
+        {stats.map((stat, i) => (
+          <MotionDiv key={i} variants={staggerItem}>
+            <div className="flex items-center gap-2 mb-1">
+              <div className={`w-8 h-8 ${stat.color} rounded-lg flex items-center justify-center group-hover:scale-110 transition`}>
+                <stat.icon className="w-4 h-4 text-white" />
+              </div>
+              <span className="text-[10px] font-medium text-accent-500">{stat.change}</span>
+            </div>
+            <p className="text-base font-bold text-secondary-700 dark:text-white">{stat.value}</p>
+            <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">{stat.label}</p>
+          </MotionDiv>
+        ))}
+      </MotionDiv>
 
       {/* Quick Actions */}
       {dashboard?.accountStatus === 'active' && (
