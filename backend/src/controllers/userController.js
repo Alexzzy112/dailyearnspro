@@ -336,6 +336,9 @@ exports.submitPayment = async (req, res) => {
     if (!amount || amount <= 0) {
       return res.status(400).json({ message: 'Invalid amount' });
     }
+    if (amount < 5000) {
+      return res.status(400).json({ message: 'Minimum funding amount is ₦5,000' });
+    }
     const ref = reference && reference.trim() ? reference.trim() : `PAY-${req.user._id}-${Date.now()}`;
     const screenshot = req.file ? req.file.path : '';
     const payment = await Payment.create({

@@ -9,7 +9,8 @@ import { HiShoppingBag, HiPhotograph, HiCheckCircle, HiXCircle, HiClock, HiClipb
 export default function PaymentsPage() {
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [selectedProduct, setSelectedProduct] = useState<{ name: string; price: number } | null>(null);
+  const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
+  const [customAmount, setCustomAmount] = useState('');
   const [screenshot, setScreenshot] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
@@ -18,23 +19,21 @@ export default function PaymentsPage() {
     queryFn: () => userAPI.getWallet().then(r => r.data),
   });
 
-  const { data: products } = useQuery({
-    queryKey: ['products'],
-    queryFn: () => userAPI.getProducts().then(r => r.data),
-  });
-
   const submitMutation = useMutation({
-    mutationFn: () => userAPI.submitPayment({ amount: selectedProduct!.price, reference: `${selectedProduct!.name}`, screenshot: screenshot || undefined } as any),
+    mutationFn: () => userAPI.submitPayment({ amount: selectedAmount, reference: 'Wallet Funding', screenshot: screenshot || undefined } as any),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wallet'] });
       toast.success('Payment submitted! Awaiting admin approval.');
-      setSelectedProduct(null);
+      setSelectedAmount(null);
+      setCustomAmount('');
       setScreenshot(null);
       setPreview(null);
       if (fileInputRef.current) fileInputRef.current.value = '';
     },
     onError: (err: any) => toast.error(err.response?.data?.message || 'Failed'),
   });
+
+  const presetAmounts = [5000, 10000, 20000, 50000];
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -73,43 +72,41 @@ export default function PaymentsPage() {
     <div className="max-w-5xl mx-auto">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-secondary-700 dark:text-white">Fund Wallet</h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">Select a plan amount to fund your wallet via bank transfer</p>
+        <p className="text-gray-500 dark:text-gray-400 mt-1">Choose an amount to fund your wallet via bank transfer</p>
       </div>
 
-      <MotionDiv variants={staggerContainer} initial="initial" animate="animate" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-        {products?.map((product: any) => (
-          <MotionDiv key={product._id} variants={staggerItem} className="bg-white dark:bg-secondary-800 rounded-xl p-4 card-shadow hover:shadow-md transition group">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 gradient-primary rounded-lg flex items-center justify-center group-hover:scale-110 transition">
-                <HiShoppingBag className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-secondary-700 dark:text-white text-sm">{product.name}</h3>
-                <p className="text-lg font-bold text-primary-500">₦{product.price?.toLocaleString()}</p>
-              </div>
-            </div>
-            <div className="bg-accent-500/10 rounded-lg p-2 mb-3">
-              <p className="text-xs text-accent-500 font-semibold">Daily Earn</p>
-              <p className="text-sm font-bold text-accent-500">+₦{product.dailyEarn?.toLocaleString()}/day</p>
-            </div>
-            <button onClick={() => setSelectedProduct(product)}
-              className="w-full gradient-primary text-white py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition">
-              Pay ₦{product.price?.toLocaleString()}
+      <MotionDiv variants={staggerContainer} initial="initial" animate="animate" className="mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+          {presetAmounts.map((amount) => (
+            <MotionDiv key={amount} variants={staggerItem}>
+              <button onClick={() => setSelectedAmount(amount)}
+                className="w-full bg-white dark:bg-secondary-800 rounded-xl p-4 card-shadow hover:shadow-md transition group border-2 border-transparent hover:border-primary-500">
+                <p className="text-lg font-bold text-primary-500">₦{amount.toLocaleString()}</p>
+              </button>
+            </MotionDiv>
+          ))}
+        </div>
+        <MotionDiv variants={staggerItem} className="bg-white dark:bg-secondary-800 rounded-xl p-4 card-shadow">
+          <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Or enter custom amount</label>
+          <div className="flex gap-3">
+            <input type="number" value={customAmount} onChange={(e) => setCustomAmount(e.target.value)}
+              className="flex-1 px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-secondary-700 text-secondary-700 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none transition"
+              placeholder="Enter amount in ₦" min={5000} />
+            <button onClick={() => { const amt = Number(customAmount); if (amt < 5000) { toast.error('Minimum funding amount is ₦5,000'); return; } setSelectedAmount(amt); }}
+              className="gradient-primary text-white px-6 py-3 rounded-xl font-semibold hover:opacity-90 transition text-sm">
+              Fund
             </button>
-          </MotionDiv>
-        ))}
-        {(!products || products.length === 0) && (
-          <MotionDiv variants={staggerItem} className="col-span-full text-center text-gray-500 py-12">No plans available</MotionDiv>
-        )}
+          </div>
+        </MotionDiv>
       </MotionDiv>
 
       <AnimatePresence>
-      {selectedProduct && (
+      {selectedAmount && (
         <MotionDiv initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
           <MotionDiv variants={scaleIn} initial="initial" animate="animate" className="bg-white dark:bg-secondary-800 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-700">
-              <h3 className="text-lg font-bold text-secondary-700 dark:text-white">Pay for {selectedProduct.name}</h3>
-              <button onClick={() => { setSelectedProduct(null); setScreenshot(null); setPreview(null); }}
+              <h3 className="text-lg font-bold text-secondary-700 dark:text-white">Fund Wallet</h3>
+              <button onClick={() => { setSelectedAmount(null); setCustomAmount(''); setScreenshot(null); setPreview(null); }}
                 className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition">
                 <HiX className="w-5 h-5 text-gray-500" />
               </button>
@@ -118,7 +115,7 @@ export default function PaymentsPage() {
             <div className="p-6 space-y-6">
               <div className="bg-gray-50 dark:bg-secondary-700/50 rounded-xl p-5 space-y-3">
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-3">
-                  Transfer <strong className="text-primary-500">₦{selectedProduct.price.toLocaleString()}</strong> to the account below and upload your payment proof
+                  Transfer <strong className="text-primary-500">₦{selectedAmount.toLocaleString()}</strong> to the account below and upload your payment proof
                 </p>
                 {[
                   { label: 'Account Number', value: walletData?.bankInfo?.accountNumber || 'N/A', copy: true },
