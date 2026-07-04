@@ -145,6 +145,8 @@ export default function DashboardPage() {
           </div>
         </MotionDiv>
       )}
+        </>
+      )}
     </div>
   );
 }
