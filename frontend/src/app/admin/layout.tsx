@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { HiChartBar, HiUsers, HiCurrencyDollar, HiCog, HiLogout, HiMenu, HiX, HiCash, HiClipboardList, HiBell, HiShoppingBag, HiChevronDown, HiArrowLeft } from 'react-icons/hi';
+import LoadingScreen from '@/components/LoadingScreen';
 import WelcomePopup from '@/components/WelcomePopup';
 import NotificationBell from '@/components/NotificationBell';
 import { useState, useRef, useEffect } from 'react';
@@ -36,12 +37,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }, []);
 
   if (authLoading) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 dark:bg-secondary-900">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-500 border-t-transparent mb-4"></div>
-        <p className="text-sm font-medium text-gray-500 dark:text-gray-400 animate-pulse">Loading Please Wait</p>
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   if (user?.role !== 'admin') {

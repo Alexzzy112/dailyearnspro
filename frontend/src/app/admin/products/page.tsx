@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { adminAPI } from '@/lib/api';
 import toast from 'react-hot-toast';
+import LoadingScreen from '@/components/LoadingScreen';
 import { MotionDiv, MotionTbody, MotionTr, staggerContainer, staggerItem, fadeInUp, scaleIn, AnimatePresence } from '@/components/MotionComponents';
 import { HiPlus, HiPencil, HiTrash, HiShoppingBag } from 'react-icons/hi';
 
@@ -45,11 +46,7 @@ export default function AdminProductsPage() {
     if (editing) updateMutation.mutate(); else createMutation.mutate();
   };
 
-  if (isLoading) return (
-    <div className="flex items-center justify-center h-96">
-      <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-500 border-t-transparent"></div>
-    </div>
-  );
+  if (isLoading) return <LoadingScreen />;
 
   return (
     <div>
