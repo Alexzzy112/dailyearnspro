@@ -26,7 +26,7 @@ export default function LoginPage() {
       const data = await login(form.email, form.password);
       toast.success('Login successful!');
       const target = data.role === 'admin' ? '/admin' : '/dashboard';
-      window.location.href = target;
+      router.push(target);
     } catch (err: any) {
       toast.error(err.response?.data?.message || 'Login failed');
       setLoading(false);
