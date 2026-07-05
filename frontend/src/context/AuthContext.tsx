@@ -36,7 +36,12 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [showLoginPopup, setShowLoginPopup] = useState(false);
+  const [showLoginPopup, setShowLoginPopup] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem('showLoginPopup') === 'true';
+    }
+    return false;
+  });
 
   const fetchUser = async () => {
     try {
@@ -60,6 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const secure = typeof window !== 'undefined' && window.location.protocol === 'https:';
     Cookies.set('token', res.data.token, { expires: 7, secure, sameSite: 'Lax' });
     setUser(res.data);
+    sessionStorage.setItem('showLoginPopup', 'true');
     setShowLoginPopup(true);
     return res.data;
   };
@@ -77,6 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     Cookies.remove('token');
     setUser(null);
+    sessionStorage.removeItem('showLoginPopup');
     setShowLoginPopup(false);
     window.location.href = '/';
   };
@@ -85,7 +92,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await fetchUser();
   };
 
-  const dismissLoginPopup = () => setShowLoginPopup(false);
+  const dismissLoginPopup = () => {
+    sessionStorage.removeItem('showLoginPopup');
+    setShowLoginPopup(false);
+  };
 
   return (
     <AuthContext.Provider value={{ user, loading, login, register, logout, refreshUser, showLoginPopup, dismissLoginPopup }}>
