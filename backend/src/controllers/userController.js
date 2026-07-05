@@ -49,6 +49,7 @@ exports.getDashboard = async (req, res) => {
     const tasksRemaining = Math.max(0, dailyLimit - user.todayTasksCompleted);
     const earningsToday = user.todayTasksCompleted * rewardPerTask;
     const access = await hasTaskAccess(user._id);
+    const recentTransactions = await Transaction.find({ userId: user._id }).sort({ createdAt: -1 }).limit(10);
 
     res.json({
       user: {
@@ -75,7 +76,8 @@ exports.getDashboard = async (req, res) => {
         dailyTaskLimit: dailyLimit,
         requiredViewingTime: safeNum('requiredViewingTime', safeEnvNum('REQUIRED_VIEWING_TIME', 15)),
         minWithdrawal: safeNum('minWithdrawal', safeEnvNum('MIN_WITHDRAWAL', 1500)),
-      }
+      },
+      transactions: recentTransactions,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

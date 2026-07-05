@@ -5,7 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 import LoadingScreen from '@/components/LoadingScreen';
 import { MotionDiv, staggerContainer, staggerItem, fadeInUp } from '@/components/MotionComponents';
-import { HiClipboardList, HiCurrencyDollar, HiUserGroup, HiCheckCircle, HiExclamationCircle, HiRefresh, HiTrendingUp } from 'react-icons/hi';
+import { HiClipboardList, HiCurrencyDollar, HiUserGroup, HiCheckCircle, HiExclamationCircle, HiRefresh, HiTrendingUp, HiArrowUp, HiArrowDown } from 'react-icons/hi';
 
 export default function DashboardPage() {
   const { refreshUser } = useAuth();
@@ -139,6 +139,31 @@ export default function DashboardPage() {
               <p className="font-semibold text-sm">Fund Wallet</p>
               <p className="text-[11px] text-pink-100 mt-0.5">Deposit & earn</p>
             </Link>
+          </div>
+        </MotionDiv>
+      )}
+
+      {/* Transaction Records */}
+      {data?.transactions?.length > 0 && (
+        <MotionDiv variants={fadeInUp(0.4)} initial="initial" whileInView="animate" viewport={{ once: true }} className="bg-white dark:bg-secondary-800 rounded-xl p-4 card-shadow mt-4">
+          <h2 className="text-sm font-semibold text-secondary-700 dark:text-white mb-3">Transaction Records</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {data.transactions.slice(0, 8).map((tx: any) => {
+              const isCredit = tx.type === 'credit';
+              const gradient = isCredit ? 'from-emerald-500 to-green-600' : 'from-red-500 to-rose-600';
+              const Icon = isCredit ? HiArrowUp : HiArrowDown;
+              return (
+                <div key={tx._id} className={`p-3 bg-gradient-to-r ${gradient} rounded-xl text-white`}>
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <Icon className="w-3.5 h-3.5" />
+                    <span className="text-[10px] font-medium uppercase opacity-80">{tx.type}</span>
+                  </div>
+                  <p className="font-bold text-sm">₦{tx.amount?.toLocaleString()}</p>
+                  <p className="text-[10px] opacity-80 mt-0.5 truncate">{tx.description}</p>
+                  <p className="text-[9px] opacity-60 mt-0.5">{new Date(tx.createdAt).toLocaleDateString()}</p>
+                </div>
+              );
+            })}
           </div>
         </MotionDiv>
       )}
