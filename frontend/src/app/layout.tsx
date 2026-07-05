@@ -4,6 +4,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Toaster } from "react-hot-toast";
 import QueryProvider from "@/components/QueryProvider";
+import InactivityWrapper from "@/components/InactivityWrapper";
 
 export const metadata: Metadata = {
   title: "TaskEarn Pro - Earn Money by Completing Daily Tasks",
@@ -20,7 +21,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProvider>
           <QueryProvider>
             <AuthProvider>
-              {children}
+              <InactivityWrapper>
+                {children}
+              </InactivityWrapper>
               <Toaster position="top-right" toastOptions={{
                 duration: 4000,
                 style: { borderRadius: '10px', background: '#333', color: '#fff' },

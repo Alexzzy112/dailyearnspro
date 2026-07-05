@@ -1,28 +1,12 @@
 'use client';
-import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { MotionDiv, staggerContainer, staggerItem, fadeInUp } from '@/components/MotionComponents';
 import { HiSparkles, HiStar } from 'react-icons/hi';
 
 export default function WelcomePopup() {
-  const { user, loading } = useAuth();
-  const [visible, setVisible] = useState(false);
+  const { user, showLoginPopup, dismissLoginPopup } = useAuth();
 
-  useEffect(() => {
-    if (!loading && user) {
-      const dismissed = localStorage.getItem('welcomeDismissed');
-      if (dismissed !== 'true') {
-        setVisible(true);
-      }
-    }
-  }, [user, loading]);
-
-  const handleDismiss = () => {
-    localStorage.setItem('welcomeDismissed', 'true');
-    setVisible(false);
-  };
-
-  if (!visible) return null;
+  if (!showLoginPopup || !user) return null;
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
@@ -67,7 +51,7 @@ export default function WelcomePopup() {
             ))}
           </MotionDiv>
 
-          <button onClick={handleDismiss}
+          <button onClick={dismissLoginPopup}
             className="w-full gradient-primary text-white py-3.5 rounded-xl font-semibold hover:opacity-90 transition shadow-lg shadow-primary-500/25">
             Let&apos;s Get Started 🚀
           </button>

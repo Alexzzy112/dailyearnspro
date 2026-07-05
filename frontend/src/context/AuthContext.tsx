@@ -27,6 +27,8 @@ interface AuthContextType {
   register: (data: { name: string; username: string; email: string; password: string; referredBy?: string }) => Promise<any>;
   logout: () => void;
   refreshUser: () => Promise<void>;
+  showLoginPopup: boolean;
+  dismissLoginPopup: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -34,6 +36,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showLoginPopup, setShowLoginPopup] = useState(false);
 
   const fetchUser = async () => {
     try {
@@ -57,6 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const secure = typeof window !== 'undefined' && window.location.protocol === 'https:';
     Cookies.set('token', res.data.token, { expires: 7, secure, sameSite: 'Lax' });
     setUser(res.data);
+    setShowLoginPopup(true);
     return res.data;
   };
 
@@ -73,6 +77,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     Cookies.remove('token');
     setUser(null);
+    setShowLoginPopup(false);
     window.location.href = '/';
   };
 
@@ -80,8 +85,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await fetchUser();
   };
 
+  const dismissLoginPopup = () => setShowLoginPopup(false);
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, refreshUser }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, refreshUser, showLoginPopup, dismissLoginPopup }}>
       {children}
     </AuthContext.Provider>
   );
