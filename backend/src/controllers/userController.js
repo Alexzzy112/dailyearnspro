@@ -69,6 +69,7 @@ exports.getDashboard = async (req, res) => {
         referralCode: user.referralCode,
         createdAt: user.createdAt,
         hasTaskAccess: access,
+        purchasedProduct: user.purchasedProduct,
         purchasedProductName: user.purchasedProductName,
         purchasedProductId: user.purchasedProductId,
         productDailyEarn: user.productDailyEarn

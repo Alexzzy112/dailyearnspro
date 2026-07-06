@@ -119,7 +119,7 @@ export default function DashboardPage() {
       </MotionDiv>
 
       {/* My Plan / Purchased Product */}
-      {dashboard?.purchasedProduct && dashboard?.purchasedProductName && (
+      {dashboard?.purchasedProduct && (
         <MotionDiv variants={fadeInUp(0.25)} initial="initial" animate="animate" className="bg-white dark:bg-secondary-800 rounded-xl p-4 card-shadow mb-4">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center flex-shrink-0">
@@ -127,8 +127,8 @@ export default function DashboardPage() {
             </div>
             <div className="flex-1">
               <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-medium">My Investment Plan</p>
-              <p className="text-lg font-bold text-secondary-700 dark:text-white">{dashboard.purchasedProductName}</p>
-              <p className="text-sm text-accent-500 font-semibold">+₦{dashboard.productDailyEarn?.toLocaleString()}/day</p>
+              <p className="text-lg font-bold text-secondary-700 dark:text-white">{dashboard.purchasedProductName || 'Active Plan'}</p>
+              <p className="text-sm text-accent-500 font-semibold">+₦{dashboard.productDailyEarn?.toLocaleString() || 0}/day</p>
             </div>
             <Link href="/dashboard/products" className="text-xs text-primary-500 hover:text-primary-600 font-medium">
               View Plans
