@@ -68,7 +68,10 @@ exports.getDashboard = async (req, res) => {
         referralEarnings: user.referralEarnings,
         referralCode: user.referralCode,
         createdAt: user.createdAt,
-        hasTaskAccess: access
+        hasTaskAccess: access,
+        purchasedProductName: user.purchasedProductName,
+        purchasedProductId: user.purchasedProductId,
+        productDailyEarn: user.productDailyEarn
       },
       settings: {
         taskLink: settingsMap.taskLink || process.env.DEFAULT_TASK_LINK,
@@ -372,6 +375,8 @@ exports.purchaseProduct = async (req, res) => {
     const isFirstPurchase = !user.purchasedProduct;
     user.walletBalance -= price;
     user.purchasedProduct = true;
+    user.purchasedProductId = product._id;
+    user.purchasedProductName = product.name;
     user.productDailyEarn = product.dailyEarn;
     await user.save();
     await Transaction.create({

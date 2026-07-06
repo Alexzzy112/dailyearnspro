@@ -23,6 +23,8 @@ const userSchema = new mongoose.Schema({
   referralEarnings: { type: Number, default: 0 },
   referralCount: { type: Number, default: 0 },
   purchasedProduct: { type: Boolean, default: false },
+  purchasedProductId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', default: null },
+  purchasedProductName: { type: String, default: '' },
   productDailyEarn: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now }
 });
