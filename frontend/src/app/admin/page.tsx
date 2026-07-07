@@ -2,7 +2,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { adminAPI } from '@/lib/api';
 import { MotionDiv, staggerContainer, staggerItem, fadeInUp } from '@/components/MotionComponents';
-import { HiUsers, HiUserGroup, HiCurrencyDollar, HiClipboardList, HiRefresh, HiTrendingUp, HiCash } from 'react-icons/hi';
+import { HiUsers, HiUserGroup, HiCurrencyDollar, HiClipboardList, HiRefresh, HiTrendingUp, HiCash, HiClock, HiUserAdd, HiArrowUp, HiArrowDown } from 'react-icons/hi';
 
 export default function AdminDashboardPage() {
   const { data, isLoading, refetch } = useQuery({
@@ -67,6 +67,62 @@ export default function AdminDashboardPage() {
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{stat.label}</p>
           </MotionDiv>
         ))}
+      </MotionDiv>
+
+      <MotionDiv variants={fadeInUp(0.3)} initial="initial" animate="animate" className="mt-8 bg-white dark:bg-secondary-800 rounded-2xl p-6 card-shadow">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 bg-purple-500 rounded-xl flex items-center justify-center">
+            <HiClock className="w-5 h-5 text-white" />
+          </div>
+          <h2 className="text-lg font-semibold text-secondary-700 dark:text-white">Recent User Activity</h2>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-gray-100 dark:border-gray-700">
+                <th className="text-left py-3 px-2 text-gray-500 dark:text-gray-400 font-medium">User</th>
+                <th className="text-left py-3 px-2 text-gray-500 dark:text-gray-400 font-medium">Action</th>
+                <th className="text-left py-3 px-2 text-gray-500 dark:text-gray-400 font-medium">Details</th>
+                <th className="text-right py-3 px-2 text-gray-500 dark:text-gray-400 font-medium">Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data?.recentActivity?.length === 0 && (
+                <tr><td colSpan={4} className="text-center py-8 text-gray-400">No recent activity</td></tr>
+              )}
+              {data?.recentActivity?.map((log: any) => (
+                <tr key={log._id} className="border-b border-gray-50 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-secondary-700/50 transition">
+                  <td className="py-3 px-2">
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                        {log.user?.name?.charAt(0)?.toUpperCase() || '?'}
+                      </div>
+                      <div>
+                        <p className="font-medium text-secondary-700 dark:text-white text-xs">{log.user?.name || 'System'}</p>
+                        {log.user?.username && <p className="text-gray-400 text-xs">@{log.user.username}</p>}
+                      </div>
+                    </div>
+                  </td>
+                  <td className="py-3 px-2">
+                    <div className="flex items-center gap-2">
+                      {log.type === 'user_registered' && <HiUserAdd className="w-4 h-4 text-green-500" />}
+                      {log.type === 'transaction' && (log.description?.includes('credit') || log.detail?.startsWith('+') ? <HiArrowDown className="w-4 h-4 text-green-500" /> : <HiArrowUp className="w-4 h-4 text-red-500" />)}
+                      {log.type === 'withdrawal' && <HiArrowUp className="w-4 h-4 text-red-500" />}
+                      {log.type === 'payment' && <HiCurrencyDollar className="w-4 h-4 text-blue-500" />}
+                      <span className="text-gray-600 dark:text-gray-300 text-xs">{log.description}</span>
+                    </div>
+                  </td>
+                  <td className="py-3 px-2">
+                    <span className="text-gray-400 dark:text-gray-500 text-xs">{log.detail}</span>
+                  </td>
+                  <td className="py-3 px-2 text-right">
+                    <span className="text-gray-400 dark:text-gray-500 text-xs">{new Date(log.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </MotionDiv>
     </div>
   );

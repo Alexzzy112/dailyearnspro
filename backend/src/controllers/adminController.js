@@ -30,6 +30,46 @@ exports.getDashboardStats = async (req, res) => {
       { $group: { _id: null, total: { $sum: '$amount' } } }
     ]);
 
+    const recentUsers = await User.find().select('name username email accountStatus createdAt').sort({ createdAt: -1 }).limit(10);
+    const recentTransactions = await Transaction.find().populate('userId', 'name username').sort({ createdAt: -1 }).limit(10);
+    const recentWithdrawals = await Withdrawal.find().populate('userId', 'name username').sort({ createdAt: -1 }).limit(10);
+    const recentPayments = await Payment.find().populate('userId', 'name username').sort({ createdAt: -1 }).limit(10);
+
+    const activityLog = [
+      ...recentUsers.map(u => ({
+        _id: u._id,
+        type: 'user_registered',
+        user: { name: u.name, username: u.username, _id: u._id },
+        description: `${u.name} (@${u.username}) registered`,
+        detail: `Status: ${u.accountStatus}`,
+        createdAt: u.createdAt
+      })),
+      ...recentTransactions.map(t => ({
+        _id: t._id,
+        type: 'transaction',
+        user: t.userId ? { name: t.userId.name, username: t.userId.username } : null,
+        description: t.description,
+        detail: `${t.type === 'credit' ? '+' : '-'}₦${t.amount}`,
+        createdAt: t.createdAt
+      })),
+      ...recentWithdrawals.map(w => ({
+        _id: w._id,
+        type: 'withdrawal',
+        user: w.userId ? { name: w.userId.name, username: w.userId.username } : null,
+        description: `Withdrawal of ₦${w.amount}`,
+        detail: `Status: ${w.status} - ${w.bankName}`,
+        createdAt: w.createdAt
+      })),
+      ...recentPayments.map(p => ({
+        _id: p._id,
+        type: 'payment',
+        user: p.userId ? { name: p.userId.name, username: p.userId.username } : null,
+        description: `Payment of ₦${p.amount}`,
+        detail: `Status: ${p.status} - Ref: ${p.reference}`,
+        createdAt: p.createdAt
+      }))
+    ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 20);
+
     res.json({
       totalUsers,
       activeUsers,
@@ -39,7 +79,8 @@ exports.getDashboardStats = async (req, res) => {
       pendingWithdrawals,
       totalWithdrawals: totalWithdrawals[0]?.total || 0,
       totalRevenue: totalRevenue[0]?.total || 0,
-      paidWithdrawals: paidWithdrawals[0]?.total || 0
+      paidWithdrawals: paidWithdrawals[0]?.total || 0,
+      recentActivity: activityLog
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

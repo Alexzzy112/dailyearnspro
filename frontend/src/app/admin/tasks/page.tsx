@@ -12,6 +12,7 @@ export default function AdminTasksPage() {
     taskLink: '',
     taskTitle: '',
     taskDescription: '',
+    dailyTaskLimit: 100,
   });
 
   const { data, isLoading } = useQuery({
@@ -25,6 +26,7 @@ export default function AdminTasksPage() {
         taskLink: data.taskLink || '',
         taskTitle: data.taskTitle || 'Visit Sponsor',
         taskDescription: data.taskDescription || 'Click the link below, wait the required time, then claim your reward.',
+        dailyTaskLimit: data.dailyTaskLimit || 100,
       });
     }
   }, [data]);
@@ -101,6 +103,13 @@ export default function AdminTasksPage() {
             </div>
 
             <div>
+              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Number of Tasks (Daily Limit)</label>
+              <input type="number" min={1} value={form.dailyTaskLimit} onChange={(e) => setForm({ ...form, dailyTaskLimit: Number(e.target.value) })}
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-secondary-700 text-secondary-700 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none transition" />
+              <p className="text-xs text-gray-500 mt-1">How many tasks each user sees per day (currently <strong>{form.dailyTaskLimit} tasks</strong>)</p>
+            </div>
+
+            <div>
               <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Task Link</label>
               <div className="relative">
                 <input type="url" value={form.taskLink} onChange={(e) => setForm({ ...form, taskLink: e.target.value })}
@@ -142,7 +151,7 @@ export default function AdminTasksPage() {
               </div>
             </div>
           </div>
-          <p className="text-xs text-gray-400 mt-3">This repeats daily for all users. Changes apply immediately — no restart needed.</p>
+          <p className="text-xs text-gray-400 mt-3">Users will see <strong>{form.dailyTaskLimit} tasks</strong> per day (Mon-Fri). Changes apply immediately — no restart needed.</p>
         </MotionDiv>
       </div>
     </div>
