@@ -41,7 +41,7 @@ function RegisterForm() {
         password: form.password,
         referredBy: form.referredBy || undefined,
       });
-      toast.success('Registration successful! Welcome to TaskEarn Pro.');
+      toast.success('Registration successful! Welcome to Drango.');
       router.push('/dashboard');
     } catch (err: any) {
       toast.error(err.response?.data?.message || 'Registration failed');

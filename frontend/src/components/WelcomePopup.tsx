@@ -30,7 +30,7 @@ export default function WelcomePopup() {
         <div className="p-6 space-y-4">
           <div className="text-center">
             <p className="text-secondary-700 dark:text-white font-semibold text-lg">
-              TaskEarn Pro
+              Drango
             </p>
             <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
               Complete daily tasks and earn real money. Start your earning journey today!

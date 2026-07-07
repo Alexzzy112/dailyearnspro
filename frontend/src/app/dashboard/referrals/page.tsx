@@ -15,7 +15,7 @@ export default function ReferralsPage() {
     queryFn: () => userAPI.getReferrals().then(r => r.data),
   });
 
-  const referralLink = `${typeof window !== 'undefined' ? window.location.origin : 'https://taskearnpro.com'}/register?ref=${user?.referralCode || ''}`;
+  const referralLink = `${typeof window !== 'undefined' ? window.location.origin : 'https://drango.com'}/register?ref=${user?.referralCode || ''}`;
 
   const copyLink = () => {
     navigator.clipboard.writeText(referralLink);

@@ -15,10 +15,9 @@ export default function Navbar() {
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
               <div className="w-8 h-8 gradient-primary rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">T</span>
+                <span className="text-white font-bold text-sm">D</span>
               </div>
-              <span className="font-bold text-xl text-secondary-700 dark:text-white">TaskEarn</span>
-              <span className="font-bold text-xl text-primary-500">Pro</span>
+              <span className="font-bold text-xl text-secondary-700 dark:text-white">Drango</span>
             </Link>
           </div>
 

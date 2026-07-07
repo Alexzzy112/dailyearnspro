@@ -66,7 +66,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/notifications', notificationRoutes);
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'TaskEarn Pro API is running' });
+  res.json({ status: 'ok', message: 'Drango API is running' });
 });
 
 const frontendPath = path.resolve(process.cwd(), 'frontend', 'out');
