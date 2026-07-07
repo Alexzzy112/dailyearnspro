@@ -1,30 +1,27 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { HiDownload } from 'react-icons/hi';
 
-let deferredPrompt: any = null;
-
 export default function InstallAppButton() {
-  const [installable, setInstallable] = useState(false);
-  const [installed, setInstalled] = useState(false);
+  const deferredPrompt = useRef<any>(null);
+  const [show, setShow] = useState(false);
 
   useEffect(() => {
     const handler = (e: Event) => {
       e.preventDefault();
-      deferredPrompt = e;
-      setInstallable(true);
+      deferredPrompt.current = e;
+      setShow(true);
     };
     window.addEventListener('beforeinstallprompt', handler);
 
     const installedHandler = () => {
-      setInstalled(true);
-      setInstallable(false);
-      deferredPrompt = null;
+      setShow(false);
+      deferredPrompt.current = null;
     };
     window.addEventListener('appinstalled', installedHandler);
 
     if (window.matchMedia('(display-mode: standalone)').matches) {
-      setInstalled(true);
+      setShow(false);
     }
 
     return () => {
@@ -34,18 +31,14 @@ export default function InstallAppButton() {
   }, []);
 
   const handleInstall = async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const result = await deferredPrompt.userChoice;
-      deferredPrompt = null;
-      setInstallable(false);
-      if (result.outcome === 'accepted') setInstalled(true);
-    } else if (!installed) {
-      window.open('/manifest.json', '_blank');
-    }
+    if (!deferredPrompt.current) return;
+    deferredPrompt.current.prompt();
+    const result = await deferredPrompt.current.userChoice;
+    deferredPrompt.current = null;
+    if (result.outcome === 'accepted') setShow(false);
   };
 
-  if (installed) return null;
+  if (!show) return null;
 
   return (
     <button
