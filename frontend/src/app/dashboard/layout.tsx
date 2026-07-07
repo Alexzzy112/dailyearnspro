@@ -38,15 +38,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <div className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-secondary-800 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between px-4 h-16">
           <Link href="/dashboard" className="flex items-center space-x-2">
-            <div className="w-8 h-8 gradient-primary rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 gradient-primary rounded-lg flex items-center justify-center shadow-md shadow-primary-500/20">
               <span className="text-white font-bold text-sm">D</span>
             </div>
             <span className="font-bold text-xl text-secondary-700 dark:text-white">Drango</span>
           </Link>
           <div className="flex items-center gap-3">
             <div ref={profileRef} className="relative">
-              <button onClick={() => setProfileOpen(!profileOpen)} className="flex items-center gap-1.5 sm:gap-3 hover:bg-gray-50 dark:hover:bg-secondary-700 rounded-xl px-2 sm:px-3 py-2 transition">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 gradient-primary rounded-full flex items-center justify-center text-white font-bold text-sm">
+                <button onClick={() => setProfileOpen(!profileOpen)} className="flex items-center gap-1.5 sm:gap-3 hover:bg-gray-50 dark:hover:bg-secondary-700 rounded-xl px-2 sm:px-3 py-2 transition">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 gradient-primary rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md shadow-primary-500/20">
                   {user?.name?.charAt(0)?.toUpperCase()}
                 </div>
                 <div className="hidden sm:block text-left">
@@ -82,7 +82,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </main>
 
       {/* Bottom navigation bar */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-secondary-800 border-t border-gray-200 dark:border-gray-700 safe-area-bottom">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-secondary-800 border-t border-gray-200 dark:border-gray-700 safe-area-bottom shadow-[0_-4px_20px_rgba(0,0,0,0.06)] dark:shadow-[0_-4px_20px_rgba(0,0,0,0.2)]">
         <div className="grid grid-cols-5 items-center h-16 max-w-lg mx-auto relative gap-1">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
@@ -91,8 +91,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               return (
                 <Link key={item.href} href={item.href}
                   className="col-span-1 flex items-center justify-center">
-                  <div className={`-mt-7 w-14 h-14 rounded-full flex flex-col items-center justify-center transition-all duration-200 shadow-lg ${
-                    isActive ? 'bg-gradient-to-br from-emerald-400 via-green-500 to-teal-600 text-white shadow-green-500/30 scale-105' : 'bg-white dark:bg-secondary-800 text-gray-400 dark:text-gray-500 border-2 border-gray-200 dark:border-gray-600'
+                  <div className={`-mt-7 w-14 h-14 rounded-full flex flex-col items-center justify-center transition-all duration-300 shadow-lg ${
+                    isActive
+                      ? 'bg-gradient-to-br from-emerald-400 via-green-500 to-teal-600 text-white shadow-green-500/30 scale-105'
+                      : 'bg-white dark:bg-secondary-800 text-gray-400 dark:text-gray-500 border-2 border-gray-200 dark:border-gray-600 hover:border-primary-300 dark:hover:border-primary-700'
                   }`}>
                     <item.icon className="w-6 h-6" />
                     <span className="text-[8px] font-bold mt-0.5">Dashboard</span>
@@ -102,7 +104,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             }
             return (
               <Link key={item.href} href={item.href}
-                className={`col-span-1 flex flex-col items-center justify-center gap-0.5 py-1 rounded-lg transition ${
+                className={`col-span-1 flex flex-col items-center justify-center gap-0.5 py-1 rounded-lg transition-all duration-200 ${
                   isActive ? 'text-primary-500' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
                 }`}>
                 <item.icon className={`w-5 h-5 ${isActive ? 'drop-shadow-sm' : ''}`} />
