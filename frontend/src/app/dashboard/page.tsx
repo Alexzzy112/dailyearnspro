@@ -6,6 +6,7 @@ import Link from 'next/link';
 import LoadingScreen from '@/components/LoadingScreen';
 import { MotionDiv, staggerContainer, staggerItem, fadeInUp } from '@/components/MotionComponents';
 import { HiClipboardList, HiCurrencyDollar, HiUserGroup, HiCheckCircle, HiExclamationCircle, HiRefresh, HiTrendingUp, HiArrowUp, HiArrowDown, HiShoppingBag, HiStar } from 'react-icons/hi';
+import InstallAppButton from '@/components/InstallAppButton';
 
 export default function DashboardPage() {
   const { refreshUser } = useAuth();
@@ -156,7 +157,7 @@ export default function DashboardPage() {
           {dashboard?.accountStatus === 'active' && (
             <MotionDiv variants={fadeInUp(0.25)} initial="initial" whileInView="animate" viewport={{ once: true }} className="mb-6 card-pro p-5">
               <h2 className="text-sm font-semibold text-secondary-700 dark:text-white mb-4">Quick Actions</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
                 <Link href="/dashboard/tasks" className="group relative overflow-hidden gradient-primary rounded-xl p-3.5 text-white hover:shadow-lg hover:shadow-primary-500/20 transition-all duration-300">
                   <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors" />
                   <p className="relative font-semibold text-sm">Start Tasks</p>
@@ -177,6 +178,7 @@ export default function DashboardPage() {
                   <p className="relative font-semibold text-sm">Fund Wallet</p>
                   <p className="relative text-[11px] text-pink-100 mt-0.5">Deposit now</p>
                 </Link>
+                <InstallAppButton />
               </div>
             </MotionDiv>
           )}
