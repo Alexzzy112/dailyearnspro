@@ -8,7 +8,7 @@ import { MotionDiv, MotionSection, staggerContainer, staggerItem, fadeInUp, scal
 import { HiArrowRight, HiCheckCircle, HiShieldCheck, HiCurrencyDollar, HiUserGroup, HiClock, HiChevronDown, HiStar } from 'react-icons/hi';
 
 const faqs = [
-  { q: 'What is Drango?', a: 'Drango is a platform where you earn real money by completing simple daily tasks like visiting websites.' },
+  { q: 'What is TaskEarn Pro?', a: 'TaskEarn Pro is a platform where you earn real money by completing simple daily tasks like visiting websites.' },
   { q: 'How much can I earn daily?', a: 'You can earn up to ₦10,000 per day by completing 10 tasks at ₦1,000 each.' },
   { q: 'How do I get started?', a: 'Register an account, fund your wallet, purchase an investment plan, and start completing tasks immediately.' },
   { q: 'When can I withdraw?', a: 'Withdrawals are processed on Fridays only. Minimum withdrawal is ₦1,500.' },
@@ -182,7 +182,7 @@ export default function Home() {
       <MotionSection initial="initial" whileInView="animate" viewport={{ once: true, amount: 0.3 }} className="py-20 bg-white dark:bg-secondary-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <MotionDiv variants={fadeInUp(0)} className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-secondary-700 dark:text-white mb-4">Why Choose Drango?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-secondary-700 dark:text-white mb-4">Why Choose TaskEarn Pro?</h2>
             <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">We provide the best earning experience with transparency and reliability.</p>
           </MotionDiv>
           <MotionDiv variants={staggerContainer} className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -297,7 +297,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="bg-secondary-700 dark:bg-secondary-900 py-8">
         <div className="max-w-7xl mx-auto px-4 text-center">
-          <p className="text-gray-400 text-sm">&copy; 2026 Drango. All rights reserved.</p>
+          <p className="text-gray-400 text-sm">&copy; 2026 TaskEarn Pro. All rights reserved.</p>
         </div>
       </footer>
     </div>
