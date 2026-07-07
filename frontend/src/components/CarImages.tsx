@@ -1,5 +1,4 @@
-import React from 'react';
-import { HiOutlinePhotograph } from 'react-icons/hi';
+import Image from 'next/image';
 
 export interface CarImageProps {
   plan?: string;
@@ -24,96 +23,186 @@ export function getCarLabel(price?: number): string {
   return labels[getCarIndex(price)];
 }
 
-const carSvgs: Record<number, (color: string) => React.ReactNode> = {
-  0: (c) => (
-    <svg viewBox="0 0 200 100" className="w-full h-full" fill="none">
-      <path d="M20 65 L20 60 Q20 55 25 55 L35 55 Q38 55 40 52 L48 38 Q50 35 53 35 L70 35 L75 28 Q77 25 80 25 L95 25 L105 30 L140 30 Q145 30 148 33 L155 42 Q158 45 160 48 Q162 52 165 53 L170 55 Q178 55 180 60 L180 65 Q180 68 178 70 L175 70 Q172 70 170 68 L168 65 Q165 60 160 60 L40 60 Q35 60 32 65 L30 68 Q28 70 25 70 L22 70 Q20 70 20 65Z" fill={c} />
-      <circle cx="48" cy="68" r="10" fill={c} />
-      <circle cx="48" cy="68" r="4" fill="white" />
-      <circle cx="152" cy="68" r="10" fill={c} />
-      <circle cx="152" cy="68" r="4" fill="white" />
-      <rect x="55" y="38" width="20" height="12" rx="2" fill="rgba(255,255,255,0.25)" />
-      <rect x="110" y="38" width="20" height="12" rx="2" fill="rgba(255,255,255,0.25)" />
-    </svg>
-  ),
-  1: (c) => (
-    <svg viewBox="0 0 220 100" className="w-full h-full" fill="none">
-      <path d="M15 62 L15 57 Q15 52 20 52 L32 52 Q36 52 38 49 L48 33 Q50 30 54 30 L75 30 L85 22 Q87 20 90 20 L110 20 L125 25 L160 25 Q165 25 168 28 L175 38 Q178 42 180 46 Q183 50 186 52 L192 55 Q200 55 202 60 L202 65 Q202 68 200 70 L196 70 Q192 70 190 67 L186 62 Q183 58 178 58 L38 58 Q33 58 30 62 L28 67 Q26 70 22 70 L18 70 Q15 70 15 62Z" fill={c} />
-      <circle cx="50" cy="65" r="11" fill={c} />
-      <circle cx="50" cy="65" r="4.5" fill="white" />
-      <circle cx="168" cy="65" r="11" fill={c} />
-      <circle cx="168" cy="65" r="4.5" fill="white" />
-      <rect x="58" y="35" width="25" height="13" rx="2" fill="rgba(255,255,255,0.25)" />
-      <rect x="125" y="35" width="22" height="13" rx="2" fill="rgba(255,255,255,0.25)" />
-    </svg>
-  ),
-  2: (c) => (
-    <svg viewBox="0 0 240 100" className="w-full h-full" fill="none">
-      <path d="M18 60 L18 55 Q18 50 23 50 L36 50 Q40 50 42 47 L52 30 Q54 27 58 27 L82 27 L92 18 Q94 15 98 15 L122 15 L140 22 L178 22 Q183 22 186 25 L194 36 Q197 40 200 45 Q203 50 207 52 L214 55 Q222 55 224 60 L224 65 Q224 68 222 70 L218 70 Q214 70 212 67 L208 60 Q204 55 198 55 L40 55 Q35 55 32 60 L28 67 Q26 70 22 70 L20 70 Q18 70 18 60Z" fill={c} />
-      <circle cx="55" cy="65" r="12" fill={c} />
-      <circle cx="55" cy="65" r="5" fill="white" />
-      <circle cx="185" cy="65" r="12" fill={c} />
-      <circle cx="185" cy="65" r="5" fill="white" />
-      <rect x="62" y="32" width="30" height="14" rx="2" fill="rgba(255,255,255,0.25)" />
-      <rect x="140" y="32" width="28" height="14" rx="2" fill="rgba(255,255,255,0.25)" />
-    </svg>
-  ),
-  3: (c) => (
-    <svg viewBox="0 0 260 100" className="w-full h-full" fill="none">
-      <path d="M20 58 L20 53 Q20 48 25 48 L40 48 Q44 48 46 45 L56 28 Q58 25 62 25 L88 25 L98 15 Q100 12 105 12 L135 12 L155 20 L195 20 Q200 20 203 23 L212 35 Q215 39 218 44 Q221 49 225 52 L232 55 Q240 55 242 60 L242 65 Q242 68 240 70 L236 70 Q232 70 230 67 L226 60 Q222 55 216 55 L42 55 Q37 55 34 60 L30 67 Q28 70 24 70 L22 70 Q20 70 20 58Z" fill={c} />
-      <circle cx="58" cy="63" r="13" fill={c} />
-      <circle cx="58" cy="63" r="5" fill="white" />
-      <circle cx="200" cy="63" r="13" fill={c} />
-      <circle cx="200" cy="63" r="5" fill="white" />
-      <rect x="66" y="30" width="32" height="15" rx="2" fill="rgba(255,255,255,0.25)" />
-      <rect x="155" y="30" width="30" height="15" rx="2" fill="rgba(255,255,255,0.25)" />
-    </svg>
-  ),
-  4: (c) => (
-    <svg viewBox="0 0 280 100" className="w-full h-full" fill="none">
-      <path d="M15 55 L15 50 Q15 45 20 45 L38 45 Q42 45 44 42 L55 25 Q57 22 62 22 L92 22 L102 12 Q104 10 108 10 L145 10 L168 18 L215 18 Q220 18 223 21 L232 33 Q235 37 238 42 Q241 47 245 50 L255 53 Q262 53 265 58 L265 63 Q265 68 262 70 L258 70 Q254 70 252 67 L245 58 Q240 53 234 53 L42 53 Q37 53 34 58 L30 67 Q28 70 24 70 L18 70 Q15 70 15 55Z" fill={c} />
-      <circle cx="60" cy="60" r="14" fill={c} />
-      <circle cx="60" cy="60" r="5.5" fill="white" />
-      <circle cx="222" cy="60" r="14" fill={c} />
-      <circle cx="222" cy="60" r="5.5" fill="white" />
-      <rect x="68" y="28" width="35" height="15" rx="2" fill="rgba(255,255,255,0.25)" />
-      <rect x="172" y="28" width="32" height="15" rx="2" fill="rgba(255,255,255,0.25)" />
-    </svg>
-  ),
-  5: (c) => (
-    <svg viewBox="0 0 300 100" className="w-full h-full" fill="none">
-      <path d="M10 52 L10 47 Q10 42 15 42 L35 42 Q40 42 42 39 L54 22 Q56 19 60 19 L95 19 L108 8 Q110 5 115 5 L158 5 L182 14 L238 14 Q243 14 246 17 L255 30 Q258 35 262 40 Q266 45 270 48 L282 52 Q290 52 292 58 L292 63 Q292 68 288 70 L284 70 Q280 70 278 67 L270 56 Q265 50 258 50 L40 50 Q35 50 32 56 L28 67 Q26 70 22 70 L14 70 Q10 70 10 52Z" fill={c} />
-      <circle cx="62" cy="58" r="15" fill={c} />
-      <circle cx="62" cy="58" r="6" fill="white" />
-      <circle cx="248" cy="58" r="15" fill={c} />
-      <circle cx="248" cy="58" r="6" fill="white" />
-      <rect x="72" y="25" width="38" height="16" rx="2" fill="rgba(255,255,255,0.25)" />
-      <rect x="190" y="25" width="36" height="16" rx="2" fill="rgba(255,255,255,0.25)" />
-    </svg>
-  ),
-  6: (c) => (
-    <svg viewBox="0 0 320 100" className="w-full h-full" fill="none">
-      <path d="M8 48 L8 43 Q8 38 13 38 L35 38 Q40 38 42 35 L55 18 Q57 15 62 15 L102 15 L115 5 Q117 3 122 3 L172 3 L198 12 L258 12 Q263 12 266 15 L276 28 Q279 33 284 38 Q288 43 292 46 L306 50 Q314 50 316 56 L316 62 Q316 68 312 70 L308 70 Q304 70 302 67 L292 54 Q286 48 278 48 L38 48 Q32 48 28 54 L24 67 Q22 70 18 70 L12 70 Q8 70 8 48Z" fill={c} />
-      <circle cx="62" cy="55" r="16" fill={c} />
-      <circle cx="62" cy="55" r="6" fill="white" />
-      <circle cx="268" cy="55" r="16" fill={c} />
-      <circle cx="268" cy="55" r="6" fill="white" />
-      <rect x="75" y="22" width="40" height="16" rx="2" fill="rgba(255,255,255,0.25)" />
-      <rect x="210" y="22" width="38" height="16" rx="2" fill="rgba(255,255,255,0.25)" />
-    </svg>
-  ),
-  7: (c) => (
-    <svg viewBox="0 0 340 100" className="w-full h-full" fill="none">
-      <path d="M5 45 L5 40 Q5 35 10 35 L35 35 Q40 35 42 32 L56 15 Q58 12 63 12 L108 12 L122 2 Q124 0 130 0 L186 0 L214 10 L278 10 Q283 10 286 13 L296 26 Q300 31 305 36 Q310 41 315 44 L330 48 Q338 48 340 54 L340 60 Q340 66 336 70 L332 70 Q328 70 326 67 L315 52 Q308 45 300 45 L35 45 Q28 45 24 52 L20 67 Q18 70 14 70 L8 70 Q5 70 5 45Z" fill={c} />
-      <circle cx="62" cy="52" r="17" fill={c} />
-      <circle cx="62" cy="52" r="6.5" fill="white" />
-      <circle cx="290" cy="52" r="17" fill={c} />
-      <circle cx="290" cy="52" r="6.5" fill="white" />
-      <rect x="78" y="18" width="42" height="16" rx="2" fill="rgba(255,255,255,0.25)" />
-      <rect x="230" y="18" width="40" height="16" rx="2" fill="rgba(255,255,255,0.25)" />
-    </svg>
-  ),
-};
+export function getCarGradient(price?: number): string {
+  const g = [
+    'from-blue-500 to-blue-600',
+    'from-emerald-500 to-emerald-600',
+    'from-purple-500 to-purple-600',
+    'from-orange-500 to-orange-600',
+    'from-pink-500 to-pink-600',
+    'from-teal-500 to-teal-600',
+    'from-indigo-500 to-indigo-600',
+    'from-red-500 to-red-600',
+  ];
+  return g[getCarIndex(price)];
+}
+
+const carSvgs: { id: string; svg: string }[] = [
+  { id: 'hatchback', svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 180">
+    <defs><linearGradient id="b1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#1d4ed8"/></linearGradient></defs>
+    <ellipse cx="105" cy="148" rx="28" ry="10" fill="rgba(0,0,0,0.3)"/>
+    <ellipse cx="310" cy="148" rx="28" ry="10" fill="rgba(0,0,0,0.3)"/>
+    <path d="M25 130 L25 115 Q25 105 35 105 L65 105 Q72 105 78 98 L95 70 Q100 62 110 62 L160 62 L175 55 Q180 50 188 50 L220 50 L245 58 L295 58 Q305 58 310 62 L325 78 Q330 84 335 90 Q340 96 345 100 L355 105 Q370 105 375 110 L375 130 Q375 138 370 140 L360 140 Q350 140 345 135 L335 125 Q328 118 318 118 L82 118 Q72 118 65 125 L55 135 Q50 140 42 140 L30 140 Q25 140 25 130Z" fill="url(#b1)"/>
+    <path d="M82 118 Q72 118 65 125 L55 135 Q50 140 42 140 L30 140 Q25 140 25 130 L25 115 Q25 105 35 105 L65 105 Q72 105 78 98 L95 70 Q100 62 110 62 L160 62 L175 55 Q180 50 188 50 L220 50 L245 58 L295 58 Q305 58 310 62 L325 78 Q330 84 335 90 Q340 96 345 100 L355 105 Q370 105 375 110 L375 130 Q375 138 370 140 L360 140 Q350 140 345 135 L335 125 Q328 118 318 118Z" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+    <rect x="112" y="72" width="62" height="26" rx="4" fill="rgba(0,0,0,0.25)"/>
+    <rect x="116" y="75" width="54" height="12" rx="2" fill="rgba(150,200,255,0.25)"/>
+    <rect x="250" y="72" width="52" height="26" rx="4" fill="rgba(0,0,0,0.2)"/>
+    <rect x="254" y="75" width="44" height="12" rx="2" fill="rgba(150,200,255,0.2)"/>
+    <circle cx="105" cy="140" r="22" fill="#1a1a2e"/>
+    <circle cx="105" cy="140" r="16" fill="#333"/>
+    <circle cx="105" cy="140" r="8" fill="#888"/>
+    <circle cx="105" cy="140" r="4" fill="#ccc"/>
+    <circle cx="310" cy="140" r="22" fill="#1a1a2e"/>
+    <circle cx="310" cy="140" r="16" fill="#333"/>
+    <circle cx="310" cy="140" r="8" fill="#888"/>
+    <circle cx="310" cy="140" r="4" fill="#ccc"/>
+    <rect x="30" y="118" width="12" height="6" rx="2" fill="#ffeb3b"/>
+    <rect x="360" y="118" width="10" height="6" rx="2" fill="#ff4444"/>
+  </svg>` },
+  { id: 'sedan', svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 180">
+    <defs><linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#10b981"/><stop offset="100%" stop-color="#059669"/></linearGradient></defs>
+    <ellipse cx="120" cy="148" rx="30" ry="10" fill="rgba(0,0,0,0.3)"/>
+    <ellipse cx="340" cy="148" rx="30" ry="10" fill="rgba(0,0,0,0.3)"/>
+    <path d="M22 130 L22 113 Q22 103 32 103 L70 103 Q78 103 84 96 L105 66 Q110 58 120 58 L175 58 L195 48 Q200 44 210 44 L250 44 L278 54 L330 54 Q340 54 345 58 L362 76 Q368 82 374 88 Q380 94 386 98 L398 103 Q412 103 418 108 L418 130 Q418 140 412 142 L400 142 Q390 142 384 136 L372 124 Q364 116 352 116 L88 116 Q78 116 70 124 L58 136 Q52 142 42 142 L28 142 Q22 142 22 130Z" fill="url(#g2)"/>
+    <path d="M88 116 Q78 116 70 124 L58 136 Q52 142 42 142 L28 142 Q22 142 22 130 L22 113 Q22 103 32 103 L70 103 Q78 103 84 96 L105 66 Q110 58 120 58 L175 58 L195 48 Q200 44 210 44 L250 44 L278 54 L330 54 Q340 54 345 58 L362 76 Q368 82 374 88 Q380 94 386 98 L398 103 Q412 103 418 108 L418 130 Q418 140 412 142 L400 142 Q390 142 384 136 L372 124 Q364 116 352 116Z" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+    <rect x="128" y="68" width="72" height="28" rx="4" fill="rgba(0,0,0,0.25)"/>
+    <rect x="132" y="71" width="64" height="12" rx="2" fill="rgba(150,255,200,0.2)"/>
+    <rect x="282" y="68" width="64" height="28" rx="4" fill="rgba(0,0,0,0.2)"/>
+    <rect x="286" y="71" width="56" height="12" rx="2" fill="rgba(150,255,200,0.18)"/>
+    <circle cx="120" cy="140" r="24" fill="#1a1a2e"/>
+    <circle cx="120" cy="140" r="18" fill="#333"/>
+    <circle cx="120" cy="140" r="9" fill="#888"/>
+    <circle cx="120" cy="140" r="4.5" fill="#ccc"/>
+    <circle cx="340" cy="140" r="24" fill="#1a1a2e"/>
+    <circle cx="340" cy="140" r="18" fill="#333"/>
+    <circle cx="340" cy="140" r="9" fill="#888"/>
+    <circle cx="340" cy="140" r="4.5" fill="#ccc"/>
+    <rect x="28" y="118" width="14" height="6" rx="2" fill="#ffeb3b"/>
+    <rect x="398" y="118" width="12" height="6" rx="2" fill="#ff4444"/>
+  </svg>` },
+  { id: 'premium', svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 180">
+    <defs><linearGradient id="g3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#8b5cf6"/><stop offset="100%" stop-color="#7c3aed"/></linearGradient></defs>
+    <ellipse cx="135" cy="148" rx="32" ry="10" fill="rgba(0,0,0,0.3)"/>
+    <ellipse cx="370" cy="148" rx="32" ry="10" fill="rgba(0,0,0,0.3)"/>
+    <path d="M20 128 L20 110 Q20 100 30 100 L75 100 Q83 100 90 93 L112 62 Q117 54 128 54 L188 54 L212 42 Q218 38 228 38 L272 38 L304 50 L358 50 Q370 50 375 54 L394 74 Q400 80 406 86 Q412 92 418 96 L432 100 Q448 100 454 106 L454 128 Q454 138 448 140 L434 140 Q424 140 416 134 L402 120 Q392 112 380 112 L86 112 Q76 112 68 120 L56 134 Q48 140 38 140 L26 140 Q20 140 20 128Z" fill="url(#g3)"/>
+    <rect x="136" y="64" width="80" height="30" rx="5" fill="rgba(0,0,0,0.25)"/>
+    <rect x="140" y="67" width="72" height="13" rx="2" fill="rgba(200,180,255,0.2)"/>
+    <rect x="306" y="64" width="72" height="30" rx="5" fill="rgba(0,0,0,0.2)"/>
+    <rect x="310" y="67" width="64" height="13" rx="2" fill="rgba(200,180,255,0.18)"/>
+    <circle cx="135" cy="140" r="26" fill="#1a1a2e"/>
+    <circle cx="135" cy="140" r="19" fill="#333"/>
+    <circle cx="135" cy="140" r="10" fill="#999"/>
+    <circle cx="135" cy="140" r="5" fill="#ddd"/>
+    <circle cx="370" cy="140" r="26" fill="#1a1a2e"/>
+    <circle cx="370" cy="140" r="19" fill="#333"/>
+    <circle cx="370" cy="140" r="10" fill="#999"/>
+    <circle cx="370" cy="140" r="5" fill="#ddd"/>
+    <rect x="26" y="116" width="14" height="6" rx="2" fill="#ffeb3b"/>
+    <rect x="434" y="116" width="12" height="6" rx="2" fill="#ff4444"/>
+  </svg>` },
+  { id: 'luxury', svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 180">
+    <defs><linearGradient id="g4" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f97316"/><stop offset="100%" stop-color="#ea580c"/></linearGradient></defs>
+    <ellipse cx="150" cy="148" rx="34" ry="10" fill="rgba(0,0,0,0.3)"/>
+    <ellipse cx="400" cy="148" rx="34" ry="10" fill="rgba(0,0,0,0.3)"/>
+    <path d="M18 126 L18 108 Q18 98 28 98 L80 98 Q88 98 95 91 L118 58 Q123 50 134 50 L200 50 L226 38 Q232 34 244 34 L294 34 L328 48 L386 48 Q398 48 404 52 L424 74 Q430 80 436 86 Q442 92 448 96 L464 100 Q480 100 486 106 L486 126 Q486 136 480 138 L466 138 Q456 138 448 132 L432 118 Q422 110 410 110 L84 110 Q74 110 66 118 L54 132 Q46 138 36 138 L24 138 Q18 138 18 126Z" fill="url(#g4)"/>
+    <rect x="142" y="60" width="88" height="32" rx="5" fill="rgba(0,0,0,0.25)"/>
+    <rect x="146" y="63" width="80" height="14" rx="2" fill="rgba(255,220,180,0.2)"/>
+    <rect x="336" y="60" width="80" height="32" rx="5" fill="rgba(0,0,0,0.2)"/>
+    <rect x="340" y="63" width="72" height="14" rx="2" fill="rgba(255,220,180,0.18)"/>
+    <circle cx="150" cy="140" r="28" fill="#1a1a2e"/>
+    <circle cx="150" cy="140" r="21" fill="#333"/>
+    <circle cx="150" cy="140" r="11" fill="#aaa"/>
+    <circle cx="150" cy="140" r="5.5" fill="#eee"/>
+    <circle cx="400" cy="140" r="28" fill="#1a1a2e"/>
+    <circle cx="400" cy="140" r="21" fill="#333"/>
+    <circle cx="400" cy="140" r="11" fill="#aaa"/>
+    <circle cx="400" cy="140" r="5.5" fill="#eee"/>
+    <rect x="24" y="114" width="16" height="6" rx="2" fill="#ffeb3b"/>
+    <rect x="466" y="114" width="14" height="6" rx="2" fill="#ff4444"/>
+  </svg>` },
+  { id: 'sports', svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 180">
+    <defs><linearGradient id="g5" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ec4899"/><stop offset="100%" stop-color="#db2777"/></linearGradient></defs>
+    <ellipse cx="165" cy="148" rx="36" ry="10" fill="rgba(0,0,0,0.3)"/>
+    <ellipse cx="430" cy="148" rx="36" ry="10" fill="rgba(0,0,0,0.3)"/>
+    <path d="M15 124 L15 105 Q15 95 25 95 L82 95 Q90 95 97 88 L122 52 Q128 44 140 44 L212 44 L240 32 Q248 28 260 28 L316 28 L354 44 L416 44 Q428 44 434 48 L456 72 Q462 78 468 84 Q474 90 480 94 L498 98 Q516 98 522 104 L522 124 Q522 134 516 136 L500 136 Q490 136 480 130 L462 116 Q452 108 440 108 L80 108 Q70 108 62 116 L48 130 Q40 136 30 136 L20 136 Q15 136 15 124Z" fill="url(#g5)"/>
+    <rect x="150" y="54" width="96" height="34" rx="6" fill="rgba(0,0,0,0.25)"/>
+    <rect x="154" y="57" width="88" height="15" rx="2" fill="rgba(255,180,220,0.2)"/>
+    <rect x="364" y="54" width="88" height="34" rx="6" fill="rgba(0,0,0,0.2)"/>
+    <rect x="368" y="57" width="80" height="15" rx="2" fill="rgba(255,180,220,0.18)"/>
+    <circle cx="165" cy="140" r="30" fill="#1a1a2e"/>
+    <circle cx="165" cy="140" r="22" fill="#333"/>
+    <circle cx="165" cy="140" r="12" fill="#aaa"/>
+    <circle cx="165" cy="140" r="6" fill="#eee"/>
+    <circle cx="430" cy="140" r="30" fill="#1a1a2e"/>
+    <circle cx="430" cy="140" r="22" fill="#333"/>
+    <circle cx="430" cy="140" r="12" fill="#aaa"/>
+    <circle cx="430" cy="140" r="6" fill="#eee"/>
+    <rect x="22" y="112" width="18" height="6" rx="2" fill="#ffeb3b"/>
+    <rect x="498" y="112" width="16" height="6" rx="2" fill="#ff4444"/>
+    <path d="M290 280 L310 96" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+  </svg>` },
+  { id: 'luxury-sports', svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 180">
+    <defs><linearGradient id="g6" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#14b8a6"/><stop offset="100%" stop-color="#0d9488"/></linearGradient></defs>
+    <ellipse cx="180" cy="148" rx="38" ry="10" fill="rgba(0,0,0,0.3)"/>
+    <ellipse cx="460" cy="148" rx="38" ry="10" fill="rgba(0,0,0,0.3)"/>
+    <path d="M12 122 L12 102 Q12 92 22 92 L85 92 Q93 92 100 85 L126 48 Q132 40 145 40 L222 40 L254 28 Q262 24 275 24 L338 24 L378 42 L444 42 Q456 42 462 46 L486 70 Q492 76 498 82 Q504 88 510 92 L530 96 Q548 96 554 102 L554 122 Q554 132 548 134 L530 134 Q520 134 510 128 L490 114 Q480 106 468 106 L78 106 Q68 106 60 114 L46 128 Q38 134 28 134 L18 134 Q12 134 12 122Z" fill="url(#g6)"/>
+    <rect x="154" y="50" width="104" height="36" rx="6" fill="rgba(0,0,0,0.25)"/>
+    <rect x="158" y="53" width="96" height="16" rx="2" fill="rgba(180,255,240,0.2)"/>
+    <rect x="390" y="50" width="96" height="36" rx="6" fill="rgba(0,0,0,0.2)"/>
+    <rect x="394" y="53" width="88" height="16" rx="2" fill="rgba(180,255,240,0.18)"/>
+    <circle cx="180" cy="140" r="32" fill="#1a1a2e"/>
+    <circle cx="180" cy="140" r="24" fill="#333"/>
+    <circle cx="180" cy="140" r="13" fill="#bbb"/>
+    <circle cx="180" cy="140" r="6.5" fill="#eee"/>
+    <circle cx="460" cy="140" r="32" fill="#1a1a2e"/>
+    <circle cx="460" cy="140" r="24" fill="#333"/>
+    <circle cx="460" cy="140" r="13" fill="#bbb"/>
+    <circle cx="460" cy="140" r="6.5" fill="#eee"/>
+    <rect x="20" y="110" width="18" height="6" rx="2" fill="#ffeb3b"/>
+    <rect x="532" y="110" width="16" height="6" rx="2" fill="#ff4444"/>
+  </svg>` },
+  { id: 'supercar', svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 180">
+    <defs><linearGradient id="g7" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#6366f1"/><stop offset="100%" stop-color="#4f46e5"/></linearGradient></defs>
+    <ellipse cx="195" cy="148" rx="40" ry="10" fill="rgba(0,0,0,0.3)"/>
+    <ellipse cx="490" cy="148" rx="40" ry="10" fill="rgba(0,0,0,0.3)"/>
+    <path d="M8 120 L8 100 Q8 90 18 90 L88 90 Q96 90 103 83 L130 44 Q136 36 150 36 L232 36 L268 24 Q276 20 290 20 L360 20 L402 40 L472 40 Q484 40 490 44 L516 68 Q522 74 528 80 Q534 86 540 90 L562 94 Q580 94 586 100 L586 120 Q586 130 580 132 L560 132 Q550 132 540 126 L518 112 Q508 104 496 104 L76 104 Q66 104 58 112 L44 126 Q36 132 26 132 L14 132 Q8 132 8 120Z" fill="url(#g7)"/>
+    <rect x="160" y="46" width="112" height="38" rx="6" fill="rgba(0,0,0,0.25)"/>
+    <rect x="164" y="49" width="104" height="17" rx="2" fill="rgba(200,200,255,0.2)"/>
+    <rect x="418" y="46" width="104" height="38" rx="6" fill="rgba(0,0,0,0.2)"/>
+    <rect x="422" y="49" width="96" height="17" rx="2" fill="rgba(200,200,255,0.18)"/>
+    <circle cx="195" cy="140" r="34" fill="#1a1a2e"/>
+    <circle cx="195" cy="140" r="25" fill="#333"/>
+    <circle cx="195" cy="140" r="14" fill="#bbb"/>
+    <circle cx="195" cy="140" r="7" fill="#fff"/>
+    <circle cx="490" cy="140" r="34" fill="#1a1a2e"/>
+    <circle cx="490" cy="140" r="25" fill="#333"/>
+    <circle cx="490" cy="140" r="14" fill="#bbb"/>
+    <circle cx="490" cy="140" r="7" fill="#fff"/>
+    <rect x="16" y="108" width="20" height="8" rx="2" fill="#ffeb3b"/>
+    <rect x="562" y="108" width="18" height="8" rx="2" fill="#ff4444"/>
+  </svg>` },
+  { id: 'hypercar', svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 180">
+    <defs><linearGradient id="g8" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ef4444"/><stop offset="100%" stop-color="#dc2626"/></linearGradient></defs>
+    <ellipse cx="210" cy="148" rx="42" ry="10" fill="rgba(0,0,0,0.3)"/>
+    <ellipse cx="520" cy="148" rx="42" ry="10" fill="rgba(0,0,0,0.3)"/>
+    <path d="M5 118 L5 98 Q5 88 15 88 L90 88 Q98 88 105 81 L134 40 Q140 32 155 32 L242 32 L280 20 Q288 16 304 16 L380 16 L424 38 L498 38 Q510 38 516 42 L544 66 Q550 72 556 78 Q562 84 568 88 L592 92 Q612 92 618 98 L618 118 Q618 128 612 130 L590 130 Q580 130 570 124 L546 110 Q536 102 524 102 L76 102 Q66 102 58 110 L44 124 Q36 130 26 130 L12 130 Q5 130 5 118Z" fill="url(#g8)"/>
+    <rect x="165" y="42" width="120" height="40" rx="7" fill="rgba(0,0,0,0.25)"/>
+    <rect x="169" y="45" width="112" height="18" rx="2" fill="rgba(255,200,200,0.2)"/>
+    <rect x="444" y="42" width="112" height="40" rx="7" fill="rgba(0,0,0,0.2)"/>
+    <rect x="448" y="45" width="104" height="18" rx="2" fill="rgba(255,200,200,0.18)"/>
+    <circle cx="210" cy="140" r="36" fill="#1a1a2e"/>
+    <circle cx="210" cy="140" r="27" fill="#333"/>
+    <circle cx="210" cy="140" r="15" fill="#bbb"/>
+    <circle cx="210" cy="140" r="7.5" fill="#fff"/>
+    <circle cx="520" cy="140" r="36" fill="#1a1a2e"/>
+    <circle cx="520" cy="140" r="27" fill="#333"/>
+    <circle cx="520" cy="140" r="15" fill="#bbb"/>
+    <circle cx="520" cy="140" r="7.5" fill="#fff"/>
+    <rect x="12" y="106" width="22" height="8" rx="2" fill="#ffeb3b"/>
+    <rect x="594" y="106" width="20" height="8" rx="2" fill="#00ff00"/>
+    <path d="M340 280 L370 94" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
+  </svg>` },
+];
 
 const carGradients = [
   'from-blue-500 to-blue-600',
@@ -126,23 +215,13 @@ const carGradients = [
   'from-red-500 to-red-600',
 ];
 
-export function getCarGradient(price?: number): string {
-  return carGradients[getCarIndex(price)];
-}
-
 export default function CarImage({ price, className = '' }: CarImageProps) {
   const idx = getCarIndex(price);
   const gradient = carGradients[idx];
-  const svgColor = '#ffffff';
-  const renderSvg = carSvgs[idx];
 
   return (
-    <div className={`relative overflow-hidden ${className}`}>
-      <div className={`w-full aspect-[3/1] bg-gradient-to-r ${gradient} p-3 flex items-center justify-center`}>
-        <div className="w-full h-full max-w-[280px] mx-auto opacity-90">
-          {renderSvg(svgColor)}
-        </div>
-      </div>
+    <div className={`relative w-full aspect-[3/1] overflow-hidden bg-gradient-to-r ${gradient} ${className}`}>
+      <div className="w-full h-full flex items-center justify-center p-2" dangerouslySetInnerHTML={{ __html: carSvgs[idx].svg }} />
     </div>
   );
 }
