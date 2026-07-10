@@ -34,7 +34,7 @@ export default function TasksPage() {
   });
 
   const startMutation = useMutation({
-    mutationFn: () => userAPI.startTask(),
+    mutationFn: (taskNumber: number) => userAPI.startTask(taskNumber),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       setElapsed(0);
@@ -42,6 +42,9 @@ export default function TasksPage() {
       timerRef.current = setInterval(() => {
         setElapsed(prev => prev + 1);
       }, 1000);
+    },
+    onError: (err: any) => {
+      toast.error(err.response?.data?.message || 'Failed to start task');
     },
   });
 
@@ -61,7 +64,7 @@ export default function TasksPage() {
   const handleStartTask = (task: any) => {
     if (task.completed) return;
     window.open(task.taskLink, '_blank');
-    startMutation.mutate();
+    startMutation.mutate(task.taskNumber);
   };
 
   const handleClaimReward = (taskNumber: number, reward: number) => {
@@ -126,7 +129,7 @@ export default function TasksPage() {
     : completedCount * rewardAmt;
   const maxEarn = productDailyEarn > 0 ? productDailyEarn : dailyLimit * rewardAmt;
 
-  const hasStarted = !!data?.taskStartedAt;
+  const hasStarted = !!data?.taskStartedAt && !!activeTaskNum;
   const canClaim = hasStarted && elapsed >= viewTime;
   const timerPercent = viewTime > 0 ? Math.min(100, (elapsed / viewTime) * 100) : 0;
   const allDone = tasks.length > 0 && tasks.every((t: any) => t.completed);
@@ -195,9 +198,8 @@ export default function TasksPage() {
 
       <MotionDiv variants={staggerContainer} initial="initial" animate="animate" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {tasks.map((task: any) => {
-          const isNext = !task.completed && task.taskNumber === activeTaskNum && !hasStarted;
           const isActive = hasStarted && task.taskNumber === activeTaskNum;
-          const isLocked = !task.completed && !isNext && !isActive;
+          const isLocked = hasStarted && !task.completed && !isActive;
 
           return (
             <MotionDiv key={task.taskNumber} variants={staggerItem} className={`card-pro p-5 ${task.completed ? 'opacity-60' : ''} ${isLocked ? 'opacity-40' : ''}`}>
@@ -228,15 +230,15 @@ export default function TasksPage() {
                       <HiCheckCircle className="w-4 h-4" /> {canClaim ? `Claim ₦${task.reward}` : 'Claim'}
                     </button>
                   </>
-                ) : isNext ? (
+                ) : isLocked ? (
+                  <div className="flex-1 flex items-center justify-center gap-1.5 bg-gray-100 dark:bg-gray-700/50 text-gray-400 py-2.5 rounded-xl text-sm font-medium">
+                    <HiLockClosed className="w-4 h-4" /> Finish active task first
+                  </div>
+                ) : (
                   <button onClick={() => handleStartTask(task)}
                     className="flex-1 flex items-center justify-center gap-1.5 bg-primary-500 hover:bg-primary-600 text-white py-2.5 rounded-xl text-sm font-medium transition-all hover:shadow-lg hover:shadow-primary-500/20">
                     <HiExternalLink className="w-4 h-4" /> Start Task
                   </button>
-                ) : (
-                  <div className="flex-1 flex items-center justify-center gap-1.5 bg-gray-100 dark:bg-gray-700/50 text-gray-400 py-2.5 rounded-xl text-sm font-medium">
-                    <HiLockClosed className="w-4 h-4" /> Complete previous tasks first
-                  </div>
                 )}
               </div>
             </MotionDiv>

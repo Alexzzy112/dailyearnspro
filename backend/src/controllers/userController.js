@@ -146,10 +146,6 @@ exports.getTasks = async (req, res) => {
     }
 
     const completedSet = new Set(user.completedTaskNumbers || []);
-    let nextTask = 0;
-    for (let i = 1; i <= dailyLimit; i++) {
-      if (!completedSet.has(i)) { nextTask = i; break; }
-    }
 
     const tasks = [];
     for (let i = 1; i <= dailyLimit; i++) {
@@ -164,7 +160,7 @@ exports.getTasks = async (req, res) => {
       });
     }
 
-    res.json({ tasks, todayCompleted: user.todayTasksCompleted, dailyLimit, taskTitle, taskDescription, tasksAvailable: true, taskStartedAt: user.taskStartedAt, activeTaskNumber: user.activeTaskNumber || nextTask, viewTime });
+    res.json({ tasks, todayCompleted: user.todayTasksCompleted, dailyLimit, taskTitle, taskDescription, tasksAvailable: true, taskStartedAt: user.taskStartedAt, activeTaskNumber: user.activeTaskNumber || null, viewTime });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -172,6 +168,7 @@ exports.getTasks = async (req, res) => {
 
 exports.startTask = async (req, res) => {
   try {
+    const { taskNumber } = req.body;
     const user = await User.findById(req.user._id);
     if (!user || user.accountStatus !== 'active') {
       return res.status(403).json({ message: 'Account must be active' });
@@ -179,7 +176,9 @@ exports.startTask = async (req, res) => {
     if (user.activeTaskNumber && user.taskStartedAt) {
       return res.status(400).json({ message: 'You already have an active task. Complete it first.' });
     }
-    const completedSet = new Set(user.completedTaskNumbers || []);
+    if (!taskNumber || taskNumber < 1 || typeof taskNumber !== 'number') {
+      return res.status(400).json({ message: 'Invalid task number' });
+    }
     const settings = await Setting.find();
     const settingsMap = {};
     settings.forEach(s => { settingsMap[s.key] = s.value; });
@@ -188,17 +187,17 @@ exports.startTask = async (req, res) => {
       return v !== undefined && v !== null ? Number(v) : fallback;
     };
     const dailyLimit = safeNum('dailyTaskLimit', safeEnvNum('DAILY_TASK_LIMIT', 100));
-    let nextTask = 0;
-    for (let i = 1; i <= dailyLimit; i++) {
-      if (!completedSet.has(i)) { nextTask = i; break; }
+    if (taskNumber > dailyLimit) {
+      return res.status(400).json({ message: 'Invalid task number' });
     }
-    if (!nextTask) {
-      return res.status(400).json({ message: 'All tasks completed for today' });
+    const completedSet = new Set(user.completedTaskNumbers || []);
+    if (completedSet.has(taskNumber)) {
+      return res.status(400).json({ message: 'Task already completed' });
     }
-    user.activeTaskNumber = nextTask;
+    user.activeTaskNumber = taskNumber;
     user.taskStartedAt = new Date();
     await user.save();
-    res.json({ taskStartedAt: user.taskStartedAt, activeTaskNumber: nextTask });
+    res.json({ taskStartedAt: user.taskStartedAt, activeTaskNumber: taskNumber });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -264,7 +263,7 @@ exports.claimTask = async (req, res) => {
     }
 
     if (taskNumber !== user.activeTaskNumber) {
-      return res.status(400).json({ message: `You must complete task #${user.activeTaskNumber} first` });
+      return res.status(400).json({ message: `You must complete your active task #${user.activeTaskNumber} first` });
     }
 
     user.completedTaskNumbers = [...completedSet, taskNumber];
@@ -276,7 +275,7 @@ exports.claimTask = async (req, res) => {
     user.tasksCompleted += 1;
     user.todayTasksCompleted += 1;
     user.taskStartedAt = null;
-    user.activeTaskNumber = 0;
+    user.activeTaskNumber = null;
     await user.save();
 
     await Transaction.create({
