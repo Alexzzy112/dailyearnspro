@@ -27,6 +27,7 @@ const userSchema = new mongoose.Schema({
   purchasedProductName: { type: String, default: '' },
   productDailyEarn: { type: Number, default: 0 },
   dailyRewardPerTask: { type: Number, default: 0 },
+  activeTaskNumber: { type: Number, default: 0 },
   taskStartedAt: { type: Date, default: null },
   createdAt: { type: Date, default: Date.now }
 });

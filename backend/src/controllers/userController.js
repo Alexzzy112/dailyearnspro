@@ -119,6 +119,7 @@ exports.getTasks = async (req, res) => {
       user.todayTasksCompleted = 0;
       user.completedTaskNumbers = [];
       user.dailyRewardPerTask = 0;
+      user.activeTaskNumber = 0;
       user.taskStartedAt = null;
       user.lastTaskResetDate = new Date();
       await user.save();
@@ -145,6 +146,11 @@ exports.getTasks = async (req, res) => {
     }
 
     const completedSet = new Set(user.completedTaskNumbers || []);
+    let nextTask = 0;
+    for (let i = 1; i <= dailyLimit; i++) {
+      if (!completedSet.has(i)) { nextTask = i; break; }
+    }
+
     const tasks = [];
     for (let i = 1; i <= dailyLimit; i++) {
       tasks.push({
@@ -158,7 +164,7 @@ exports.getTasks = async (req, res) => {
       });
     }
 
-    res.json({ tasks, todayCompleted: user.todayTasksCompleted, dailyLimit, taskTitle, taskDescription, tasksAvailable: true, taskStartedAt: user.taskStartedAt, viewTime });
+    res.json({ tasks, todayCompleted: user.todayTasksCompleted, dailyLimit, taskTitle, taskDescription, tasksAvailable: true, taskStartedAt: user.taskStartedAt, activeTaskNumber: user.activeTaskNumber || nextTask, viewTime });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -170,9 +176,29 @@ exports.startTask = async (req, res) => {
     if (!user || user.accountStatus !== 'active') {
       return res.status(403).json({ message: 'Account must be active' });
     }
+    if (user.activeTaskNumber && user.taskStartedAt) {
+      return res.status(400).json({ message: 'You already have an active task. Complete it first.' });
+    }
+    const completedSet = new Set(user.completedTaskNumbers || []);
+    const settings = await Setting.find();
+    const settingsMap = {};
+    settings.forEach(s => { settingsMap[s.key] = s.value; });
+    const safeNum = (key, fallback) => {
+      const v = settingsMap[key];
+      return v !== undefined && v !== null ? Number(v) : fallback;
+    };
+    const dailyLimit = safeNum('dailyTaskLimit', safeEnvNum('DAILY_TASK_LIMIT', 100));
+    let nextTask = 0;
+    for (let i = 1; i <= dailyLimit; i++) {
+      if (!completedSet.has(i)) { nextTask = i; break; }
+    }
+    if (!nextTask) {
+      return res.status(400).json({ message: 'All tasks completed for today' });
+    }
+    user.activeTaskNumber = nextTask;
     user.taskStartedAt = new Date();
     await user.save();
-    res.json({ taskStartedAt: user.taskStartedAt });
+    res.json({ taskStartedAt: user.taskStartedAt, activeTaskNumber: nextTask });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -237,6 +263,10 @@ exports.claimTask = async (req, res) => {
       return res.status(400).json({ message: `Please wait at least ${viewTime} seconds before claiming` });
     }
 
+    if (taskNumber !== user.activeTaskNumber) {
+      return res.status(400).json({ message: `You must complete task #${user.activeTaskNumber} first` });
+    }
+
     user.completedTaskNumbers = [...completedSet, taskNumber];
     const maxDailyEarn = user.productDailyEarn || Infinity;
     const earnedTodayBefore = user.todayTasksCompleted * reward;
@@ -246,6 +276,7 @@ exports.claimTask = async (req, res) => {
     user.tasksCompleted += 1;
     user.todayTasksCompleted += 1;
     user.taskStartedAt = null;
+    user.activeTaskNumber = 0;
     await user.save();
 
     await Transaction.create({

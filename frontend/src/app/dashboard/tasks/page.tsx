@@ -118,6 +118,7 @@ export default function TasksPage() {
   const viewTime = data?.viewTime || 15;
   const rewardAmt = tasks.length > 0 ? tasks[0].reward : 10;
   const productDailyEarn = dashData?.user?.productDailyEarn || 0;
+  const activeTaskNum = data?.activeTaskNumber || 0;
 
   const progressPercent = dailyLimit > 0 ? (completedCount / dailyLimit) * 100 : 0;
   const totalEarned = productDailyEarn > 0
@@ -128,6 +129,7 @@ export default function TasksPage() {
   const hasStarted = !!data?.taskStartedAt;
   const canClaim = hasStarted && elapsed >= viewTime;
   const timerPercent = viewTime > 0 ? Math.min(100, (elapsed / viewTime) * 100) : 0;
+  const allDone = tasks.length > 0 && tasks.every((t: any) => t.completed);
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -173,7 +175,7 @@ export default function TasksPage() {
               <div className="w-8 h-8 gradient-accent rounded-lg flex items-center justify-center">
                 <HiClock className="w-4 h-4 text-white" />
               </div>
-              <span className="text-sm font-semibold text-secondary-700 dark:text-white">Viewing Timer</span>
+              <span className="text-sm font-semibold text-secondary-700 dark:text-white">Task #{activeTaskNum} — Viewing Timer</span>
             </div>
             <span className={`text-sm font-bold ${canClaim ? 'text-green-500' : 'text-primary-500'}`}>
               {elapsed}s / {viewTime}s
@@ -186,21 +188,23 @@ export default function TasksPage() {
             />
           </div>
           <p className="text-xs text-gray-400 mt-2">
-            {canClaim ? 'Timer complete! You can now claim your reward.' : `Wait ${Math.max(0, viewTime - elapsed)} more seconds...`}
+            {canClaim ? 'Timer complete! Claim your reward below.' : `Wait ${Math.max(0, viewTime - elapsed)} more seconds...`}
           </p>
         </MotionDiv>
       )}
 
       <MotionDiv variants={staggerContainer} initial="initial" animate="animate" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {tasks.filter((t: any) => !t.completed).map((task: any) => {
-          const isCurrentTask = hasStarted;
-          const claimDisabled = !isCurrentTask || !canClaim;
+        {tasks.map((task: any) => {
+          const isNext = !task.completed && task.taskNumber === activeTaskNum && !hasStarted;
+          const isActive = hasStarted && task.taskNumber === activeTaskNum;
+          const isLocked = !task.completed && !isNext && !isActive;
 
           return (
-            <MotionDiv key={task.taskNumber} variants={staggerItem} className="card-pro p-5 group">
+            <MotionDiv key={task.taskNumber} variants={staggerItem} className={`card-pro p-5 ${task.completed ? 'opacity-60' : ''} ${isLocked ? 'opacity-40' : ''}`}>
               <div className="flex items-center justify-between mb-3">
                 <span className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-400 bg-gray-100 dark:bg-gray-700/50 px-3 py-1 rounded-full">
                   <HiCurrencyDollar className="w-3 h-3" /> Task #{task.taskNumber}
+                  {task.completed && <HiCheckCircle className="w-3 h-3 text-green-500" />}
                 </span>
                 <span className="flex items-center gap-1 text-accent-500 font-bold text-sm bg-accent-500/10 px-3 py-1 rounded-full">
                   +₦{task.reward}
@@ -209,23 +213,38 @@ export default function TasksPage() {
               {task.title && <p className="text-sm font-semibold text-secondary-700 dark:text-white mb-1">{task.title}</p>}
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 line-clamp-2 leading-relaxed">{task.description}</p>
               <div className="flex gap-2">
-                <button onClick={() => handleStartTask(task)}
-                  className="flex-1 flex items-center justify-center gap-1.5 bg-primary-500 hover:bg-primary-600 disabled:bg-gray-200 dark:disabled:bg-gray-700 disabled:text-gray-400 text-white py-2.5 rounded-xl text-sm font-medium transition-all hover:shadow-lg hover:shadow-primary-500/20 disabled:shadow-none"
-                  disabled={isCurrentTask || task.completed}>
-                  <HiExternalLink className="w-4 h-4" /> {isCurrentTask ? 'Viewing...' : 'Start Task'}
-                </button>
-                <button onClick={() => handleClaimReward(task.taskNumber, task.reward)}
-                  disabled={claimDisabled}
-                  className="flex-1 flex items-center justify-center gap-1.5 bg-accent-500 hover:bg-accent-600 disabled:bg-gray-200 dark:disabled:bg-gray-700 disabled:text-gray-400 text-white py-2.5 rounded-xl text-sm font-medium transition-all hover:shadow-lg hover:shadow-accent-500/20 disabled:shadow-none">
-                  <HiCheckCircle className="w-4 h-4" /> {canClaim && isCurrentTask ? `Claim ₦${task.reward}` : 'Claim'}
-                </button>
+                {task.completed ? (
+                  <div className="flex-1 flex items-center justify-center gap-1.5 bg-green-500/10 text-green-600 dark:text-green-400 py-2.5 rounded-xl text-sm font-medium">
+                    <HiCheckCircle className="w-4 h-4" /> Completed
+                  </div>
+                ) : isActive ? (
+                  <>
+                    <button disabled className="flex-1 flex items-center justify-center gap-1.5 bg-primary-500/80 text-white py-2.5 rounded-xl text-sm font-medium disabled:shadow-none">
+                      <HiExternalLink className="w-4 h-4" /> Viewing...
+                    </button>
+                    <button onClick={() => handleClaimReward(task.taskNumber, task.reward)}
+                      disabled={!canClaim}
+                      className="flex-1 flex items-center justify-center gap-1.5 bg-accent-500 hover:bg-accent-600 disabled:bg-gray-200 dark:disabled:bg-gray-700 disabled:text-gray-400 text-white py-2.5 rounded-xl text-sm font-medium transition-all hover:shadow-lg hover:shadow-accent-500/20 disabled:shadow-none">
+                      <HiCheckCircle className="w-4 h-4" /> {canClaim ? `Claim ₦${task.reward}` : 'Claim'}
+                    </button>
+                  </>
+                ) : isNext ? (
+                  <button onClick={() => handleStartTask(task)}
+                    className="flex-1 flex items-center justify-center gap-1.5 bg-primary-500 hover:bg-primary-600 text-white py-2.5 rounded-xl text-sm font-medium transition-all hover:shadow-lg hover:shadow-primary-500/20">
+                    <HiExternalLink className="w-4 h-4" /> Start Task
+                  </button>
+                ) : (
+                  <div className="flex-1 flex items-center justify-center gap-1.5 bg-gray-100 dark:bg-gray-700/50 text-gray-400 py-2.5 rounded-xl text-sm font-medium">
+                    <HiLockClosed className="w-4 h-4" /> Complete previous tasks first
+                  </div>
+                )}
               </div>
             </MotionDiv>
           );
         })}
       </MotionDiv>
 
-      {tasks.filter((t: any) => !t.completed).length === 0 && completedCount > 0 && (
+      {allDone && (
         <MotionDiv variants={fadeInUp(0.2)} initial="initial" animate="animate" className="text-center py-16">
           <div className="w-20 h-20 bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/10 rounded-3xl flex items-center justify-center mx-auto mb-4">
             <HiCheckCircle className="w-10 h-10 text-green-500" />
