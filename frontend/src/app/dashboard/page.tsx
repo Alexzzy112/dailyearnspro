@@ -120,9 +120,9 @@ export default function DashboardPage() {
           <MotionDiv variants={staggerContainer} initial="initial" animate="animate" className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
             {stats.map((stat, i) => (
               <MotionDiv key={i} variants={staggerItem}>
-                <Link href={stat.href} className="card-pro p-4 sm:p-5 block group">
+                <div className="card-pro p-4 sm:p-5">
                   <div className="flex items-start justify-between mb-3">
-                    <div className={`w-9 h-9 ${stat.gradient} rounded-xl flex items-center justify-center shadow-lg shadow-black/5 group-hover:scale-110 transition-transform duration-300`}>
+                    <div className={`w-9 h-9 ${stat.gradient} rounded-xl flex items-center justify-center shadow-lg shadow-black/5 transition-transform duration-300`}>
                       <stat.icon className="w-4 h-4 text-white" />
                     </div>
                     <div className="text-right">
@@ -132,9 +132,8 @@ export default function DashboardPage() {
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-[11px] text-gray-400 dark:text-gray-500">{stat.sub}</span>
-                    <span className="text-[11px] text-primary-500 opacity-0 group-hover:opacity-100 transition-opacity font-medium">View &rarr;</span>
                   </div>
-                </Link>
+                </div>
               </MotionDiv>
             ))}
           </MotionDiv>

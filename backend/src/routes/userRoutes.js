@@ -5,6 +5,7 @@ const upload = require('../middleware/upload');
 const {
   getDashboard,
   getTasks,
+  startTask,
   claimTask,
   getWallet,
   requestWithdrawal,
@@ -17,6 +18,7 @@ const {
 
 router.get('/dashboard', protect, getDashboard);
 router.get('/tasks', protect, checkNotSuspended, getTasks);
+router.post('/tasks/start', protect, checkNotSuspended, startTask);
 router.post('/tasks/claim', protect, checkNotSuspended, claimTask);
 router.get('/wallet', protect, checkNotSuspended, getWallet);
 router.post('/withdraw', protect, checkNotSuspended, requestWithdrawal);

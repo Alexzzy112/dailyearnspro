@@ -12,12 +12,11 @@ import { HiExternalLink, HiCheckCircle, HiClock, HiCurrencyDollar, HiLockClosed,
 export default function TasksPage() {
   const queryClient = useQueryClient();
   const { user, loading: authLoading } = useAuth();
-  const [activeTimers, setActiveTimers] = useState<Record<number, number>>({});
-  const timersRef = useRef<Record<number, ReturnType<typeof setInterval>>>({});
+  const [elapsed, setElapsed] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
-    const timers = timersRef.current;
-    return () => { Object.values(timers).forEach(clearInterval); };
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, []);
 
   const { data: dashData, isLoading: dashLoading } = useQuery({
@@ -34,11 +33,25 @@ export default function TasksPage() {
     enabled: hasAccess === true,
   });
 
+  const startMutation = useMutation({
+    mutationFn: () => userAPI.startTask(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      setElapsed(0);
+      if (timerRef.current) clearInterval(timerRef.current);
+      timerRef.current = setInterval(() => {
+        setElapsed(prev => prev + 1);
+      }, 1000);
+    },
+  });
+
   const claimMutation = useMutation({
     mutationFn: (taskNumber: number) => userAPI.claimTask(taskNumber),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      if (timerRef.current) clearInterval(timerRef.current);
+      setElapsed(0);
     },
     onError: (err: any) => {
       toast.error(err.response?.data?.message || 'Failed to claim reward');
@@ -47,25 +60,14 @@ export default function TasksPage() {
 
   const handleStartTask = (task: any) => {
     if (task.completed) return;
-    if (timersRef.current[task.taskNumber]) return;
     window.open(task.taskLink, '_blank');
-    setActiveTimers(prev => ({ ...prev, [task.taskNumber]: 0 }));
-    timersRef.current[task.taskNumber] = setInterval(() => {
-      setActiveTimers(prev => ({ ...prev, [task.taskNumber]: (prev[task.taskNumber] || 0) + 1 }));
-    }, 1000);
+    startMutation.mutate();
   };
 
   const handleClaimReward = (taskNumber: number, reward: number) => {
     claimMutation.mutate(taskNumber, {
       onSuccess: () => {
         toast.success(`Reward claimed! ₦${reward} added to wallet.`);
-        clearInterval(timersRef.current[taskNumber]);
-        delete timersRef.current[taskNumber];
-        setActiveTimers(prev => {
-          const next = { ...prev };
-          delete next[taskNumber];
-          return next;
-        });
       }
     });
   };
@@ -113,11 +115,19 @@ export default function TasksPage() {
   const tasks = data?.tasks || [];
   const completedCount = data?.todayCompleted || 0;
   const dailyLimit = data?.dailyLimit || 100;
+  const viewTime = data?.viewTime || 15;
   const rewardAmt = tasks.length > 0 ? tasks[0].reward : 10;
+  const productDailyEarn = dashData?.user?.productDailyEarn || 0;
 
   const progressPercent = dailyLimit > 0 ? (completedCount / dailyLimit) * 100 : 0;
-  const totalEarned = completedCount * rewardAmt;
-  const maxEarn = dailyLimit * rewardAmt;
+  const totalEarned = productDailyEarn > 0
+    ? Math.min(completedCount * rewardAmt, productDailyEarn)
+    : completedCount * rewardAmt;
+  const maxEarn = productDailyEarn > 0 ? productDailyEarn : dailyLimit * rewardAmt;
+
+  const hasStarted = !!data?.taskStartedAt;
+  const canClaim = hasStarted && elapsed >= viewTime;
+  const timerPercent = viewTime > 0 ? Math.min(100, (elapsed / viewTime) * 100) : 0;
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -156,12 +166,35 @@ export default function TasksPage() {
         </div>
       </MotionDiv>
 
+      {hasStarted && (
+        <MotionDiv variants={fadeInUp(0.08)} initial="initial" animate="animate" className="card-pro p-5 mb-6 border-2 border-primary-200 dark:border-primary-800">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 gradient-accent rounded-lg flex items-center justify-center">
+                <HiClock className="w-4 h-4 text-white" />
+              </div>
+              <span className="text-sm font-semibold text-secondary-700 dark:text-white">Viewing Timer</span>
+            </div>
+            <span className={`text-sm font-bold ${canClaim ? 'text-green-500' : 'text-primary-500'}`}>
+              {elapsed}s / {viewTime}s
+            </span>
+          </div>
+          <div className="w-full bg-gray-100 dark:bg-gray-700/50 rounded-full h-2.5 overflow-hidden">
+            <div
+              className={`h-full rounded-full transition-all duration-1000 ${canClaim ? 'bg-green-500' : 'bg-primary-500'}`}
+              style={{ width: `${timerPercent}%` }}
+            />
+          </div>
+          <p className="text-xs text-gray-400 mt-2">
+            {canClaim ? 'Timer complete! You can now claim your reward.' : `Wait ${Math.max(0, viewTime - elapsed)} more seconds...`}
+          </p>
+        </MotionDiv>
+      )}
+
       <MotionDiv variants={staggerContainer} initial="initial" animate="animate" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {tasks.filter((t: any) => !t.completed).map((task: any) => {
-          const taskTime = activeTimers[task.taskNumber] ?? -1;
-          const isActive = taskTime >= 0;
-          const canClaim = isActive && taskTime >= (task.requiredViewingTime || 15);
-          const timerPercent = task.requiredViewingTime > 0 ? Math.min(100, (taskTime / task.requiredViewingTime) * 100) : 0;
+          const isCurrentTask = hasStarted;
+          const claimDisabled = !isCurrentTask || !canClaim;
 
           return (
             <MotionDiv key={task.taskNumber} variants={staggerItem} className="card-pro p-5 group">
@@ -175,30 +208,16 @@ export default function TasksPage() {
               </div>
               {task.title && <p className="text-sm font-semibold text-secondary-700 dark:text-white mb-1">{task.title}</p>}
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 line-clamp-2 leading-relaxed">{task.description}</p>
-              {isActive && (
-                <div className="mb-3">
-                  <div className="flex items-center justify-between mb-1.5">
-                    <div className="flex items-center gap-1.5 text-sm">
-                      <HiClock className="w-4 h-4 text-primary-500" />
-                      <span className="text-primary-500 font-medium">{taskTime}s / {task.requiredViewingTime}s</span>
-                    </div>
-                    <span className="text-xs text-gray-400">{timerPercent.toFixed(0)}%</span>
-                  </div>
-                  <div className="w-full bg-gray-100 dark:bg-gray-700/50 rounded-full h-1.5 overflow-hidden">
-                    <div className="h-full rounded-full bg-primary-500 transition-all duration-1000" style={{ width: `${timerPercent}%` }} />
-                  </div>
-                </div>
-              )}
               <div className="flex gap-2">
                 <button onClick={() => handleStartTask(task)}
                   className="flex-1 flex items-center justify-center gap-1.5 bg-primary-500 hover:bg-primary-600 disabled:bg-gray-200 dark:disabled:bg-gray-700 disabled:text-gray-400 text-white py-2.5 rounded-xl text-sm font-medium transition-all hover:shadow-lg hover:shadow-primary-500/20 disabled:shadow-none"
-                  disabled={isActive}>
-                  <HiExternalLink className="w-4 h-4" /> {isActive ? 'Visited' : 'Start Task'}
+                  disabled={isCurrentTask || task.completed}>
+                  <HiExternalLink className="w-4 h-4" /> {isCurrentTask ? 'Viewing...' : 'Start Task'}
                 </button>
                 <button onClick={() => handleClaimReward(task.taskNumber, task.reward)}
-                  disabled={!canClaim}
+                  disabled={claimDisabled}
                   className="flex-1 flex items-center justify-center gap-1.5 bg-accent-500 hover:bg-accent-600 disabled:bg-gray-200 dark:disabled:bg-gray-700 disabled:text-gray-400 text-white py-2.5 rounded-xl text-sm font-medium transition-all hover:shadow-lg hover:shadow-accent-500/20 disabled:shadow-none">
-                  <HiCheckCircle className="w-4 h-4" /> {canClaim ? `Claim ₦${task.reward}` : 'Claim'}
+                  <HiCheckCircle className="w-4 h-4" /> {canClaim && isCurrentTask ? `Claim ₦${task.reward}` : 'Claim'}
                 </button>
               </div>
             </MotionDiv>

@@ -49,6 +49,7 @@ const toFormData = (data: Record<string, any>) => {
 export const userAPI = {
   getDashboard: () => api.get('/user/dashboard'),
   getTasks: () => api.get('/user/tasks'),
+  startTask: () => api.post('/user/tasks/start'),
   claimTask: (taskNumber: number) => api.post('/user/tasks/claim', { taskNumber }),
   getWallet: () => api.get('/user/wallet'),
   requestWithdrawal: (data: { amount: number; bankName: string; accountNumber: string; accountName: string }) =>

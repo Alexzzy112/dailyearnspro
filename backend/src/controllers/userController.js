@@ -18,6 +18,15 @@ const getNigeriaDay = () => {
   return new Date(utcMs + 60 * 60000).getUTCDay();
 };
 
+const getNigeriaTodayStart = () => {
+  const now = new Date();
+  const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
+  const nigeriaDate = new Date(utcMs + 60 * 60000);
+  nigeriaDate.setUTCHours(0, 0, 0, 0);
+  const offsetMs = nigeriaDate.getTime() - (utcMs + 60 * 60000);
+  return new Date(now.getTime() + now.getTimezoneOffset() * 60000 + 60 * 60000 + offsetMs);
+};
+
 const hasTaskAccess = async (userId) => {
   const user = await User.findById(userId).select('purchasedProduct');
   return user?.purchasedProduct === true;
@@ -28,11 +37,11 @@ exports.getDashboard = async (req, res) => {
     const user = await User.findById(req.user._id).select('-password');
     if (!user) return res.status(404).json({ message: 'User not found' });
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const today = getNigeriaTodayStart();
     if (!user.lastTaskResetDate || user.lastTaskResetDate < today) {
       user.todayTasksCompleted = 0;
       user.completedTaskNumbers = [];
+      user.dailyRewardPerTask = 0;
       user.lastTaskResetDate = new Date();
       await user.save();
     }
@@ -47,7 +56,7 @@ exports.getDashboard = async (req, res) => {
     const dailyLimit = safeNum('dailyTaskLimit', safeEnvNum('DAILY_TASK_LIMIT', 100));
     const rewardPerTask = user.productDailyEarn ? Math.round(user.productDailyEarn / dailyLimit) : safeNum('rewardPerTask', safeEnvNum('REWARD_PER_TASK', 10));
     const tasksRemaining = Math.max(0, dailyLimit - user.todayTasksCompleted);
-    const earningsToday = user.todayTasksCompleted * rewardPerTask;
+    const earningsToday = Math.min(user.todayTasksCompleted * rewardPerTask, user.productDailyEarn || Infinity);
     const access = await hasTaskAccess(user._id);
     const recentTransactions = await Transaction.find({ userId: user._id }).sort({ createdAt: -1 }).limit(10);
 
@@ -105,11 +114,12 @@ exports.getTasks = async (req, res) => {
       return res.status(403).json({ message: 'Purchase an investment plan to unlock daily tasks', locked: true });
     }
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const today = getNigeriaTodayStart();
     if (!user.lastTaskResetDate || user.lastTaskResetDate < today) {
       user.todayTasksCompleted = 0;
       user.completedTaskNumbers = [];
+      user.dailyRewardPerTask = 0;
+      user.taskStartedAt = null;
       user.lastTaskResetDate = new Date();
       await user.save();
     }
@@ -129,6 +139,11 @@ exports.getTasks = async (req, res) => {
     const reward = user.productDailyEarn ? Math.round(user.productDailyEarn / dailyLimit) : safeNum('rewardPerTask', safeEnvNum('REWARD_PER_TASK', 10));
     const viewTime = safeNum('requiredViewingTime', safeEnvNum('REQUIRED_VIEWING_TIME', 15));
 
+    if (user.dailyRewardPerTask !== reward) {
+      user.dailyRewardPerTask = reward;
+      await user.save();
+    }
+
     const completedSet = new Set(user.completedTaskNumbers || []);
     const tasks = [];
     for (let i = 1; i <= dailyLimit; i++) {
@@ -143,7 +158,21 @@ exports.getTasks = async (req, res) => {
       });
     }
 
-    res.json({ tasks, todayCompleted: user.todayTasksCompleted, dailyLimit, taskTitle, taskDescription, tasksAvailable: true });
+    res.json({ tasks, todayCompleted: user.todayTasksCompleted, dailyLimit, taskTitle, taskDescription, tasksAvailable: true, taskStartedAt: user.taskStartedAt, viewTime });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.startTask = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user || user.accountStatus !== 'active') {
+      return res.status(403).json({ message: 'Account must be active' });
+    }
+    user.taskStartedAt = new Date();
+    await user.save();
+    res.json({ taskStartedAt: user.taskStartedAt });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -156,7 +185,7 @@ exports.claimTask = async (req, res) => {
       return res.status(400).json({ message: 'Tasks can only be completed Monday to Friday' });
     }
 
-    const { taskNumber } = req.body;
+    const { taskNumber, startedAt } = req.body;
     if (!taskNumber || taskNumber < 1 || typeof taskNumber !== 'number') {
       return res.status(400).json({ message: 'Invalid task number' });
     }
@@ -170,11 +199,12 @@ exports.claimTask = async (req, res) => {
       return res.status(403).json({ message: 'Purchase an investment plan to unlock daily tasks' });
     }
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const today = getNigeriaTodayStart();
     if (!user.lastTaskResetDate || user.lastTaskResetDate < today) {
       user.todayTasksCompleted = 0;
       user.completedTaskNumbers = [];
+      user.dailyRewardPerTask = 0;
+      user.taskStartedAt = null;
       user.lastTaskResetDate = new Date();
       await user.save();
     }
@@ -187,7 +217,8 @@ exports.claimTask = async (req, res) => {
       return v !== undefined && v !== null ? Number(v) : fallback;
     };
     const dailyLimit = safeNum('dailyTaskLimit', safeEnvNum('DAILY_TASK_LIMIT', 100));
-    const reward = user.productDailyEarn ? Math.round(user.productDailyEarn / dailyLimit) : safeNum('rewardPerTask', safeEnvNum('REWARD_PER_TASK', 10));
+    const viewTime = safeNum('requiredViewingTime', safeEnvNum('REQUIRED_VIEWING_TIME', 15));
+    const reward = user.dailyRewardPerTask || (user.productDailyEarn ? Math.round(user.productDailyEarn / dailyLimit) : safeNum('rewardPerTask', safeEnvNum('REWARD_PER_TASK', 10)));
 
     if (!Number.isInteger(taskNumber) || taskNumber < 1 || taskNumber > dailyLimit) {
       return res.status(400).json({ message: 'Invalid task number' });
@@ -200,22 +231,32 @@ exports.claimTask = async (req, res) => {
       return res.status(400).json({ message: 'Daily task limit reached' });
     }
 
+    const taskStartTime = user.taskStartedAt ? new Date(user.taskStartedAt).getTime() : 0;
+    const elapsed = taskStartTime ? (Date.now() - taskStartTime) / 1000 : 0;
+    if (!taskStartTime || elapsed < viewTime) {
+      return res.status(400).json({ message: `Please wait at least ${viewTime} seconds before claiming` });
+    }
+
     user.completedTaskNumbers = [...completedSet, taskNumber];
-    user.walletBalance += reward;
-    user.totalEarnings += reward;
+    const maxDailyEarn = user.productDailyEarn || Infinity;
+    const earnedTodayBefore = user.todayTasksCompleted * reward;
+    const actualReward = Math.min(reward, Math.max(0, maxDailyEarn - earnedTodayBefore));
+    user.walletBalance += actualReward;
+    user.totalEarnings += actualReward;
     user.tasksCompleted += 1;
     user.todayTasksCompleted += 1;
+    user.taskStartedAt = null;
     await user.save();
 
     await Transaction.create({
       userId: user._id,
       type: 'credit',
-      amount: reward,
+      amount: actualReward,
       description: `Reward for completing task #${taskNumber}`
     });
 
     res.json({
-      message: `₦${reward} added to wallet`,
+      message: `₦${actualReward} added to wallet`,
       walletBalance: user.walletBalance,
       todayTasksCompleted: user.todayTasksCompleted,
       tasksCompleted: user.tasksCompleted,
@@ -223,7 +264,7 @@ exports.claimTask = async (req, res) => {
     });
     if (user.todayTasksCompleted === 1) {
       await createNotification({
-        userId: user._id, title: 'First Task Done!', message: `Congratulations on completing your first task! ₦${reward} has been added to your wallet.`, type: 'success', link: '/dashboard/tasks'
+        userId: user._id, title: 'First Task Done!', message: `Congratulations on completing your first task! ₦${actualReward} has been added to your wallet.`, type: 'success', link: '/dashboard/tasks'
       });
     }
   } catch (error) {
