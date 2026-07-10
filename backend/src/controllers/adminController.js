@@ -47,7 +47,7 @@ exports.getDashboardStats = async (req, res) => {
       ...recentTransactions.map(t => ({
         _id: t._id,
         type: 'transaction',
-        user: t.userId ? { name: t.userId.name, username: t.userId.username } : null,
+        user: t.userId && typeof t.userId === 'object' ? { name: t.userId.name, username: t.userId.username } : null,
         description: t.description,
         detail: `${t.type === 'credit' ? '+' : '-'}₦${t.amount}`,
         createdAt: t.createdAt
@@ -55,7 +55,7 @@ exports.getDashboardStats = async (req, res) => {
       ...recentWithdrawals.map(w => ({
         _id: w._id,
         type: 'withdrawal',
-        user: w.userId ? { name: w.userId.name, username: w.userId.username } : null,
+        user: w.userId && typeof w.userId === 'object' ? { name: w.userId.name, username: w.userId.username } : null,
         description: `Withdrawal of ₦${w.amount}`,
         detail: `Status: ${w.status} - ${w.bankName}`,
         createdAt: w.createdAt
@@ -63,7 +63,7 @@ exports.getDashboardStats = async (req, res) => {
       ...recentPayments.map(p => ({
         _id: p._id,
         type: 'payment',
-        user: p.userId ? { name: p.userId.name, username: p.userId.username } : null,
+        user: p.userId && typeof p.userId === 'object' ? { name: p.userId.name, username: p.userId.username } : null,
         description: `Payment of ₦${p.amount}`,
         detail: `Status: ${p.status} - Ref: ${p.reference}`,
         createdAt: p.createdAt
@@ -144,6 +144,9 @@ exports.adjustWallet = async (req, res) => {
     const { amount, type } = req.body;
     if (!amount || amount <= 0 || typeof amount !== 'number' || !Number.isFinite(amount)) {
       return res.status(400).json({ message: 'Invalid amount' });
+    }
+    if (type !== 'credit' && type !== 'debit') {
+      return res.status(400).json({ message: 'Type must be "credit" or "debit"' });
     }
     const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ message: 'User not found' });
@@ -259,21 +262,24 @@ exports.rejectWithdrawal = async (req, res) => {
   try {
     const withdrawal = await Withdrawal.findById(req.params.id);
     if (!withdrawal) return res.status(404).json({ message: 'Withdrawal not found' });
+    const wasRefundable = withdrawal.status === 'pending' || withdrawal.status === 'approved';
     withdrawal.status = 'rejected';
     await withdrawal.save();
-    const user = await User.findById(withdrawal.userId);
-    if (user) {
-      user.walletBalance += withdrawal.amount;
-      await user.save();
-      await Transaction.create({
-        userId: user._id,
-        type: 'credit',
-        amount: withdrawal.amount,
-        description: `Refund for rejected withdrawal #${withdrawal._id}`
-      });
-      await createNotification({
-        userId: user._id, title: 'Withdrawal Rejected', message: `Your withdrawal of ₦${withdrawal.amount} has been rejected. Funds have been returned to your wallet.`, type: 'error', link: '/dashboard/wallet'
-      });
+    if (wasRefundable) {
+      const user = await User.findById(withdrawal.userId);
+      if (user) {
+        user.walletBalance += withdrawal.amount + (withdrawal.charge || 0);
+        await user.save();
+        await Transaction.create({
+          userId: user._id,
+          type: 'credit',
+          amount: withdrawal.amount + (withdrawal.charge || 0),
+          description: `Refund for rejected withdrawal #${withdrawal._id}`
+        });
+        await createNotification({
+          userId: user._id, title: 'Withdrawal Rejected', message: `Your withdrawal of ₦${withdrawal.amount} has been rejected. Funds have been returned to your wallet.`, type: 'error', link: '/dashboard/wallet'
+        });
+      }
     }
     res.json({ message: 'Withdrawal rejected, funds returned', withdrawal });
   } catch (error) {
@@ -300,15 +306,15 @@ exports.deleteWithdrawal = async (req, res) => {
   try {
     const withdrawal = await Withdrawal.findById(req.params.id);
     if (!withdrawal) return res.status(404).json({ message: 'Withdrawal not found' });
-    if (withdrawal.status === 'pending' || withdrawal.status === 'rejected') {
+    if (withdrawal.status === 'pending') {
       const user = await User.findById(withdrawal.userId);
       if (user) {
-        user.walletBalance += withdrawal.amount;
+        user.walletBalance += withdrawal.amount + (withdrawal.charge || 0);
         await user.save();
         await Transaction.create({
           userId: user._id,
           type: 'credit',
-          amount: withdrawal.amount,
+          amount: withdrawal.amount + (withdrawal.charge || 0),
           description: `Refund for deleted withdrawal #${withdrawal._id}`
         });
       }
@@ -336,12 +342,12 @@ exports.revertWithdrawal = async (req, res) => {
     if (wasPaid) {
       const user = await User.findById(withdrawal.userId);
       if (user) {
-        user.walletBalance += withdrawal.amount;
+        user.walletBalance += withdrawal.amount + (withdrawal.charge || 0);
         await user.save();
         await Transaction.create({
           userId: user._id,
           type: 'credit',
-          amount: withdrawal.amount,
+          amount: withdrawal.amount + (withdrawal.charge || 0),
           description: `Refund for reverted paid withdrawal #${withdrawal._id}`
         });
         await createNotification({
@@ -373,12 +379,12 @@ exports.revertAllWithdrawals = async (req, res) => {
       if (wasPaid) {
         const user = await User.findById(withdrawal.userId);
         if (user) {
-          user.walletBalance += withdrawal.amount;
+          user.walletBalance += withdrawal.amount + (withdrawal.charge || 0);
           await user.save();
           await Transaction.create({
             userId: user._id,
             type: 'credit',
-            amount: withdrawal.amount,
+            amount: withdrawal.amount + (withdrawal.charge || 0),
             description: `Refund for reverted paid withdrawal #${withdrawal._id}`
           });
           refundedCount++;

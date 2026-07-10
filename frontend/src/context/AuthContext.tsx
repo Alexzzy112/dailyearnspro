@@ -62,9 +62,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string) => {
     const res = await authAPI.login({ email, password });
+    const { token, ...userData } = res.data;
     const secure = typeof window !== 'undefined' && window.location.protocol === 'https:';
-    Cookies.set('token', res.data.token, { expires: 7, secure, sameSite: 'Lax' });
-    setUser(res.data);
+    Cookies.set('token', token, { expires: 7, secure, sameSite: 'Lax' });
+    setUser(userData);
     sessionStorage.setItem('showLoginPopup', 'true');
     setShowLoginPopup(true);
     return res.data;
@@ -73,9 +74,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = async (data: { name: string; username: string; email: string; password: string; referredBy?: string }) => {
     const res = await authAPI.register(data);
     if (res.data.token) {
+      const { token, ...userData } = res.data;
       const secure = typeof window !== 'undefined' && window.location.protocol === 'https:';
-      Cookies.set('token', res.data.token, { expires: 7, secure, sameSite: 'Lax' });
-      setUser(res.data);
+      Cookies.set('token', token, { expires: 7, secure, sameSite: 'Lax' });
+      setUser(userData);
+      sessionStorage.setItem('showLoginPopup', 'true');
+      setShowLoginPopup(true);
     }
     return res.data;
   };

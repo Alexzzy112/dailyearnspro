@@ -87,7 +87,7 @@ export default function AdminDashboardPage() {
               </tr>
             </thead>
             <tbody>
-              {data?.recentActivity?.length === 0 && (
+              {!data?.recentActivity?.length && (
                 <tr><td colSpan={4} className="text-center py-8 text-gray-400">No recent activity</td></tr>
               )}
               {data?.recentActivity?.map((log: any) => (

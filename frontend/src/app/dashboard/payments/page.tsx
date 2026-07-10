@@ -210,7 +210,7 @@ export default function PaymentsPage() {
                       <p className="text-sm font-bold text-secondary-700 dark:text-white">₦{p.amount.toLocaleString()}</p>
                       <p className="text-xs text-gray-500 mt-0.5">{p.reference || `Ref: ${p._id?.slice(-6)}`}</p>
                       {p.screenshot && (
-                        <a href={p.screenshot} target="_blank"
+                        <a href={p.screenshot} target="_blank" rel="noopener noreferrer"
                           className="text-xs text-primary-500 hover:text-primary-600 inline-flex items-center gap-1 mt-1">
                           <HiPhotograph className="w-3 h-3" /> View Screenshot
                         </a>

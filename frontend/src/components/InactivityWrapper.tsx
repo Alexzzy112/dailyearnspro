@@ -10,9 +10,18 @@ export default function InactivityWrapper({ children }: { children: React.ReactN
   const { user, logout } = useAuth();
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const warningTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const userIdRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      userIdRef.current = null;
+      if (timerRef.current) clearTimeout(timerRef.current);
+      if (warningTimerRef.current) clearTimeout(warningTimerRef.current);
+      return;
+    }
+
+    if (userIdRef.current === user._id) return;
+    userIdRef.current = user._id;
 
     const clearTimers = () => {
       if (timerRef.current) clearTimeout(timerRef.current);
@@ -39,7 +48,7 @@ export default function InactivityWrapper({ children }: { children: React.ReactN
       clearTimers();
       events.forEach(e => window.removeEventListener(e, resetTimer));
     };
-  }, [user, logout]);
+  }, [user?._id, logout]);
 
   return <>{children}</>;
 }

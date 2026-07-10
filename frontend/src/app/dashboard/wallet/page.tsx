@@ -10,8 +10,12 @@ import { HiCurrencyDollar, HiClock, HiCheckCircle, HiXCircle, HiInformationCircl
 export default function WithdrawPage() {
   const queryClient = useQueryClient();
   const [form, setForm] = useState({ amount: '', bankName: '', accountNumber: '', accountName: '' });
-  const today = new Date().getDay();
-  const isFriday = today === 5;
+  const getNigeriaDay = () => {
+    const now = new Date();
+    const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
+    return new Date(utcMs + 60 * 60000).getUTCDay();
+  };
+  const isFriday = getNigeriaDay() === 5;
 
   const { data, isLoading } = useQuery({
     queryKey: ['wallet'],

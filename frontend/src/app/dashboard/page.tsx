@@ -10,13 +10,26 @@ import InstallAppButton from '@/components/InstallAppButton';
 
 export default function DashboardPage() {
   const { refreshUser } = useAuth();
-  const { data, isLoading, refetch } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['dashboard'],
     queryFn: () => userAPI.getDashboard().then(r => r.data),
   });
 
   if (isLoading) {
     return <LoadingScreen />;
+  }
+
+  if (isError || !data) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+        <HiExclamationCircle className="w-16 h-16 text-red-400 mb-4" />
+        <h2 className="text-xl font-bold text-secondary-700 dark:text-white mb-2">Failed to load dashboard</h2>
+        <p className="text-gray-500 dark:text-gray-400 mb-6">Something went wrong. Please try again.</p>
+        <button onClick={() => refetch()} className="flex items-center gap-2 gradient-primary text-white px-6 py-3 rounded-xl font-medium hover:opacity-90 transition">
+          <HiRefresh className="w-4 h-4" /> Retry
+        </button>
+      </div>
+    );
   }
 
   const dashboard = data?.user;

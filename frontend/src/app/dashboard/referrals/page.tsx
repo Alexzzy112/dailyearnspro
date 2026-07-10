@@ -15,7 +15,7 @@ export default function ReferralsPage() {
     queryFn: () => userAPI.getReferrals().then(r => r.data),
   });
 
-  const referralLink = `${typeof window !== 'undefined' ? window.location.origin : 'https://drango.com'}/register?ref=${user?.referralCode || ''}`;
+  const referralLink = `${typeof window !== 'undefined' ? window.location.origin : 'https://taskearnpro.com'}/register?ref=${user?.referralCode || ''}`;
 
   const copyLink = () => {
     navigator.clipboard.writeText(referralLink);
@@ -84,7 +84,7 @@ export default function ReferralsPage() {
       <MotionDiv variants={fadeInUp(0.15)} initial="initial" animate="animate" className="card-pro p-5">
         <div className="flex items-center gap-3 mb-5">
           <div className="w-9 h-9 gradient-pink rounded-xl flex items-center justify-center">
-            <HiUserGroup className="w-4.5 h-4.5 text-white" />
+            <HiUserGroup className="w-5 h-5 text-white" />
           </div>
           <h2 className="text-lg font-semibold text-secondary-700 dark:text-white">Referral History</h2>
           <span className="ml-auto text-xs font-medium text-gray-400">{data?.count || 0} total</span>

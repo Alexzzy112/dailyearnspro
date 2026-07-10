@@ -29,8 +29,8 @@ const adminOnly = (req, res, next) => {
 };
 
 const checkNotSuspended = (req, res, next) => {
-  if (req.user && req.user.accountStatus === 'suspended') {
-    return res.status(403).json({ message: 'Account suspended. Contact admin.' });
+  if (req.user && req.user.accountStatus !== 'active') {
+    return res.status(403).json({ message: 'Account is suspended or inactive. Contact admin.' });
   }
   next();
 };

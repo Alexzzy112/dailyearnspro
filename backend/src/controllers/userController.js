@@ -234,6 +234,7 @@ exports.claimTask = async (req, res) => {
 exports.getWallet = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select('walletBalance totalEarnings');
+    if (!user) return res.status(404).json({ message: 'User not found' });
     const transactions = await Transaction.find({ userId: req.user._id }).sort({ createdAt: -1 }).limit(50);
     const withdrawals = await Withdrawal.find({ userId: req.user._id }).sort({ createdAt: -1 });
     const payments = await Payment.find({ userId: req.user._id }).sort({ createdAt: -1 });
@@ -263,7 +264,10 @@ exports.getWallet = async (req, res) => {
 exports.requestWithdrawal = async (req, res) => {
   try {
     const { amount, bankName, accountNumber, accountName } = req.body;
-    if (!amount || !bankName || !accountNumber || !accountName) {
+    if (!amount || typeof amount !== 'number' || !Number.isFinite(amount) || amount <= 0) {
+      return res.status(400).json({ message: 'Invalid withdrawal amount' });
+    }
+    if (!bankName || !accountNumber || !accountName) {
       return res.status(400).json({ message: 'All withdrawal fields are required' });
     }
     const user = await User.findById(req.user._id);
@@ -301,6 +305,7 @@ exports.requestWithdrawal = async (req, res) => {
     const withdrawal = await Withdrawal.create({
       userId: user._id,
       amount,
+      charge,
       bankName,
       accountNumber,
       accountName
@@ -361,17 +366,18 @@ exports.submitPayment = async (req, res) => {
 
 exports.purchaseProduct = async (req, res) => {
   try {
-    const { name, price } = req.body;
-    if (!name || !price || price <= 0) {
+    const { name } = req.body;
+    if (!name) {
       return res.status(400).json({ message: 'Invalid product' });
-    }
-    const user = await User.findById(req.user._id);
-    if (user.walletBalance < price) {
-      return res.status(400).json({ message: `Insufficient funds. You need ₦${price.toLocaleString()} but have ₦${user.walletBalance.toLocaleString()}` });
     }
     const product = await Product.findOne({ name, active: true });
     if (!product) {
       return res.status(400).json({ message: 'Product not found' });
+    }
+    const price = product.price;
+    const user = await User.findById(req.user._id);
+    if (user.walletBalance < price) {
+      return res.status(400).json({ message: `Insufficient funds. You need ₦${price.toLocaleString()} but have ₦${user.walletBalance.toLocaleString()}` });
     }
     const isFirstPurchase = !user.purchasedProduct;
     user.walletBalance -= price;
